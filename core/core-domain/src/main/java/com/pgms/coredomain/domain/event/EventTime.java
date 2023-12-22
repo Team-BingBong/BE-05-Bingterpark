@@ -42,11 +42,4 @@ public class EventTime extends BaseEntity {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "event_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
 	private Event event;
-
-	public EventTime(int round, LocalDateTime startTime, LocalDateTime endTime, Event event) {
-		this.round = round;
-		this.startTime = startTime;
-		this.endTime = endTime;
-		this.event = event;
-	}
 }

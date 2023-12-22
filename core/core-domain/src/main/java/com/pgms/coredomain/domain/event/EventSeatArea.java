@@ -40,10 +40,4 @@ public class EventSeatArea extends BaseEntity {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "event_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
 	private Event event;
-
-	public EventSeatArea(SeatAreaType seatAreaType, int price, Event event) {
-		this.seatAreaType = seatAreaType;
-		this.price = price;
-		this.event = event;
-	}
 }

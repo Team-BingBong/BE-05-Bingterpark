@@ -4,16 +4,9 @@ import java.time.LocalDateTime;
 
 import com.pgms.coredomain.domain.common.BaseEntity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Lob;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -55,22 +48,7 @@ public class Event extends BaseEntity {
 	@Column(name = "thumbnail")
 	private String thumbnail;
 
-	public Event(
-		String title,
-		String description,
-		int runningTime,
-		LocalDateTime startDate,
-		LocalDateTime endDate,
-		String rating,
-		GenreType genreType,
-		String thumbnail) {
-		this.title = title;
-		this.description = description;
-		this.runningTime = runningTime;
-		this.startDate = startDate;
-		this.endDate = endDate;
-		this.rating = rating;
-		this.genreType = genreType;
-		this.thumbnail = thumbnail;
-	}
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "event_hall_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+	private EventHall eventHall;
 }
