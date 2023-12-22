@@ -2,7 +2,6 @@ package com.pgms.coredomain.domain.member;
 
 import java.time.LocalDateTime;
 
-import com.pgms.coredomain.domain.common.BaseEntity;
 import com.pgms.coredomain.domain.member.enums.AccountStatus;
 import com.pgms.coredomain.domain.member.enums.Gender;
 import com.pgms.coredomain.domain.member.enums.Provider;
@@ -20,9 +19,10 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "member")
-public class Member extends BaseEntity {
+public class Member extends AccountBaseEntity {
 
 	@Id
+	@Column(name = "id", nullable = false)
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 

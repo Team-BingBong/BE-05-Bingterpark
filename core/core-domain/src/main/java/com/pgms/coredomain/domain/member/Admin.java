@@ -2,7 +2,6 @@ package com.pgms.coredomain.domain.member;
 
 import java.time.LocalDateTime;
 
-import com.pgms.coredomain.domain.common.BaseEntity;
 import com.pgms.coredomain.domain.member.enums.AccountStatus;
 
 import jakarta.persistence.Column;
@@ -14,12 +13,15 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.Getter;
 
+@Getter
 @Entity
 @Table(name = "admin")
-public class Admin extends BaseEntity {
+public class Admin extends AccountBaseEntity {
 
 	@Id
+	@Column(name = "id", nullable = false)
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
