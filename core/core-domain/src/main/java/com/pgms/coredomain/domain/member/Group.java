@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.pgms.coredomain.domain.common.BaseEntity;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -18,12 +19,13 @@ import jakarta.persistence.Table;
 public class Group extends BaseEntity {
 
 	@Id
+	@Column(name = "id", nullable = false)
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
 	@Column(name = "name", nullable = false)
 	private String name;
 
-	@OneToMany(mappedBy = "group")
+	@OneToMany(mappedBy = "group", cascade = CascadeType.REMOVE)
 	private List<GroupPermission> permissions = new ArrayList<>();
 }
