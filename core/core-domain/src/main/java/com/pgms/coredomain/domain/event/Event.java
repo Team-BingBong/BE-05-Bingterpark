@@ -47,8 +47,9 @@ public class Event extends BaseEntity {
 	@Column(name = "rating")
 	private String rating;
 
+	@Column(name = "genre")
 	@Enumerated(value = EnumType.STRING)
-	private Genre genre;
+	private GenreType genreType;
 
 	@Lob
 	@Column(name = "thumbnail")
@@ -61,7 +62,7 @@ public class Event extends BaseEntity {
 		LocalDateTime startDate,
 		LocalDateTime endDate,
 		String rating,
-		Genre genre,
+		GenreType genreType,
 		String thumbnail) {
 		this.title = title;
 		this.description = description;
@@ -69,7 +70,7 @@ public class Event extends BaseEntity {
 		this.startDate = startDate;
 		this.endDate = endDate;
 		this.rating = rating;
-		this.genre = genre;
+		this.genreType = genreType;
 		this.thumbnail = thumbnail;
 	}
 }

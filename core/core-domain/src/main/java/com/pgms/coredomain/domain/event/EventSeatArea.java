@@ -5,6 +5,8 @@ import com.pgms.coredomain.domain.common.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.ConstraintMode;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.ForeignKey;
 import jakarta.persistence.GeneratedValue;
@@ -19,17 +21,18 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
-@Table(name = "event_seat_grade")
+@Table(name = "event_seat_area")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class EventSeatGrade extends BaseEntity {
+public class EventSeatArea extends BaseEntity {
 
 	@Id
 	@Column(name = "id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(name = "grade")
-	private String grade;
+	@Column(name = "area")
+	@Enumerated(value = EnumType.STRING)
+	private SeatAreaType seatAreaType;
 
 	@Column(name = "price")
 	private int price;
@@ -38,8 +41,8 @@ public class EventSeatGrade extends BaseEntity {
 	@JoinColumn(name = "event_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
 	private Event event;
 
-	public EventSeatGrade(String grade, int price, Event event) {
-		this.grade = grade;
+	public EventSeatArea(SeatAreaType seatAreaType, int price, Event event) {
+		this.seatAreaType = seatAreaType;
 		this.price = price;
 		this.event = event;
 	}
