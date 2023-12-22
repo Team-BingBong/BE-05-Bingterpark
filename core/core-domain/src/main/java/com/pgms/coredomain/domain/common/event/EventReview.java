@@ -1,10 +1,11 @@
 package com.pgms.coredomain.domain.common.event;
 
+import com.pgms.coredomain.domain.common.BaseEntity;
 import jakarta.persistence.*;
 
 @Entity
 @Table(name = "event_review")
-public class EventReview {
+public class EventReview extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

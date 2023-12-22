@@ -1,10 +1,11 @@
 package com.pgms.coredomain.domain.common.event;
 
+import com.pgms.coredomain.domain.common.BaseEntity;
 import jakarta.persistence.*;
 
 @Entity
 @Table(name = "event_image")
-public class EventImage {
+public class EventImage extends BaseEntity {
 
     @Id
     @GeneratedValue
