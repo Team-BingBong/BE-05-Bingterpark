@@ -1,6 +1,6 @@
 package com.pgms.coredomain.domain.order;
 
-import com.pgms.coredomain.domain.Ticket;
+import com.pgms.coredomain.domain.event.Ticket;
 import com.pgms.coredomain.domain.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -50,4 +50,6 @@ public class Order extends BaseEntity {
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Ticket> tickets = new ArrayList<>();
+
+    //TODO: 회원 매핑
 }

@@ -1,4 +1,4 @@
-package com.pgms.coredomain.domain;
+package com.pgms.coredomain.domain.event;
 
 import com.pgms.coredomain.domain.common.BaseEntity;
 import com.pgms.coredomain.domain.order.Order;
