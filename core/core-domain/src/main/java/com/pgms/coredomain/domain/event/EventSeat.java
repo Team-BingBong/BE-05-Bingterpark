@@ -1,8 +1,7 @@
-package com.pgms.coredomain.domain.common.event;
+package com.pgms.coredomain.domain.event;
 
 import com.pgms.coredomain.domain.common.BaseEntity;
 import jakarta.persistence.*;
-import org.yaml.snakeyaml.events.Event;
 
 @Entity
 @Table(name = "event_seat")
