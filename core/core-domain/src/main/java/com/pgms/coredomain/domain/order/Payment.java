@@ -35,7 +35,7 @@ public class Payment extends BaseEntity {
     @Column(name = "card_number")
     private String cardNumber;
 
-    @Column(name = "card_number")
+    @Column(name = "installment_plan_months")
     private int installmentPlanMonths;
 
     @Column(name = "is_interest_free")
