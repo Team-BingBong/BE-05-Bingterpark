@@ -48,7 +48,7 @@ public class Order extends BaseEntity {
     @Column(name = "amount", nullable = false)
     private int amount;
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<Ticket> tickets = new ArrayList<>();
 
     //TODO: 회원 매핑
