@@ -26,8 +26,8 @@ import lombok.NoArgsConstructor;
 public class EventTime extends BaseEntity {
 
 	@Id
+	@Column(name = "id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "event_time_id")
 	private Long id;
 
 	@Column(name = "round")

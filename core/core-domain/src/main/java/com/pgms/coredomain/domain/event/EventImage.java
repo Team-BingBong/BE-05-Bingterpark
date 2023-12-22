@@ -8,8 +8,8 @@ import jakarta.persistence.*;
 public class EventImage extends BaseEntity {
 
     @Id
-    @GeneratedValue
     @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Lob

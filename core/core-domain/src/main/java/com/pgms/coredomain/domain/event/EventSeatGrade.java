@@ -24,8 +24,8 @@ import lombok.NoArgsConstructor;
 public class EventSeatGrade extends BaseEntity {
 
 	@Id
+	@Column(name = "id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "event_seat_grade_id")
 	private Long id;
 
 	@Column(name = "grade")

@@ -24,8 +24,8 @@ import lombok.NoArgsConstructor;
 public class Event extends BaseEntity {
 
 	@Id
+	@Column(name = "id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "event_id")
 	private Long id;
 
 	@Column(name = "title")
