@@ -1,11 +1,9 @@
 package com.pgms.coredomain.domain.common.event;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Lob;
+import jakarta.persistence.*;
 
 @Entity
+@Table(name = "event_image")
 public class EventImage {
 
     @Id

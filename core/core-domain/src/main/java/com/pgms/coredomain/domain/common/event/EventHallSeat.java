@@ -1,11 +1,9 @@
 package com.pgms.coredomain.domain.common.event;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 @Entity
+@Table(name = "event_hall_seat")
 public class EventHallSeat {
 
     @Id

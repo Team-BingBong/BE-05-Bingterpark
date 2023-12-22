@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import org.yaml.snakeyaml.events.Event;
 
 @Entity
+@Table(name = "event_seat")
 public class EventSeat {
 
     @Id
