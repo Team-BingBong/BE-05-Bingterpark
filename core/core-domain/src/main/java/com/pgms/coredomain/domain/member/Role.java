@@ -15,8 +15,8 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "group")
-public class Group extends BaseEntity {
+@Table(name = "role")
+public class Role extends BaseEntity {
 
 	@Id
 	@Column(name = "id", nullable = false)
@@ -26,6 +26,6 @@ public class Group extends BaseEntity {
 	@Column(name = "name", nullable = false)
 	private String name;
 
-	@OneToMany(mappedBy = "group", cascade = CascadeType.REMOVE)
-	private List<GroupPermission> permissions = new ArrayList<>();
+	@OneToMany(mappedBy = "role", cascade = CascadeType.REMOVE)
+	private List<RolePermission> permissions = new ArrayList<>();
 }

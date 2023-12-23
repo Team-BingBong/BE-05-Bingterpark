@@ -10,6 +10,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -51,8 +52,8 @@ public class Member extends AccountBaseEntity {
 	@Column(name = "detail_address", nullable = false)
 	private String detailAddress;
 
-	@Column(name = "zipcode", nullable = false)
-	private String zipcode;
+	@Column(name = "zip_code", nullable = false)
+	private String zipCode;
 
 	@Column(name = "status", nullable = false)
 	@Enumerated(EnumType.STRING)
@@ -65,7 +66,7 @@ public class Member extends AccountBaseEntity {
 	@Column(name = "last_login_at", nullable = false)
 	private LocalDateTime lastLoginAt;
 
-	@ManyToOne
-	@JoinColumn(name = "user_id", nullable = false)
-	private Group group;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "member_id", nullable = false)
+	private Role role;
 }
