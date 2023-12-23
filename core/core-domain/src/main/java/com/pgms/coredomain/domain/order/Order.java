@@ -31,11 +31,11 @@ public class Order extends BaseEntity {
 	@Column(name = "receipt_type", nullable = false)
 	private ReceiptType receiptType;
 
-	@Column(name = "buyer_name", nullable = false)
-	private String buyerName;
+	@Column(name = "customer_name", nullable = false)
+	private String customerName;
 
-	@Column(name = "buyer_phone_number", nullable = false)
-	private String buyerPhoneNumber;
+	@Column(name = "customer_phone_number", nullable = false)
+	private String customerPhoneNumber;
 
 	@Column(name = "street_address")
 	private String streetAddress;
@@ -53,4 +53,7 @@ public class Order extends BaseEntity {
 	private List<Ticket> tickets = new ArrayList<>();
 
 	//TODO: 회원 매핑
+
+	@OneToOne(mappedBy = "order", cascade = CascadeType.ALL)
+	private Payment payment;
 }
