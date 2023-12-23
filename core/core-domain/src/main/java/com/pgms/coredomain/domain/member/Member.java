@@ -1,7 +1,5 @@
 package com.pgms.coredomain.domain.member;
 
-import java.time.LocalDateTime;
-
 import com.pgms.coredomain.domain.member.enums.AccountStatus;
 import com.pgms.coredomain.domain.member.enums.Gender;
 import com.pgms.coredomain.domain.member.enums.Provider;
@@ -17,7 +15,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.Getter;
 
+@Getter
 @Entity
 @Table(name = "member")
 public class Member extends AccountBaseEntity {
@@ -62,9 +62,6 @@ public class Member extends AccountBaseEntity {
 	@Column(name = "provider", nullable = false)
 	@Enumerated(EnumType.STRING)
 	private Provider provider;
-
-	@Column(name = "last_login_at", nullable = false)
-	private LocalDateTime lastLoginAt;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "member_id", nullable = false)

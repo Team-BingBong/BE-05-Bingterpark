@@ -1,7 +1,5 @@
 package com.pgms.coredomain.domain.member;
 
-import java.time.LocalDateTime;
-
 import com.pgms.coredomain.domain.member.enums.AccountStatus;
 
 import jakarta.persistence.Column;
@@ -41,9 +39,6 @@ public class Admin extends AccountBaseEntity {
 	@Column(name = "status", nullable = false)
 	@Enumerated(EnumType.STRING)
 	private AccountStatus status;
-
-	@Column(name = "last_login_at", nullable = false)
-	private LocalDateTime lastLoginAt;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	private Role role;
