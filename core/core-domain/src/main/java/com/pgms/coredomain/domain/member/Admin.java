@@ -47,4 +47,12 @@ public class Admin extends AccountBaseEntity {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	private Role role;
+
+	public boolean isDeleted() {
+		return this.status == AccountStatus.DELETED;
+	}
+
+	public void updateToDeleted() {
+		this.status = AccountStatus.DELETED;
+	}
 }

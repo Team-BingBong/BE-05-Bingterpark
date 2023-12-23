@@ -69,4 +69,8 @@ public class Member extends AccountBaseEntity {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "member_id", nullable = false)
 	private Role role;
+
+	public boolean isDeleted() {
+		return this.status == AccountStatus.DELETED;
+	}
 }
