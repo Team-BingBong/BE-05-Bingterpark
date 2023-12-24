@@ -27,6 +27,7 @@ public class AdminService {
 	private final MemberRepository memberRepository;
 	private final RoleRepository roleRepository;
 
+	// 슈퍼 관리자 기능
 	public Long createAdmin(AdminCreateRequest requestDto) {
 		if (isAdminExistsByEmail(requestDto.email()))
 			throw new NoSuchElementException("Admin already exists");
@@ -39,6 +40,12 @@ public class AdminService {
 		return adminRepository.save(admin).getId();
 	}
 
+	@Transactional(readOnly = true)
+	public List<AdminGetResponse> getAdmins() {
+		return adminRepository.findAll().stream().map(AdminGetResponse::from).toList();
+	}
+
+	// 일반 관리자 기능
 	@Transactional(readOnly = true)
 	public List<MemberSummaryGetResponse> getMembers() {
 		return memberRepository.findAll().stream().map(MemberSummaryGetResponse::from).toList();

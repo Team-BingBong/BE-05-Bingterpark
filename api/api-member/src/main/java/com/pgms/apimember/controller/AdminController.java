@@ -33,6 +33,7 @@ public class AdminController {
 
 	private final AdminService adminService;
 
+	// 슈퍼 관리자 기능
 	@PostMapping
 	public ResponseEntity<ApiResponse<Long>> createAdmin(
 		@RequestBody @NotNull AdminCreateRequest requestDto) {
@@ -44,8 +45,8 @@ public class AdminController {
 	}
 
 	@GetMapping
-	public ResponseEntity<ApiResponse<Void>> getAdmins() {
-		return ResponseEntity.noContent().build();
+	public ResponseEntity<ApiResponse<List<AdminGetResponse>>> getAdmins() {
+		return ResponseEntity.ok(ApiResponse.ok(adminService.getAdmins()));
 	}
 
 	@PatchMapping
@@ -58,6 +59,7 @@ public class AdminController {
 		return ResponseEntity.noContent().build();
 	}
 
+	//일반 관리자 기능
 	@GetMapping("/members")
 	public ResponseEntity<ApiResponse<List<MemberSummaryGetResponse>>> getMembers() {
 		return ResponseEntity.ok(ApiResponse.ok(adminService.getMembers()));
