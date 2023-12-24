@@ -28,19 +28,24 @@ public class EventHall extends BaseEntity {
     @OneToMany(mappedBy = "eventHall")
     private List<EventHallSeat> eventHallSeats = new ArrayList<>();
 
+    @Builder
+    public EventHall(String name, String address, List<EventHallSeat> eventHallSeats) {
+        this.name = name;
+        this.address = address;
+        this.eventHallSeats = eventHallSeats;
+    }
+
     public void addEventHallSeat(EventHallSeat eventHallSeat){
         eventHallSeats.add(eventHallSeat);
-        eventHallSeat.setEventHall(this);
     }
 
     public void deleteEventHallSeat(EventHallSeat eventHallSeat){
         eventHallSeats.remove(eventHallSeat);
     }
 
-    @Builder
-    public EventHall(String name, String address, List<EventHallSeat> eventHallSeats) {
-        this.name = name;
-        this.address = address;
-        this.eventHallSeats = eventHallSeats;
+    public void updateEventHall(EventHallEdit eventHallEdit){
+        this.name = eventHallEdit.getName();
+        this.address = eventHallEdit.getAddress();
+        this.eventHallSeats = eventHallEdit.getEventHallSeats();
     }
 }

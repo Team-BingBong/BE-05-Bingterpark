@@ -39,4 +39,15 @@ public class EventHallService {
     public EventHallSeat createEventHallSeat(EventHallSeatCreateRequest eventHallSeatCreateRequest) {
         return new EventHallSeat(eventHallSeatCreateRequest.name());
     }
+
+    public void deleteEventHall(Long id) {
+        EventHall eventHall = eventHallRepository.findById(id)
+                .orElseThrow(RuntimeException::new);
+
+        eventHallRepository.delete(eventHall);
+    }
+
+    public void editEventHall(Long id) {
+
+    }
 }

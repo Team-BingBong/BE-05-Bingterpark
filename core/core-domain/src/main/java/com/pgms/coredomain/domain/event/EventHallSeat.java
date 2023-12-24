@@ -20,14 +20,6 @@ public class EventHallSeat extends BaseEntity {
     @Column(name = "name")
     private String name;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "event_hall_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-    private EventHall eventHall;
-
-    public void setEventHall(EventHall eventHall){
-        this.eventHall = eventHall;
-    }
-
     public EventHallSeat(String name) {
         this.name = name;
     }
