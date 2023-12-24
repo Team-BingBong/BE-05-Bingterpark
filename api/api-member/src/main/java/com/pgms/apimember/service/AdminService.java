@@ -1,7 +1,8 @@
 package com.pgms.apimember.service;
 
+import static com.pgms.apimember.exception.CustomErrorCode.*;
+
 import java.util.List;
-import java.util.NoSuchElementException;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,6 +12,7 @@ import com.pgms.apimember.dto.request.AdminUpdateRequest;
 import com.pgms.apimember.dto.response.AdminGetResponse;
 import com.pgms.apimember.dto.response.MemberDetailGetResponse;
 import com.pgms.apimember.dto.response.MemberSummaryGetResponse;
+import com.pgms.apimember.exception.AdminException;
 import com.pgms.coredomain.domain.member.Admin;
 import com.pgms.coredomain.domain.member.Role;
 import com.pgms.coredomain.domain.member.repository.AdminRepository;
@@ -33,7 +35,7 @@ public class AdminService {
 		checkPasswordMatched(requestDto.password(), requestDto.passwordConfirm());
 
 		if (isAdminExistsByEmail(requestDto.email()))
-			throw new IllegalArgumentException("Admin already exists");
+			throw new AdminException(DUPLICATED_ADMIN_EMAIL);
 
 		// TODO: 비밀번호 암호화 추가 필요
 		final Admin admin = AdminCreateRequest.toEntity(requestDto, "암호화된 비밀번호", getRole(requestDto.roleName()));
@@ -49,7 +51,7 @@ public class AdminService {
 		checkPasswordMatched(requestDto.password(), requestDto.passwordConfirm());
 
 		final Admin admin = adminRepository.findById(adminId)
-			.orElseThrow(() -> new NoSuchElementException("Admin not found"));
+			.orElseThrow(() -> new AdminException(ADMIN_NOT_FOUND));
 
 		final Role role = getRole(requestDto.roleName());
 		// TODO: 비밀번호 암호화 추가 필요
@@ -70,7 +72,7 @@ public class AdminService {
 	@Transactional(readOnly = true)
 	public AdminGetResponse getAdmin(Long adminId) {
 		final Admin admin = adminRepository.findById(adminId)
-			.orElseThrow(() -> new NoSuchElementException("Admin not found"));
+			.orElseThrow(() -> new AdminException(ADMIN_NOT_FOUND));
 		return AdminGetResponse.from(admin);
 	}
 
@@ -89,14 +91,14 @@ public class AdminService {
 
 	private void checkPasswordMatched(String password, String passwordConfirm) {
 		if (!password.equals(passwordConfirm)) {
-			throw new IllegalArgumentException("Password and passwordConfirm are not matched");
+			throw new AdminException(NOT_MATCH_PASSWORD_CONFIRM);
 		}
 	}
 
 	private Role getRole(String roleName) {
 		// return null; // 테스트용
 		return roleRepository.findByName(roleName)
-			.orElseThrow(() -> new NoSuchElementException("Role not found"));
+			.orElseThrow(() -> new AdminException(ADMIN_ROLE_NOT_FOUND));
 	}
 
 }
