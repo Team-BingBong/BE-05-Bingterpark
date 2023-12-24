@@ -66,4 +66,17 @@ public class EventHallService {
 
         eventHall.updateEventHall(eventHallEdit);
     }
+
+    public EventHallResponse getEventHall(Long id) {
+        EventHall eventHall = eventHallRepository.findById(id).orElseThrow(RuntimeException::new);
+
+        return EventHallResponse.of(eventHall);
+    }
+
+    public List<EventHallResponse> getEventHalls() {
+        List<EventHall> eventHalls = eventHallRepository.findAll();
+        return eventHalls.stream()
+                .map(EventHallResponse::of)
+                .toList();
+    }
 }

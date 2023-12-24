@@ -27,4 +27,14 @@ public class EventHallController {
     public void editEventHall(@PathVariable Long id, @RequestBody EventHallEditRequest eventHallEditRequest){
         eventHallService.editEventHall(id, eventHallEditRequest);
     }
+
+    @GetMapping("/backoffice/event-halls/{id}")
+    public void getEventHall(@PathVariable Long id){
+        eventHallService.getEventHall(id);
+    }
+
+    @GetMapping("/backoffice/event-halls")
+    public void getEventHall(){
+        eventHallService.getEventHalls();
+    }
 }
