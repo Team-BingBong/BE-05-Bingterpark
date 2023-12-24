@@ -1,9 +1,11 @@
 package com.pgms.apievent.eventHall.service;
 
 import com.pgms.apievent.eventHall.dto.request.EventHallCreateRequest;
+import com.pgms.apievent.eventHall.dto.request.EventHallEditRequest;
 import com.pgms.apievent.eventHall.dto.request.EventHallSeatCreateRequest;
 import com.pgms.apievent.eventHall.dto.response.EventHallResponse;
 import com.pgms.coredomain.domain.event.EventHall;
+import com.pgms.coredomain.domain.event.EventHallEdit;
 import com.pgms.coredomain.domain.event.EventHallSeat;
 import com.pgms.coredomain.domain.event.repository.EventHallRepository;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +27,7 @@ public class EventHallService {
 
         List<EventHallSeat> eventHallSeats = eventHallSeatCreateRequests.stream()
                 .map(this::createEventHallSeat)
-                .collect(Collectors.toList());
+                .toList();
 
         EventHall eventHall = EventHall.builder()
                 .name(eventHallCreateRequest.name())
@@ -47,7 +49,21 @@ public class EventHallService {
         eventHallRepository.delete(eventHall);
     }
 
-    public void editEventHall(Long id) {
+    public void editEventHall(Long id, EventHallEditRequest eventHallEditRequest) {
+        EventHall eventHall = eventHallRepository.findById(id).orElseThrow(RuntimeException::new);
 
+        List<EventHallSeatCreateRequest> eventHallSeatCreateRequests = eventHallEditRequest.eventHallSeatCreateRequests();
+
+        List<EventHallSeat> eventHallSeats = eventHallSeatCreateRequests.stream()
+                .map(this::createEventHallSeat)
+                .toList();
+
+        EventHallEdit eventHallEdit = EventHallEdit.builder()
+                .name(eventHallEditRequest.name())
+                .address(eventHallEditRequest.address())
+                .eventHallSeats(eventHallSeats)
+                .build();
+
+        eventHall.updateEventHall(eventHallEdit);
     }
 }

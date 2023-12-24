@@ -1,6 +1,7 @@
 package com.pgms.apievent.eventHall.controller;
 
 import com.pgms.apievent.eventHall.dto.request.EventHallCreateRequest;
+import com.pgms.apievent.eventHall.dto.request.EventHallEditRequest;
 import com.pgms.apievent.eventHall.dto.response.EventHallResponse;
 import com.pgms.apievent.eventHall.service.EventHallService;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +24,7 @@ public class EventHallController {
     }
 
     @PutMapping("/backoffice/event-halls/{id}")
-    public void editEventHall(@PathVariable Long id){
-        eventHallService.editEventHall(id);
+    public void editEventHall(@PathVariable Long id, @RequestBody EventHallEditRequest eventHallEditRequest){
+        eventHallService.editEventHall(id, eventHallEditRequest);
     }
 }
