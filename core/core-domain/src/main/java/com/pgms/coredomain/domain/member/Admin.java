@@ -1,5 +1,7 @@
 package com.pgms.coredomain.domain.member;
 
+import static lombok.AccessLevel.*;
+
 import com.pgms.coredomain.domain.member.enums.AccountStatus;
 
 import jakarta.persistence.Column;
@@ -12,11 +14,14 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
 @Table(name = "admin")
+@NoArgsConstructor(access = PROTECTED)
 public class Admin extends AccountBaseEntity {
 
 	@Id
@@ -27,14 +32,14 @@ public class Admin extends AccountBaseEntity {
 	@Column(name = "name", nullable = false)
 	private String name;
 
+	@Column(name = "email", nullable = false)
+	private String email;
+
 	@Column(name = "password", nullable = false)
 	private String password;
 
 	@Column(name = "phone_number", nullable = false)
 	private String phoneNumber;
-
-	@Column(name = "email", nullable = false)
-	private String email;
 
 	@Column(name = "status", nullable = false)
 	@Enumerated(EnumType.STRING)
@@ -42,6 +47,16 @@ public class Admin extends AccountBaseEntity {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	private Role role;
+
+	@Builder
+	public Admin(String name, String password, String phoneNumber, String email, Role role) {
+		this.name = name;
+		this.password = password;
+		this.phoneNumber = phoneNumber;
+		this.email = email;
+		this.status = AccountStatus.ACTIVE;
+		this.role = role;
+	}
 
 	public boolean isDeleted() {
 		return this.status == AccountStatus.DELETED;
