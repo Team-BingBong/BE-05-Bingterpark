@@ -1,19 +1,19 @@
 package com.pgms.apievent.event.service;
 
-import static com.pgms.apievent.exception.EventErrorCode.*;
-
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.pgms.apievent.event.dto.request.EventCreateRequest;
 import com.pgms.apievent.event.dto.request.EventUpdateRequest;
 import com.pgms.apievent.event.dto.response.EventResponse;
 import com.pgms.apievent.exception.CustomException;
 import com.pgms.coredomain.domain.event.Event;
 import com.pgms.coredomain.domain.event.EventEdit;
+import com.pgms.coredomain.domain.event.EventHall;
+import com.pgms.coredomain.domain.event.repository.EventHallRepository;
 import com.pgms.coredomain.domain.event.repository.EventRepository;
-
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import static com.pgms.apievent.exception.EventErrorCode.*;
 
 @Service
 @Transactional
@@ -21,16 +21,15 @@ import lombok.RequiredArgsConstructor;
 public class EventService {
 
 	private final EventRepository eventRepository;
-	// private final EventHallRepository eventHallRepository;
+	private final EventHallRepository eventHallRepository;
 
 	public EventResponse createEvent(EventCreateRequest request) {
 		validateDuplicateEvent(request.title());
-		/**
-		 * TODO
-		 *  1) 공연장 정보를 통해 공연장 가져오기
-		 *  2) toEntity 메소드에 eventHall 넘겨주기
-		 */
-		Event event = request.toEntity(null);
+
+		EventHall eventHall = eventHallRepository.findById(request.eventHallId())
+				.orElseThrow(() -> new CustomException(EVENT_HALL_NOT_FOUND));
+
+		Event event = request.toEntity(eventHall);
 		eventRepository.save(event);
 		return EventResponse.of(event);
 	}
@@ -63,10 +62,9 @@ public class EventService {
 	}
 
 	private EventEdit getEventEdit(EventUpdateRequest request) {
-		/**
-		 * TODO
-		 *  eventHall 찾아서 eventHall 부분에 넣어주기
-		 */
+		EventHall eventHall = eventHallRepository.findById(request.eventHallId())
+			.orElseThrow(() -> new CustomException(EVENT_HALL_NOT_FOUND));
+
 		return EventEdit.builder()
 			.title(request.title())
 			.description(request.description())
@@ -76,6 +74,7 @@ public class EventService {
 			.rating(request.rating())
 			.genreType(request.genreType())
 			.thumbnail(request.thumbnail())
-			.eventHall(null).build();
+			.eventHall(eventHall)
+			.build();
 	}
 }
