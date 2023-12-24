@@ -96,6 +96,6 @@ public class Event extends BaseEntity {
 		this.rating = eventEdit.rating();
 		this.genreType = eventEdit.genreType();
 		this.thumbnail = eventEdit.thumbnail();
-		this.eventHall = eventEdit.getEventHall();
+		this.eventHall = eventEdit.eventHall();
 	}
 }
