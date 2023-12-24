@@ -25,17 +25,17 @@ public class AdminService {
 
 	@Transactional(readOnly = true)
 	public List<MemberSummaryGetResponse> getMembers() {
-		return memberRepository.findAll().stream().map(MemberSummaryGetResponse::toDto).toList();
+		return memberRepository.findAll().stream().map(MemberSummaryGetResponse::from).toList();
 	}
 
 	@Transactional(readOnly = true)
 	public List<MemberDetailGetResponse> getMemberDetails(List<Long> memberIds) {
-		return memberRepository.findAllById(memberIds).stream().map(MemberDetailGetResponse::toDto).toList();
+		return memberRepository.findAllById(memberIds).stream().map(MemberDetailGetResponse::from).toList();
 	}
 
 	@Transactional(readOnly = true)
 	public AdminGetResponse getAdmin(Long adminId) {
-		return AdminGetResponse.toDto(getAvailableAdmin(adminId));
+		return AdminGetResponse.from(getAvailableAdmin(adminId));
 	}
 
 	public void deleteAdmin(Long adminId) {
