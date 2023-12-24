@@ -2,6 +2,7 @@ package com.pgms.apipayment.service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
@@ -23,7 +24,7 @@ public class SeatService {
 		List<EventSeat> seats = eventSeatRepository.findAllWithAreaByEventTimeId(request.eventTimeId());
 
 		Map<Long, List<EventSeat>> seatsByArea = seats.stream()
-			.collect(java.util.stream.Collectors.groupingBy(es -> es.getEventSeatArea().getId()));
+			.collect(Collectors.groupingBy(es -> es.getEventSeatArea().getId()));
 
 		return seatsByArea.values().stream()
 			.map(AreaResponse::from)
