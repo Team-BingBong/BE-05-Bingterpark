@@ -1,5 +1,8 @@
 package com.pgms.coredomain.domain.event;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.pgms.coredomain.domain.common.BaseEntity;
 
 import jakarta.persistence.Column;
@@ -14,14 +17,15 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Getter
 @Entity
 @Table(name = "event_seat_area")
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class EventSeatArea extends BaseEntity {
 
@@ -40,4 +44,14 @@ public class EventSeatArea extends BaseEntity {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "event_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
 	private Event event;
+
+	@OneToMany(mappedBy = "eventSeatArea")
+	private List<EventSeat> eventSeats = new ArrayList<>();
+
+	public int getAvailableSeatCount() {
+		return eventSeats.stream()
+			.filter(EventSeat::isAvailable)
+			.toList()
+			.size();
+	}
 }
