@@ -69,9 +69,13 @@ public class AdminService {
 		return AdminGetResponse.from(getAvailableAdmin(adminId));
 	}
 
-	public void deleteAdmin(Long adminId) {
-		final Admin admin = getAvailableAdmin(adminId);
-		admin.updateToDeleted();
+	public void deleteAdmins(List<Long> adminIds) {
+		List<Admin> admins = adminRepository.findAllById(adminIds);
+		admins.forEach(admin -> {
+			if (!admin.isDeleted()) {
+				admin.updateToDeleted();
+			}
+		});
 	}
 
 	private Admin getAvailableAdmin(Long adminId) {

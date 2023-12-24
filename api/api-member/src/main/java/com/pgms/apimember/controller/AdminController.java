@@ -1,6 +1,7 @@
 package com.pgms.apimember.controller;
 
 import java.net.URI;
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
@@ -61,7 +62,8 @@ public class AdminController {
 	}
 
 	@DeleteMapping
-	public ResponseEntity<ApiResponse<Void>> deleteAdmin() {
+	public ResponseEntity<ApiResponse<Void>> deleteAdmins(@RequestParam List<Long> adminIds) {
+		adminService.deleteAdmins(adminIds);
 		return ResponseEntity.noContent().build();
 	}
 
@@ -85,7 +87,7 @@ public class AdminController {
 
 	@DeleteMapping("/me")
 	public ResponseEntity<ApiResponse<Void>> deleteMyAccount() {
-		adminService.deleteAdmin(TEMP_CURRENT_ID);
+		adminService.deleteAdmins(Collections.singletonList(TEMP_CURRENT_ID));
 		return ResponseEntity.noContent().build();
 	}
 }
