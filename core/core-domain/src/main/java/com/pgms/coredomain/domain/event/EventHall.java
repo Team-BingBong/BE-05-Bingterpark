@@ -2,10 +2,10 @@ package com.pgms.coredomain.domain.event;
 
 import com.pgms.coredomain.domain.common.BaseEntity;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -24,4 +24,23 @@ public class EventHall extends BaseEntity {
 
     @Column(name = "address")
     private String address;
+
+    @OneToMany(mappedBy = "eventHall")
+    private List<EventHallSeat> eventHallSeats = new ArrayList<>();
+
+    public void addEventHallSeat(EventHallSeat eventHallSeat){
+        eventHallSeats.add(eventHallSeat);
+        eventHallSeat.setEventHall(this);
+    }
+
+    public void deleteEventHallSeat(EventHallSeat eventHallSeat){
+        eventHallSeats.remove(eventHallSeat);
+    }
+
+    @Builder
+    public EventHall(String name, String address, List<EventHallSeat> eventHallSeats) {
+        this.name = name;
+        this.address = address;
+        this.eventHallSeats = eventHallSeats;
+    }
 }
