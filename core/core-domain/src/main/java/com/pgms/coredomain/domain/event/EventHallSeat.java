@@ -20,7 +20,15 @@ public class EventHallSeat extends BaseEntity {
     @Column(name = "name")
     private String name;
 
+    @JoinColumn(name = "eventhall_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    private EventHall eventHall;
+
     public EventHallSeat(String name) {
         this.name = name;
+    }
+
+    public void setEventHall(EventHall eventHall) {
+        this.eventHall = eventHall;
     }
 }

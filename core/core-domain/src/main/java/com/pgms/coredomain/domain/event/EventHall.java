@@ -25,7 +25,7 @@ public class EventHall extends BaseEntity {
     @Column(name = "address")
     private String address;
 
-    @OneToMany(mappedBy = "eventHall")
+    @OneToMany(mappedBy = "eventHall", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<EventHallSeat> eventHallSeats = new ArrayList<>();
 
     @Builder
@@ -33,14 +33,6 @@ public class EventHall extends BaseEntity {
         this.name = name;
         this.address = address;
         this.eventHallSeats = eventHallSeats;
-    }
-
-    public void addEventHallSeat(EventHallSeat eventHallSeat){
-        eventHallSeats.add(eventHallSeat);
-    }
-
-    public void deleteEventHallSeat(EventHallSeat eventHallSeat){
-        eventHallSeats.remove(eventHallSeat);
     }
 
     public void updateEventHall(EventHallEdit eventHallEdit){

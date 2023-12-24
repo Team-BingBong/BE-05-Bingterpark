@@ -1,7 +1,7 @@
 package com.pgms.apievent.eventHall.service;
 
 import com.pgms.apievent.eventHall.dto.request.EventHallCreateRequest;
-import com.pgms.apievent.eventHall.dto.request.EventHallEditRequest;
+import com.pgms.apievent.eventHall.dto.request.EventHallUpdateRequest;
 import com.pgms.apievent.eventHall.dto.request.EventHallSeatCreateRequest;
 import com.pgms.apievent.eventHall.dto.response.EventHallResponse;
 import com.pgms.coredomain.domain.event.EventHall;
@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -38,10 +37,6 @@ public class EventHallService {
         return EventHallResponse.of(eventHallRepository.save(eventHall));
     }
 
-    public EventHallSeat createEventHallSeat(EventHallSeatCreateRequest eventHallSeatCreateRequest) {
-        return new EventHallSeat(eventHallSeatCreateRequest.name());
-    }
-
     public void deleteEventHall(Long id) {
         EventHall eventHall = eventHallRepository.findById(id)
                 .orElseThrow(RuntimeException::new);
@@ -49,34 +44,42 @@ public class EventHallService {
         eventHallRepository.delete(eventHall);
     }
 
-    public void editEventHall(Long id, EventHallEditRequest eventHallEditRequest) {
+    public EventHallResponse updateEventHall(Long id, EventHallUpdateRequest eventHallUpdateRequest) {
         EventHall eventHall = eventHallRepository.findById(id).orElseThrow(RuntimeException::new);
 
-        List<EventHallSeatCreateRequest> eventHallSeatCreateRequests = eventHallEditRequest.eventHallSeatCreateRequests();
+        List<EventHallSeatCreateRequest> eventHallSeatCreateRequests = eventHallUpdateRequest.eventHallSeatCreateRequests();
 
         List<EventHallSeat> eventHallSeats = eventHallSeatCreateRequests.stream()
                 .map(this::createEventHallSeat)
                 .toList();
 
         EventHallEdit eventHallEdit = EventHallEdit.builder()
-                .name(eventHallEditRequest.name())
-                .address(eventHallEditRequest.address())
+                .name(eventHallUpdateRequest.name())
+                .address(eventHallUpdateRequest.address())
                 .eventHallSeats(eventHallSeats)
                 .build();
 
         eventHall.updateEventHall(eventHallEdit);
+
+        return EventHallResponse.of(eventHall);
     }
 
+    @Transactional(readOnly = true)
     public EventHallResponse getEventHall(Long id) {
         EventHall eventHall = eventHallRepository.findById(id).orElseThrow(RuntimeException::new);
 
         return EventHallResponse.of(eventHall);
     }
 
+    @Transactional(readOnly = true)
     public List<EventHallResponse> getEventHalls() {
         List<EventHall> eventHalls = eventHallRepository.findAll();
         return eventHalls.stream()
                 .map(EventHallResponse::of)
                 .toList();
+    }
+
+    private EventHallSeat createEventHallSeat(EventHallSeatCreateRequest eventHallSeatCreateRequest) {
+        return new EventHallSeat(eventHallSeatCreateRequest.name());
     }
 }
