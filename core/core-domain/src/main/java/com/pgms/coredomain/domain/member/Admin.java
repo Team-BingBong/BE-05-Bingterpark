@@ -1,13 +1,12 @@
 package com.pgms.coredomain.domain.member;
 
-import java.time.LocalDateTime;
-
 import com.pgms.coredomain.domain.member.enums.AccountStatus;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -41,9 +40,14 @@ public class Admin extends AccountBaseEntity {
 	@Enumerated(EnumType.STRING)
 	private AccountStatus status;
 
-	@Column(name = "last_login_at", nullable = false)
-	private LocalDateTime lastLoginAt;
+	@ManyToOne(fetch = FetchType.LAZY)
+	private Role role;
 
-	@ManyToOne
-	private Group group;
+	public boolean isDeleted() {
+		return this.status == AccountStatus.DELETED;
+	}
+
+	public void updateToDeleted() {
+		this.status = AccountStatus.DELETED;
+	}
 }

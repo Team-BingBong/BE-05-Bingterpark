@@ -1,7 +1,5 @@
 package com.pgms.coredomain.domain.member;
 
-import java.time.LocalDateTime;
-
 import com.pgms.coredomain.domain.member.enums.AccountStatus;
 import com.pgms.coredomain.domain.member.enums.Gender;
 import com.pgms.coredomain.domain.member.enums.Provider;
@@ -10,13 +8,16 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.Getter;
 
+@Getter
 @Entity
 @Table(name = "member")
 public class Member extends AccountBaseEntity {
@@ -51,8 +52,8 @@ public class Member extends AccountBaseEntity {
 	@Column(name = "detail_address", nullable = false)
 	private String detailAddress;
 
-	@Column(name = "zipcode", nullable = false)
-	private String zipcode;
+	@Column(name = "zip_code", nullable = false)
+	private String zipCode;
 
 	@Column(name = "status", nullable = false)
 	@Enumerated(EnumType.STRING)
@@ -62,10 +63,11 @@ public class Member extends AccountBaseEntity {
 	@Enumerated(EnumType.STRING)
 	private Provider provider;
 
-	@Column(name = "last_login_at", nullable = false)
-	private LocalDateTime lastLoginAt;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "member_id", nullable = false)
+	private Role role;
 
-	@ManyToOne
-	@JoinColumn(name = "user_id", nullable = false)
-	private Group group;
+	public boolean isDeleted() {
+		return this.status == AccountStatus.DELETED;
+	}
 }

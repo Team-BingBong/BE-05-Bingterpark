@@ -5,6 +5,9 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import java.util.HashMap;
 import java.util.Map;
 
+import lombok.Getter;
+
+@Getter
 @JsonInclude(value = JsonInclude.Include.NON_EMPTY)
 public class ErrorResponse {
     private String errorCode; // ex) TOO_LONG_PRODUCT_DESCRIPTION
