@@ -56,6 +56,8 @@ public class Admin extends AccountBaseEntity {
 		this.email = email;
 		this.status = AccountStatus.ACTIVE;
 		this.role = role;
+		super.updateLastLoginAt();
+		super.updateLastPasswordUpdatedAt();
 	}
 
 	public void update(String name, String password, String phoneNumber, Role role) {
@@ -63,6 +65,7 @@ public class Admin extends AccountBaseEntity {
 		this.password = password;
 		this.phoneNumber = phoneNumber;
 		this.role = role;
+		super.updateLastPasswordUpdatedAt();
 	}
 
 	public boolean isDeleted() {

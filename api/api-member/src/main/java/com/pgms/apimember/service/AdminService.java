@@ -92,6 +92,7 @@ public class AdminService {
 	}
 
 	private Role getRole(String roleName) {
+		// return null; // 테스트용
 		return roleRepository.findByName(roleName)
 			.orElseThrow(() -> new NoSuchElementException("Role not found"));
 	}
