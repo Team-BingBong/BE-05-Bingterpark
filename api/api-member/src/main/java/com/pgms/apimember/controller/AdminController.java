@@ -37,6 +37,6 @@ public class AdminController {
 	@DeleteMapping("/me")
 	public ResponseEntity<ApiResponse<Void>> deleteMyAccount() {
 		adminService.deleteAdmin(TEMP_CURRENT_ID);
-		return ResponseEntity.ok(ApiResponse.ok(null));
+		return ResponseEntity.noContent().build();
 	}
 }
