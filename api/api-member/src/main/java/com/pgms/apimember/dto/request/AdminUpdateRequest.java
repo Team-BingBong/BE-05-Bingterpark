@@ -1,5 +1,7 @@
 package com.pgms.apimember.dto.request;
 
+import com.pgms.coredomain.domain.member.enums.AccountStatus;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -19,6 +21,9 @@ public record AdminUpdateRequest(
 	@NotBlank(message = "전화번호를 입력해주세요.")
 	@Pattern(regexp = "\\d+", message = "전화번호는 숫자만 입력해주세요.")
 	String phoneNumber,
+
+	@NotBlank(message = "계정 상태를 입력해주세요.")
+	AccountStatus status,
 
 	@NotBlank(message = "역할을 입력해주세요.")
 	String roleName

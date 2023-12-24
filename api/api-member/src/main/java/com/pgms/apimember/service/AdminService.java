@@ -30,12 +30,11 @@ public class AdminService {
 
 	// 슈퍼 관리자 기능
 	public Long createAdmin(AdminCreateRequest requestDto) {
+		checkPasswordMatched(requestDto.password(), requestDto.passwordConfirm());
+
 		if (isAdminExistsByEmail(requestDto.email()))
 			throw new IllegalArgumentException("Admin already exists");
 
-		if (!requestDto.password().equals(requestDto.passwordConfirm())) {
-			throw new IllegalArgumentException("Password and passwordConfirm are not matched");
-		}
 		// TODO: 비밀번호 암호화 추가 필요
 		final Admin admin = AdminCreateRequest.toEntity(requestDto, "암호화된 비밀번호", getRole(requestDto.roleName()));
 		return adminRepository.save(admin).getId();
@@ -47,10 +46,14 @@ public class AdminService {
 	}
 
 	public void updateAdmin(Long adminId, AdminUpdateRequest requestDto) {
-		final Admin admin = getAvailableAdmin(adminId);
+		checkPasswordMatched(requestDto.password(), requestDto.passwordConfirm());
+
+		final Admin admin = adminRepository.findById(adminId)
+			.orElseThrow(() -> new NoSuchElementException("Admin not found"));
+
 		final Role role = getRole(requestDto.roleName());
 		// TODO: 비밀번호 암호화 추가 필요
-		admin.update(requestDto.name(), "암호화된 비밀번호", requestDto.phoneNumber(), role);
+		admin.update(requestDto.name(), "암호화된 비밀번호", requestDto.phoneNumber(), requestDto.status(), role);
 	}
 
 	// 일반 관리자 기능
@@ -66,7 +69,9 @@ public class AdminService {
 
 	@Transactional(readOnly = true)
 	public AdminGetResponse getAdmin(Long adminId) {
-		return AdminGetResponse.from(getAvailableAdmin(adminId));
+		final Admin admin = adminRepository.findById(adminId)
+			.orElseThrow(() -> new NoSuchElementException("Admin not found"));
+		return AdminGetResponse.from(admin);
 	}
 
 	public void deleteAdmins(List<Long> adminIds) {
@@ -78,17 +83,14 @@ public class AdminService {
 		});
 	}
 
-	private Admin getAvailableAdmin(Long adminId) {
-		final Admin admin = adminRepository.findById(adminId)
-			.orElseThrow(() -> new NoSuchElementException("Admin not found"));
-		if (admin.isDeleted()) {
-			throw new IllegalArgumentException("Admin is already deleted");
-		}
-		return admin;
-	}
-
 	private boolean isAdminExistsByEmail(String email) {
 		return adminRepository.existsByEmail(email);
+	}
+
+	private void checkPasswordMatched(String password, String passwordConfirm) {
+		if (!password.equals(passwordConfirm)) {
+			throw new IllegalArgumentException("Password and passwordConfirm are not matched");
+		}
 	}
 
 	private Role getRole(String roleName) {

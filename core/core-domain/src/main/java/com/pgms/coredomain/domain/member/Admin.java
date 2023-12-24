@@ -60,10 +60,11 @@ public class Admin extends AccountBaseEntity {
 		super.updateLastPasswordUpdatedAt();
 	}
 
-	public void update(String name, String password, String phoneNumber, Role role) {
+	public void update(String name, String password, String phoneNumber, AccountStatus status, Role role) {
 		this.name = name;
 		this.password = password;
 		this.phoneNumber = phoneNumber;
+		this.status = status;
 		this.role = role;
 		super.updateLastPasswordUpdatedAt();
 	}
