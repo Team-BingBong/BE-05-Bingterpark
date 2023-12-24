@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.pgms.apipayment.dto.request.SeatsGetRequest;
 import com.pgms.apipayment.dto.response.AreaResponse;
@@ -15,11 +16,13 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class SeatService {
 
 	private final EventSeatRepository eventSeatRepository;
 
 	//TODO: 테스트 코드 작성
+	@Transactional(readOnly = true)
 	public List<AreaResponse> getSeats(SeatsGetRequest request) {
 		List<EventSeat> seats = eventSeatRepository.findAllWithAreaByEventTimeId(request.eventTimeId());
 
