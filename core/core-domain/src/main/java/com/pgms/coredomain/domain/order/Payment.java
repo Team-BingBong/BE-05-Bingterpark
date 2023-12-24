@@ -53,14 +53,6 @@ public class Payment extends BaseEntity {
     @Column(name = "is_interest_free")
     private boolean isInterestFree;
 
-    @Builder
-    public Payment(PaymentMethod method, PaymentStatus status, int amount, Order order) {
-        this.method = method;
-        this.status = status;
-        this.amount = amount;
-        this.order = order;
-    }
-
     @Column(name = "account_number")
     private String accountNumber;
 
@@ -94,4 +86,25 @@ public class Payment extends BaseEntity {
     @OneToOne
     @JoinColumn(name = "order_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private Order order;
+
+    @Builder
+    public Payment(PaymentMethod method, PaymentStatus status, int amount, Order order) {
+        this.method = method;
+        this.status = status;
+        this.amount = amount;
+        this.order = order;
+    }
+
+    public void updateCardInfo(String cardNumber, int installmentPlanMonths, boolean isInterestFree) {
+        this.cardNumber = cardNumber;
+        this.installmentPlanMonths = installmentPlanMonths;
+        this.isInterestFree = isInterestFree;
+    }
+
+    public void updateConfirmInfo(String paymentKey, LocalDateTime approvedAt, LocalDateTime requestedAt) {
+        this.paymentKey = paymentKey;
+        this.approvedAt = approvedAt;
+        this.requestedAt = requestedAt;
+        this.status = PaymentStatus.COMPLETED;
+    }
 }
