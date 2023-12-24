@@ -58,6 +58,13 @@ public class Admin extends AccountBaseEntity {
 		this.role = role;
 	}
 
+	public void update(String name, String password, String phoneNumber, Role role) {
+		this.name = name;
+		this.password = password;
+		this.phoneNumber = phoneNumber;
+		this.role = role;
+	}
+
 	public boolean isDeleted() {
 		return this.status == AccountStatus.DELETED;
 	}

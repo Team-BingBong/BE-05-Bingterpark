@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,12 +16,14 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.pgms.apimember.dto.request.AdminCreateRequest;
+import com.pgms.apimember.dto.request.AdminUpdateRequest;
 import com.pgms.apimember.dto.response.AdminGetResponse;
 import com.pgms.apimember.dto.response.MemberDetailGetResponse;
 import com.pgms.apimember.dto.response.MemberSummaryGetResponse;
 import com.pgms.apimember.service.AdminService;
 import com.pgms.coredomain.response.ApiResponse;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 
@@ -34,9 +37,9 @@ public class AdminController {
 	private final AdminService adminService;
 
 	// 슈퍼 관리자 기능
+	// TODO: 슈퍼 관리자인지 확인 필요 (security)
 	@PostMapping
-	public ResponseEntity<ApiResponse<Long>> createAdmin(
-		@RequestBody @NotNull AdminCreateRequest requestDto) {
+	public ResponseEntity<ApiResponse<Long>> createAdmin(@RequestBody @Valid AdminCreateRequest requestDto) {
 		final Long adminId = adminService.createAdmin(requestDto);
 		final URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
 			.buildAndExpand(adminId)
@@ -49,8 +52,11 @@ public class AdminController {
 		return ResponseEntity.ok(ApiResponse.ok(adminService.getAdmins()));
 	}
 
-	@PatchMapping
-	public ResponseEntity<ApiResponse<Void>> updateAdmin() {
+	@PatchMapping("/{adminId}")
+	public ResponseEntity<ApiResponse<Void>> updateAdmin(
+		@PathVariable Long adminId,
+		@RequestBody @NotNull AdminUpdateRequest requestDto) {
+		adminService.updateAdmin(adminId, requestDto);
 		return ResponseEntity.noContent().build();
 	}
 
@@ -59,7 +65,8 @@ public class AdminController {
 		return ResponseEntity.noContent().build();
 	}
 
-	//일반 관리자 기능
+	// 일반 관리자 기능
+	// TODO: 일반 관리자인지 확인 필요 (security)
 	@GetMapping("/members")
 	public ResponseEntity<ApiResponse<List<MemberSummaryGetResponse>>> getMembers() {
 		return ResponseEntity.ok(ApiResponse.ok(adminService.getMembers()));

@@ -1,14 +1,10 @@
 package com.pgms.apimember.dto.request;
 
-import com.pgms.coredomain.domain.member.Admin;
-import com.pgms.coredomain.domain.member.Role;
-
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
-public record AdminCreateRequest(
+public record AdminUpdateRequest(
 	@NotBlank(message = "이름을 입력해주세요.")
 	@Size(min = 2, max = 50, message = "이름은 2자 이상 50자 이하로 입력해주세요.")
 	String name,
@@ -24,20 +20,7 @@ public record AdminCreateRequest(
 	@Pattern(regexp = "\\d+", message = "전화번호는 숫자만 입력해주세요.")
 	String phoneNumber,
 
-	@NotBlank(message = "이메일을 입력해주세요.")
-	@Email(message = "이메일 형식에 맞지 않습니다.")
-	String email,
-
 	@NotBlank(message = "역할을 입력해주세요.")
 	String roleName
 ) {
-	public static Admin toEntity(AdminCreateRequest requestDto, String encodedPassword, Role role) {
-		return Admin.builder()
-			.name(requestDto.name())
-			.password(encodedPassword)
-			.phoneNumber(requestDto.phoneNumber())
-			.email(requestDto.email())
-			.role(role)
-			.build();
-	}
 }

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.pgms.apimember.dto.request.AdminCreateRequest;
+import com.pgms.apimember.dto.request.AdminUpdateRequest;
 import com.pgms.apimember.dto.response.AdminGetResponse;
 import com.pgms.apimember.dto.response.MemberDetailGetResponse;
 import com.pgms.apimember.dto.response.MemberSummaryGetResponse;
@@ -30,19 +31,26 @@ public class AdminService {
 	// 슈퍼 관리자 기능
 	public Long createAdmin(AdminCreateRequest requestDto) {
 		if (isAdminExistsByEmail(requestDto.email()))
-			throw new NoSuchElementException("Admin already exists");
+			throw new IllegalArgumentException("Admin already exists");
 
 		if (!requestDto.password().equals(requestDto.passwordConfirm())) {
 			throw new IllegalArgumentException("Password and passwordConfirm are not matched");
 		}
-
-		final Admin admin = AdminCreateRequest.toEntity(requestDto, getRole(requestDto.roleName()));
+		// TODO: 비밀번호 암호화 추가 필요
+		final Admin admin = AdminCreateRequest.toEntity(requestDto, "암호화된 비밀번호", getRole(requestDto.roleName()));
 		return adminRepository.save(admin).getId();
 	}
 
 	@Transactional(readOnly = true)
 	public List<AdminGetResponse> getAdmins() {
 		return adminRepository.findAll().stream().map(AdminGetResponse::from).toList();
+	}
+
+	public void updateAdmin(Long adminId, AdminUpdateRequest requestDto) {
+		final Admin admin = getAvailableAdmin(adminId);
+		final Role role = getRole(requestDto.roleName());
+		// TODO: 비밀번호 암호화 추가 필요
+		admin.update(requestDto.name(), "암호화된 비밀번호", requestDto.phoneNumber(), role);
 	}
 
 	// 일반 관리자 기능
@@ -83,4 +91,5 @@ public class AdminService {
 		return roleRepository.findByName(roleName)
 			.orElseThrow(() -> new NoSuchElementException("Role not found"));
 	}
+
 }
