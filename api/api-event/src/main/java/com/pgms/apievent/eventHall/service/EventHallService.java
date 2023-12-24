@@ -4,6 +4,7 @@ import com.pgms.apievent.eventHall.dto.request.EventHallCreateRequest;
 import com.pgms.apievent.eventHall.dto.request.EventHallUpdateRequest;
 import com.pgms.apievent.eventHall.dto.request.EventHallSeatCreateRequest;
 import com.pgms.apievent.eventHall.dto.response.EventHallResponse;
+import com.pgms.apievent.exception.EventHallNotFoundException;
 import com.pgms.coredomain.domain.event.EventHall;
 import com.pgms.coredomain.domain.event.EventHallEdit;
 import com.pgms.coredomain.domain.event.EventHallSeat;
@@ -45,7 +46,7 @@ public class EventHallService {
     }
 
     public EventHallResponse updateEventHall(Long id, EventHallUpdateRequest eventHallUpdateRequest) {
-        EventHall eventHall = eventHallRepository.findById(id).orElseThrow(RuntimeException::new);
+        EventHall eventHall = eventHallRepository.findById(id).orElseThrow(EventHallNotFoundException::new);
 
         List<EventHallSeatCreateRequest> eventHallSeatCreateRequests = eventHallUpdateRequest.eventHallSeatCreateRequests();
 
@@ -66,7 +67,7 @@ public class EventHallService {
 
     @Transactional(readOnly = true)
     public EventHallResponse getEventHall(Long id) {
-        EventHall eventHall = eventHallRepository.findById(id).orElseThrow(RuntimeException::new);
+        EventHall eventHall = eventHallRepository.findById(id).orElseThrow(EventHallNotFoundException::new);
 
         return EventHallResponse.of(eventHall);
     }
