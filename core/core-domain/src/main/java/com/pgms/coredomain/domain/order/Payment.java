@@ -1,12 +1,24 @@
 package com.pgms.coredomain.domain.order;
 
+import java.time.LocalDateTime;
+
 import com.pgms.coredomain.domain.common.BaseEntity;
-import jakarta.persistence.*;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.ConstraintMode;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "payment")
@@ -19,7 +31,7 @@ public class Payment extends BaseEntity {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(name = "payment_key", nullable = false)
+    @Column(name = "payment_key")
     private String paymentKey;
 
     @Column(name = "method", nullable = false)
@@ -40,6 +52,14 @@ public class Payment extends BaseEntity {
 
     @Column(name = "is_interest_free")
     private boolean isInterestFree;
+
+    @Builder
+    public Payment(PaymentMethod method, PaymentStatus status, int amount, Order order) {
+        this.method = method;
+        this.status = status;
+        this.amount = amount;
+        this.order = order;
+    }
 
     @Column(name = "account_number")
     private String accountNumber;
@@ -65,11 +85,13 @@ public class Payment extends BaseEntity {
     @Column(name = "failed_msg")
     private String failedMsg;
 
-    @Column(name = "requested_at", nullable = false)
+    @Column(name = "requested_at")
     private LocalDateTime requestedAt;
 
-    @Column(name = "approved_at", nullable = false)
+    @Column(name = "approved_at")
     private LocalDateTime approvedAt;
 
-    // TODO: 예매 매칭
+    @OneToOne
+    @JoinColumn(name = "order_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    private Order order;
 }
