@@ -34,7 +34,7 @@ public class EventSeatArea extends BaseEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(name = "area")
+	@Column(name = "area_type")
 	@Enumerated(value = EnumType.STRING)
 	private SeatAreaType seatAreaType;
 
