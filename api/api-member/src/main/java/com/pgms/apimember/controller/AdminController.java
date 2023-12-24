@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.pgms.apimember.dto.response.AdminGetResponse;
+import com.pgms.apimember.dto.response.MemberDetailGetResponse;
+import com.pgms.apimember.dto.response.MemberSummaryGetResponse;
 import com.pgms.apimember.service.AdminService;
 import com.pgms.coredomain.response.ApiResponse;
 
@@ -25,8 +27,14 @@ public class AdminController {
 	private final AdminService adminService;
 
 	@GetMapping("/members")
-	public ResponseEntity<ApiResponse<?>> getMembers(@RequestParam(required = false) List<Long> memberIds) {
-		return ResponseEntity.ok(ApiResponse.ok(adminService.getMembers(memberIds)));
+	public ResponseEntity<ApiResponse<List<MemberSummaryGetResponse>>> getMembers() {
+		return ResponseEntity.ok(ApiResponse.ok(adminService.getMembers()));
+	}
+
+	@GetMapping("/members/details")
+	public ResponseEntity<ApiResponse<List<MemberDetailGetResponse>>> getMemberDetails(
+		@RequestParam List<Long> memberIds) {
+		return ResponseEntity.ok(ApiResponse.ok(adminService.getMemberDetails(memberIds)));
 	}
 
 	@GetMapping("/me")

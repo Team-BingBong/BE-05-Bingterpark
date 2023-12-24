@@ -24,12 +24,13 @@ public class AdminService {
 	private final MemberRepository memberRepository;
 
 	@Transactional(readOnly = true)
-	public Object getMembers(List<Long> memberIds) {
-		if (memberIds == null || memberIds.isEmpty()) {
-			return memberRepository.findAll().stream().map(MemberSummaryGetResponse::toDto).toList();
-		} else {
-			return memberRepository.findAllById(memberIds).stream().map(MemberDetailGetResponse::toDto).toList();
-		}
+	public List<MemberSummaryGetResponse> getMembers() {
+		return memberRepository.findAll().stream().map(MemberSummaryGetResponse::toDto).toList();
+	}
+
+	@Transactional(readOnly = true)
+	public List<MemberDetailGetResponse> getMemberDetails(List<Long> memberIds) {
+		return memberRepository.findAllById(memberIds).stream().map(MemberDetailGetResponse::toDto).toList();
 	}
 
 	@Transactional(readOnly = true)
