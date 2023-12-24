@@ -15,7 +15,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "\"group\"")
+@Table(name = "group")
 public class Group extends BaseEntity {
 
 	@Id
