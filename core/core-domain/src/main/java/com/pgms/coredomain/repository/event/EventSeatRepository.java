@@ -1,6 +1,7 @@
 package com.pgms.coredomain.repository.event;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -12,4 +13,6 @@ public interface EventSeatRepository extends JpaRepository<EventSeat, Long> {
 
 	@Query("select es from EventSeat es join fetch es.eventSeatArea esa where es.eventTime.id = :eventTimeId")
 	List<EventSeat> findAllWithAreaByEventTimeId(@Param("eventTimeId") Long eventTimeId);
+
+	Optional<EventSeat> findById(Long id);
 }
