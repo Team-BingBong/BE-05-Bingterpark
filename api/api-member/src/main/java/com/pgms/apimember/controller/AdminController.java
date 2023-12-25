@@ -47,7 +47,7 @@ public class AdminController {
 		final URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
 			.buildAndExpand(adminId)
 			.toUri();
-		return ResponseEntity.created(uri).body(ApiResponse.ok(adminId));
+		return ResponseEntity.created(uri).body(ApiResponse.created(adminId));
 	}
 
 	@GetMapping
