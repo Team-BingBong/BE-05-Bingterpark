@@ -4,11 +4,14 @@ import static com.pgms.apimember.exception.CustomErrorCode.*;
 
 import java.util.List;
 
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.pgms.apimember.dto.request.AdminCreateRequest;
 import com.pgms.apimember.dto.request.AdminUpdateRequest;
+import com.pgms.apimember.dto.request.PageCondition;
 import com.pgms.apimember.dto.response.AdminGetResponse;
 import com.pgms.apimember.dto.response.MemberDetailGetResponse;
 import com.pgms.apimember.dto.response.MemberSummaryGetResponse;
@@ -43,8 +46,9 @@ public class AdminService {
 	}
 
 	@Transactional(readOnly = true)
-	public List<AdminGetResponse> getAdmins() {
-		return adminRepository.findAll().stream().map(AdminGetResponse::from).toList();
+	public List<AdminGetResponse> getAdmins(PageCondition pageCondition) {
+		Pageable pageable = PageRequest.of(pageCondition.getPage() - 1, pageCondition.getSize());
+		return adminRepository.findSliceBy(pageable).stream().map(AdminGetResponse::from).toList();
 	}
 
 	public void updateAdmin(Long adminId, AdminUpdateRequest requestDto) {
@@ -60,8 +64,9 @@ public class AdminService {
 
 	// 일반 관리자 기능
 	@Transactional(readOnly = true)
-	public List<MemberSummaryGetResponse> getMembers() {
-		return memberRepository.findAll().stream().map(MemberSummaryGetResponse::from).toList();
+	public List<MemberSummaryGetResponse> getMembers(PageCondition pageCondition) {
+		Pageable pageable = PageRequest.of(pageCondition.getPage() - 1, pageCondition.getSize());
+		return memberRepository.findSliceBy(pageable).stream().map(MemberSummaryGetResponse::from).toList();
 	}
 
 	@Transactional(readOnly = true)

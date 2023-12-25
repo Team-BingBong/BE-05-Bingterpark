@@ -7,6 +7,7 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,6 +19,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.pgms.apimember.dto.request.AdminCreateRequest;
 import com.pgms.apimember.dto.request.AdminUpdateRequest;
+import com.pgms.apimember.dto.request.PageCondition;
 import com.pgms.apimember.dto.response.AdminGetResponse;
 import com.pgms.apimember.dto.response.MemberDetailGetResponse;
 import com.pgms.apimember.dto.response.MemberSummaryGetResponse;
@@ -49,8 +51,9 @@ public class AdminController {
 	}
 
 	@GetMapping
-	public ResponseEntity<ApiResponse<List<AdminGetResponse>>> getAdmins() {
-		return ResponseEntity.ok(ApiResponse.ok(adminService.getAdmins()));
+	public ResponseEntity<ApiResponse<List<AdminGetResponse>>> getAdmins(
+		@ModelAttribute @Valid PageCondition pageCondition) {
+		return ResponseEntity.ok(ApiResponse.ok(adminService.getAdmins(pageCondition)));
 	}
 
 	@PatchMapping("/{adminId}")
@@ -70,8 +73,9 @@ public class AdminController {
 	// 일반 관리자 기능
 	// TODO: 일반 관리자인지 확인 필요 (security)
 	@GetMapping("/members")
-	public ResponseEntity<ApiResponse<List<MemberSummaryGetResponse>>> getMembers() {
-		return ResponseEntity.ok(ApiResponse.ok(adminService.getMembers()));
+	public ResponseEntity<ApiResponse<List<MemberSummaryGetResponse>>> getMembers(
+		@ModelAttribute @Valid PageCondition pageCondition) {
+		return ResponseEntity.ok(ApiResponse.ok(adminService.getMembers(pageCondition)));
 	}
 
 	@GetMapping("/members/details")
