@@ -1,17 +1,22 @@
 package com.pgms.apievent.event.service;
 
 import com.pgms.apievent.event.dto.request.EventCreateRequest;
+import com.pgms.apievent.event.dto.request.EventSeatAreaCreateRequest;
+import com.pgms.apievent.event.dto.request.EventSeatAreaUpdateRequest;
 import com.pgms.apievent.event.dto.request.EventUpdateRequest;
 import com.pgms.apievent.event.dto.response.EventResponse;
+import com.pgms.apievent.event.dto.response.EventSeatAreaResponse;
 import com.pgms.apievent.exception.CustomException;
-import com.pgms.coredomain.domain.event.Event;
-import com.pgms.coredomain.domain.event.EventEdit;
-import com.pgms.coredomain.domain.event.EventHall;
+import com.pgms.apievent.exception.EventSeatAreaNotFoundException;
+import com.pgms.coredomain.domain.event.*;
 import com.pgms.coredomain.domain.event.repository.EventHallRepository;
 import com.pgms.coredomain.domain.event.repository.EventRepository;
+import com.pgms.coredomain.domain.event.repository.EventSeatAreaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 import static com.pgms.apievent.exception.EventErrorCode.*;
 
@@ -22,6 +27,7 @@ public class EventService {
 
 	private final EventRepository eventRepository;
 	private final EventHallRepository eventHallRepository;
+	private final EventSeatAreaRepository eventSeatAreaRepository;
 
 	public EventResponse createEvent(EventCreateRequest request) {
 		validateDuplicateEvent(request.title());
@@ -76,5 +82,44 @@ public class EventService {
 			.thumbnail(request.thumbnail())
 			.eventHall(eventHall)
 			.build();
+	}
+
+    public List<EventSeatAreaResponse> createEventSeatArea(Long id, EventSeatAreaCreateRequest request) {
+		Event event = eventRepository.findById(id)
+				.orElseThrow(() -> new CustomException(EVENT_NOT_FOUND));
+
+		List<EventSeatArea> eventSeatAreas = request.requests().stream()
+				.map(areaRequest -> new EventSeatArea(areaRequest.seatAreaType(), areaRequest.price(), event))
+				.toList();
+
+		List<EventSeatArea> savedEventSeatAreas = eventSeatAreaRepository.saveAll(eventSeatAreas);
+
+		return savedEventSeatAreas.stream()
+				.map(EventSeatAreaResponse::of)
+				.toList();
+	}
+
+	public void deleteEventSeatArea(Long areaId) {
+		EventSeatArea eventSeatArea = eventSeatAreaRepository.findById(areaId)
+				.orElseThrow(EventSeatAreaNotFoundException::new);
+
+		eventSeatAreaRepository.delete(eventSeatArea);
+	}
+
+	public void updateEventSeatArea(Long areaId, EventSeatAreaUpdateRequest request) {
+		EventSeatArea eventSeatArea = eventSeatAreaRepository.findById(areaId)
+				.orElseThrow(EventSeatAreaNotFoundException::new);
+
+		eventSeatArea.updateEventSeatAreaPriceAndType(request.seatAreaType(), request.price());
+	}
+
+	public List<EventSeatAreaResponse> getEventSeatAreas(Long id) {
+		Event event = eventRepository.findById(id)
+				.orElseThrow();
+		List<EventSeatArea> eventSeatAreas = eventSeatAreaRepository.findEventSeatAreasByEvent(event);
+
+		return eventSeatAreas.stream()
+				.map(EventSeatAreaResponse::of)
+				.toList();
 	}
 }
