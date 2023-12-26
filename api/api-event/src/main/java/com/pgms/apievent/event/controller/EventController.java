@@ -8,8 +8,11 @@ import com.pgms.apievent.event.dto.response.EventResponse;
 import com.pgms.apievent.event.dto.response.EventSeatAreaResponse;
 import com.pgms.apievent.event.service.EventService;
 import com.pgms.coredomain.response.ApiResponse;
+<<<<<<< Updated upstream
 
 import jakarta.validation.Valid;
+=======
+>>>>>>> Stashed changes
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
