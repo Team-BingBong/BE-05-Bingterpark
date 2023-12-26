@@ -1,7 +1,7 @@
 package com.pgms.coredomain.domain.event;
 
 import com.pgms.coredomain.domain.common.BaseEntity;
-import com.pgms.coredomain.domain.order.Order;
+import com.pgms.coredomain.domain.booking.Booking;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -18,8 +18,8 @@ public class Ticket extends BaseEntity {
 	private Long id;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "order_id", nullable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-	private Order order;
+	@JoinColumn(name = "booking_id", nullable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+	private Booking booking;
 
 	//TODO: 공연 좌석 매핑
 }

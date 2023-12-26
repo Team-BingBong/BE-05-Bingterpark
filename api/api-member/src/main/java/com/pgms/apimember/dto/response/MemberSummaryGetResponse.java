@@ -8,7 +8,7 @@ public record MemberSummaryGetResponse(
 	String phoneNumber,
 	String email
 ) {
-	public static MemberSummaryGetResponse toDto(Member member) {
+	public static MemberSummaryGetResponse from(Member member) {
 		return new MemberSummaryGetResponse(
 			member.getId(),
 			member.getName(),

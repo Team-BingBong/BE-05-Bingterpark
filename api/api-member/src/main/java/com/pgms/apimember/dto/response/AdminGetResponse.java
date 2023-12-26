@@ -18,7 +18,7 @@ public record AdminGetResponse(
 	LocalDateTime updatedAt,
 	Role role
 ) {
-	public static AdminGetResponse toDto(Admin admin) {
+	public static AdminGetResponse from(Admin admin) {
 		return new AdminGetResponse(
 			admin.getId(),
 			admin.getName(),
