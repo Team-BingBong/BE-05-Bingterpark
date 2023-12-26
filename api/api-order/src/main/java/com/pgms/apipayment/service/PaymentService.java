@@ -7,7 +7,6 @@ import java.util.Base64;
 import java.util.Collections;
 import java.util.NoSuchElementException;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -18,13 +17,14 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import com.pgms.apipayment.config.TossPaymentConfig;
 import com.pgms.apipayment.dto.request.PaymentConfirmRequest;
 import com.pgms.apipayment.dto.request.PaymentCreateRequest;
 import com.pgms.apipayment.dto.response.PaymentCreateResponse;
 import com.pgms.apipayment.dto.response.PaymentSuccessResponse;
 import com.pgms.coredomain.domain.order.Order;
-import com.pgms.coredomain.domain.order.repository.OrderRepository;
 import com.pgms.coredomain.domain.order.Payment;
+import com.pgms.coredomain.domain.order.repository.OrderRepository;
 import com.pgms.coredomain.domain.order.repository.PaymentRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -36,30 +36,17 @@ public class PaymentService {
 
 	private final PaymentRepository paymentRepository;
 	private final OrderRepository orderRepository;
-
-	@Value("${payment.toss_test_client_api_key}")
-	private String testClientApiKey;
-
-	@Value("${payment.toss_test_secret_api_key}")
-	private String testSecretApiKey;
-
-	@Value("${payment.success_url}")
-	private String successUrl;
-
-	@Value("${payment.fail_url}")
-	private String failUrl;
-	public static final String URL = "https://api.tosspayments.com/v1/payments/confirm";
+	private final TossPaymentConfig tossPaymentConfig;
 
 	public PaymentCreateResponse createPayment(PaymentCreateRequest request) {
 		// TODO: order 생성 로직 추가하기 
 		Order order = orderRepository.findById(request.orderId())
 			.orElseThrow(() -> new NoSuchElementException("Order not found"));
 		Payment payment = paymentRepository.save(request.toEntity(order));
-		return PaymentCreateResponse.of(payment, successUrl, failUrl);
+		return PaymentCreateResponse.of(payment, tossPaymentConfig.getSuccessUrl(), tossPaymentConfig.getFailUrl());
 	}
 
-	@Transactional
-	public PaymentSuccessResponse paymentSuccess(String paymentKey, String orderId, int amount) {
+	public PaymentSuccessResponse succeedPayment(String paymentKey, String orderId, int amount) {
 		Payment payment = getAndVerifyPayment(orderId, amount);
 		PaymentSuccessResponse response = requestPaymentConfirmation(paymentKey, orderId, amount);
 
@@ -73,7 +60,6 @@ public class PaymentService {
 		return response;
 	}
 
-	@Transactional
 	public PaymentSuccessResponse requestPaymentConfirmation(String paymentKey, String orderId, int amount) {
 		RestTemplate restTemplate = new RestTemplate();
 		HttpHeaders headers = buildTossApiHeaders();
@@ -81,7 +67,7 @@ public class PaymentService {
 
 		try { // tossPayments post 요청 (url , HTTP 객체 ,응답 Dto)
 			ResponseEntity<PaymentSuccessResponse> response = restTemplate.postForEntity(
-				URL, new HttpEntity<>(request, headers), PaymentSuccessResponse.class);
+				TossPaymentConfig.URL, new HttpEntity<>(request, headers), PaymentSuccessResponse.class);
 			return response.getBody();
 		} catch (HttpClientErrorException e) {
 			throw new RuntimeException("Toss Payments API 오류", e);
@@ -106,7 +92,7 @@ public class PaymentService {
 	private HttpHeaders buildTossApiHeaders() {
 		HttpHeaders headers = new HttpHeaders();
 		String encodedAuthKey = new String(
-			Base64.getEncoder().encode((testSecretApiKey + ":").getBytes(StandardCharsets.UTF_8)));
+			Base64.getEncoder().encode((tossPaymentConfig.getTestSecretApiKey() + ":").getBytes(StandardCharsets.UTF_8)));
 		headers.setBasicAuth(encodedAuthKey);
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
