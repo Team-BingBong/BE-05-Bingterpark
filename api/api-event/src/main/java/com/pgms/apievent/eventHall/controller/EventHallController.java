@@ -5,6 +5,7 @@ import com.pgms.apievent.eventHall.dto.request.EventHallUpdateRequest;
 import com.pgms.apievent.eventHall.dto.response.EventHallResponse;
 import com.pgms.apievent.eventHall.service.EventHallService;
 import com.pgms.coredomain.response.ApiResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +22,7 @@ public class EventHallController {
     private final EventHallService eventHallService;
 
     @PostMapping
-    public ResponseEntity<ApiResponse> createEventHall(@RequestBody EventHallCreateRequest request){
+    public ResponseEntity<ApiResponse> createEventHall(@RequestBody @Valid EventHallCreateRequest request){
         EventHallResponse eventHallResponse = eventHallService.createEventHall(request);
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
@@ -40,7 +41,7 @@ public class EventHallController {
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse> updateEventHall(
             @PathVariable Long id,
-            @RequestBody EventHallUpdateRequest request) {
+            @RequestBody @Valid EventHallUpdateRequest request) {
         EventHallResponse response = eventHallService.updateEventHall(id, request);
         return ResponseEntity.ok(ApiResponse.ok(response));
     }
