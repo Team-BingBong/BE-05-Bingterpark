@@ -34,6 +34,6 @@ public class PaymentController {
 		@RequestParam String orderId,
 		@RequestParam int amount
 	) {
-		return ResponseEntity.ok(ApiResponse.ok(paymentService.paymentSuccess(paymentKey, orderId, amount)));
+		return ResponseEntity.ok(ApiResponse.ok(paymentService.succeedPayment(paymentKey, orderId, amount)));
 	}
 }
