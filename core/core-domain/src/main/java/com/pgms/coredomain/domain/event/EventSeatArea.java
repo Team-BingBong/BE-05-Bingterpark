@@ -47,8 +47,8 @@ public class EventSeatArea extends BaseEntity {
 			.size();
 	}
 
-	public void updateEventSeatArea(EventSeatAreaEdit edit){
-		this.seatAreaType = edit.getSeatAreaType();
-		this.price = edit.getPrice();
+	public void updateEventSeatAreaPriceAndType(SeatAreaType seatAreaType, int price){
+		this.seatAreaType = seatAreaType;
+		this.price = price;
 	}
 }

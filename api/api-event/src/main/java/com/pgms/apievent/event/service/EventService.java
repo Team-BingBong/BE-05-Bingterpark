@@ -110,12 +110,7 @@ public class EventService {
 		EventSeatArea eventSeatArea = eventSeatAreaRepository.findById(areaId)
 				.orElseThrow(EventSeatAreaNotFoundException::new);
 
-		EventSeatAreaEdit eventSeatAreaEdit = EventSeatAreaEdit.builder()
-				.seatAreaType(request.seatAreaType())
-				.price(request.price())
-				.build();
-
-		eventSeatArea.updateEventSeatArea(eventSeatAreaEdit);
+		eventSeatArea.updateEventSeatAreaPriceAndType(request.seatAreaType(), request.price());
 	}
 
 	public List<EventSeatAreaResponse> getEventSeatAreas(Long id) {
