@@ -3,7 +3,6 @@ package com.pgms.apievent.eventtime.service;
 import static org.assertj.core.api.Assertions.*;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,10 +14,11 @@ import com.pgms.apievent.eventtime.dto.request.EventTimeCreateRequest;
 import com.pgms.apievent.eventtime.dto.request.EventTimeUpdateRequest;
 import com.pgms.apievent.eventtime.dto.response.EventTimeResponse;
 import com.pgms.apievent.exception.CustomException;
+import com.pgms.apievent.factory.event.EventFactory;
+import com.pgms.apievent.factory.eventhall.EventHallFactory;
 import com.pgms.coredomain.domain.event.Event;
 import com.pgms.coredomain.domain.event.EventHall;
 import com.pgms.coredomain.domain.event.EventTime;
-import com.pgms.coredomain.domain.event.GenreType;
 import com.pgms.coredomain.domain.event.repository.EventHallRepository;
 import com.pgms.coredomain.domain.event.repository.EventRepository;
 import com.pgms.coredomain.domain.event.repository.EventTimeRepository;
@@ -42,17 +42,9 @@ class EventTimeServiceTest {
 
 	@BeforeEach
 	void setUp() {
-		EventHall eventHall = eventHallRepository.save(new EventHall("테스트 공연장", "테스트 주소", new ArrayList<>()));
-		event = eventRepository.save(new Event(
-			"공연 1 수정",
-			"공연 1 내용 수정입니다.",
-			100,
-			LocalDateTime.of(2023, 2, 1, 0, 0),
-			LocalDateTime.of(2023, 2, 1, 0, 0),
-			"15세 이상",
-			GenreType.MUSICAL,
-			"thumbnail.jpg",
-			eventHall));
+		EventHall eventHall = EventHallFactory.createEventHall();
+		eventHallRepository.save(eventHall);
+		event = eventRepository.save(EventFactory.createEvent(eventHall));
 	}
 
 	@AfterEach
