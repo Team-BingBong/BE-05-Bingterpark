@@ -1,27 +1,13 @@
 package com.pgms.coredomain.domain.event;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.pgms.coredomain.domain.common.BaseEntity;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.ConstraintMode;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.ForeignKey;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "event_seat_area")
@@ -48,10 +34,21 @@ public class EventSeatArea extends BaseEntity {
 	@OneToMany(mappedBy = "eventSeatArea")
 	private List<EventSeat> eventSeats = new ArrayList<>();
 
+	public EventSeatArea(SeatAreaType seatAreaType, int price, Event event) {
+		this.seatAreaType = seatAreaType;
+		this.price = price;
+		this.event = event;
+	}
+
 	public int getAvailableSeatCount() {
 		return eventSeats.stream()
 			.filter(EventSeat::isAvailable)
 			.toList()
 			.size();
+	}
+
+	public void updateEventSeatAreaPriceAndType(SeatAreaType seatAreaType, int price){
+		this.seatAreaType = seatAreaType;
+		this.price = price;
 	}
 }
