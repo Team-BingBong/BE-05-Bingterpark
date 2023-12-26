@@ -10,7 +10,8 @@ import com.pgms.coredomain.domain.event.EventTime;
 import jakarta.validation.constraints.Positive;
 
 public record EventTimeCreateRequest(
-	@Positive(message = "회차는 0보다 큰 값이어야 합니다.")
+
+	@Positive(message = "회차는 0보다 큰 값 이어야 합니다.")
 	int round,
 
 	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
