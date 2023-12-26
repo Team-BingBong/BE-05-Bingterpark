@@ -47,7 +47,7 @@ class EventHallServiceTest {
 
         // then
         assertThat(eventHallResponse.name(), is("test"));
-        assertThat(eventHallResponse.eventHallSeatResponses().size(), is(10L));
+        assertThat(eventHallResponse.eventHallSeatResponses().size(), is(10));
     }
 
     @Test
@@ -69,7 +69,7 @@ class EventHallServiceTest {
         eventHallRepository.delete(savedEventHall);
 
         // then
-        assertThat(eventHallRepository.count(), is(0));
+        assertThat(eventHallRepository.count(), is(0L));
     }
 
     @Test
@@ -98,7 +98,7 @@ class EventHallServiceTest {
 
         // then
         assertThat(eventHallResponse.name(), is("update"));
-        assertThat(savedEventHall.getEventHallSeats().size(), is(10L));
+        assertThat(savedEventHall.getEventHallSeats().size(), is(10));
     }
 
     @Test
@@ -123,6 +123,6 @@ class EventHallServiceTest {
         List<EventHall> savedEventHalls = eventHallRepository.saveAll(eventHalls);
 
         // then
-        assertThat(savedEventHalls.size(), is(10L));
+        assertThat(savedEventHalls.size(), is(10));
     }
 }
