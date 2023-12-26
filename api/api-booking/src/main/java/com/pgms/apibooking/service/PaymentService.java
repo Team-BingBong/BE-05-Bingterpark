@@ -21,6 +21,7 @@ import com.pgms.apibooking.config.TossPaymentConfig;
 import com.pgms.apibooking.dto.request.PaymentConfirmRequest;
 import com.pgms.apibooking.dto.request.PaymentCreateRequest;
 import com.pgms.apibooking.dto.response.PaymentCreateResponse;
+import com.pgms.apibooking.dto.response.PaymentFailResponse;
 import com.pgms.apibooking.dto.response.PaymentSuccessResponse;
 import com.pgms.coredomain.domain.booking.Booking;
 import com.pgms.coredomain.domain.booking.Payment;
@@ -46,7 +47,7 @@ public class PaymentService {
 		return PaymentCreateResponse.of(payment, tossPaymentConfig.getSuccessUrl(), tossPaymentConfig.getFailUrl());
 	}
 
-	public PaymentSuccessResponse succeedPayment(String paymentKey, String bookingId, int amount) {
+	public PaymentSuccessResponse successPayment(String paymentKey, String bookingId, int amount) {
 		Payment payment = getAndVerifyPayment(bookingId, amount);
 		PaymentSuccessResponse response = requestPaymentConfirmation(paymentKey, bookingId, amount);
 
@@ -60,6 +61,15 @@ public class PaymentService {
 		payment.updateConfirmInfo(paymentKey, LocalDateTime.parse(response.approvedAt(), formatter),
 			LocalDateTime.parse(response.requestedAt(), formatter));
 		return response;
+	}
+
+	public PaymentFailResponse failPayment(String errorCode, String errorMessage, String orderId) {
+		// TODO: orderId String 형식으로 바뀌면 수정 필요
+		Payment payment = paymentRepository.findByBookingId(1L)
+			.orElseThrow(() -> new NoSuchElementException("Booking not found"));
+		payment.toAborted();
+		payment.updateFailedMsg(errorMessage);
+		return new PaymentFailResponse(errorCode, errorMessage, orderId);
 	}
 
 	public PaymentSuccessResponse requestPaymentConfirmation(String paymentKey, String bookingId, int amount) {

@@ -105,6 +105,14 @@ public class Payment extends BaseEntity {
         this.paymentKey = paymentKey;
         this.approvedAt = approvedAt;
         this.requestedAt = requestedAt;
-        this.status = PaymentStatus.COMPLETED;
+        this.status = PaymentStatus.DONE;
+    }
+
+    public void toAborted() {
+        this.status = PaymentStatus.ABORTED;
+    }
+
+    public void updateFailedMsg(String failedMsg) {
+        this.failedMsg = failedMsg;
     }
 }

@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.pgms.apibooking.dto.request.PaymentCreateRequest;
 import com.pgms.apibooking.dto.response.PaymentCreateResponse;
+import com.pgms.apibooking.dto.response.PaymentFailResponse;
+import com.pgms.apibooking.dto.response.PaymentSuccessResponse;
 import com.pgms.apibooking.service.PaymentService;
 import com.pgms.coredomain.response.ApiResponse;
 
@@ -28,12 +30,25 @@ public class PaymentController {
 		return ResponseEntity.ok(response);
 	}
 
-	@GetMapping("/success")
+	@GetMapping("/confirm")
 	public ResponseEntity<ApiResponse> confirmPaymentSuccess(
 		@RequestParam String paymentKey,
 		@RequestParam(name = "orderId") String bookingId,
 		@RequestParam int amount
 	) {
-		return ResponseEntity.ok(ApiResponse.ok(paymentService.succeedPayment(paymentKey, bookingId, amount)));
+		ApiResponse<PaymentSuccessResponse> response = ApiResponse.ok(
+			paymentService.successPayment(paymentKey, bookingId, amount));
+		return ResponseEntity.ok(response);
+	}
+
+	@GetMapping("/fail")
+	public ResponseEntity<ApiResponse> confirmPaymentFail(
+		@RequestParam(name = "code") String errorCode,
+		@RequestParam(name = "message") String errorMessage,
+		@RequestParam(name = "orderId") String orderId
+	) {
+		ApiResponse<PaymentFailResponse> response = ApiResponse.ok(
+			paymentService.failPayment(errorCode, errorMessage, orderId));
+		return ResponseEntity.ok(response);
 	}
 }
