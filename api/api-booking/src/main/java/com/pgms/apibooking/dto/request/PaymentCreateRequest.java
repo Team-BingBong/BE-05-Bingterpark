@@ -15,7 +15,7 @@ public record PaymentCreateRequest(
 			.method(method)
 			.booking(booking)
 			.amount(amount)
-			.status(PaymentStatus.DEPOSIT_PENDING)
+			.status(PaymentStatus.WAITING_FOR_DEPOSIT)
 			.build();
 	}
 }
