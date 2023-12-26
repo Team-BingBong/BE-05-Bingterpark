@@ -1,12 +1,24 @@
 package com.pgms.coredomain.domain.booking;
 
+import java.time.LocalDateTime;
+
 import com.pgms.coredomain.domain.common.BaseEntity;
-import jakarta.persistence.*;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.ConstraintMode;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "payment")
@@ -19,7 +31,7 @@ public class Payment extends BaseEntity {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(name = "payment_key", nullable = false)
+    @Column(name = "payment_key")
     private String paymentKey;
 
     @Column(name = "method", nullable = false)
@@ -65,11 +77,34 @@ public class Payment extends BaseEntity {
     @Column(name = "failed_msg")
     private String failedMsg;
 
-    @Column(name = "requested_at", nullable = false)
+    @Column(name = "requested_at")
     private LocalDateTime requestedAt;
 
-    @Column(name = "approved_at", nullable = false)
+    @Column(name = "approved_at")
     private LocalDateTime approvedAt;
 
-    // TODO: 예매 매칭
+    @OneToOne
+    @JoinColumn(name = "booking_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    private Booking booking;
+
+    @Builder
+    public Payment(PaymentMethod method, PaymentStatus status, int amount, Booking booking) {
+        this.method = method;
+        this.status = status;
+        this.amount = amount;
+        this.booking = booking;
+    }
+
+    public void updateCardInfo(String cardNumber, int installmentPlanMonths, boolean isInterestFree) {
+        this.cardNumber = cardNumber;
+        this.installmentPlanMonths = installmentPlanMonths;
+        this.isInterestFree = isInterestFree;
+    }
+
+    public void updateConfirmInfo(String paymentKey, LocalDateTime approvedAt, LocalDateTime requestedAt) {
+        this.paymentKey = paymentKey;
+        this.approvedAt = approvedAt;
+        this.requestedAt = requestedAt;
+        this.status = PaymentStatus.COMPLETED;
+    }
 }
