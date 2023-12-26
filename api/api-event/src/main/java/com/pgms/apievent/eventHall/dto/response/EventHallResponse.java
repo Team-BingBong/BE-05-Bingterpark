@@ -1,10 +1,10 @@
 package com.pgms.apievent.eventHall.dto.response;
 
-import com.pgms.coredomain.domain.event.EventHall;
-import com.pgms.coredomain.domain.event.EventHallSeat;
-import lombok.Builder;
-
 import java.util.List;
+
+import com.pgms.coredomain.domain.event.EventHall;
+
+import lombok.Builder;
 
 @Builder
 public record EventHallResponse(Long id, String name, String address, List<EventHallSeatResponse> eventHallSeatResponses) {

@@ -1,7 +1,0 @@
-spring:
-  profiles:
-    include: infra
-    active: dev
-
-server:
-  port: 8082
