@@ -1,4 +1,4 @@
-package com.pgms.coredomain.domain.order;
+package com.pgms.coredomain.domain.booking;
 
 import com.pgms.coredomain.domain.common.BaseEntity;
 import jakarta.persistence.*;

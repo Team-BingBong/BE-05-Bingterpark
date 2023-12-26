@@ -1,4 +1,4 @@
-package com.pgms.coredomain.domain.order;
+package com.pgms.coredomain.domain.booking;
 
 import com.pgms.coredomain.domain.common.BaseEntity;
 import jakarta.persistence.*;
@@ -7,10 +7,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "order_cancel")
+@Table(name = "booking_cancel")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class OrderCancel extends BaseEntity {
+public class BookingCancel extends BaseEntity {
 
     @Id
     @GeneratedValue

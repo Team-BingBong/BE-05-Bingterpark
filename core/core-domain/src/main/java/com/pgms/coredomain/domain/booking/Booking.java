@@ -1,4 +1,4 @@
-package com.pgms.coredomain.domain.order;
+package com.pgms.coredomain.domain.booking;
 
 import com.pgms.coredomain.domain.event.Ticket;
 import com.pgms.coredomain.domain.common.BaseEntity;
@@ -11,21 +11,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "order")
+@Table(name = "booking")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Order extends BaseEntity {
+public class Booking extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id", nullable = false)
 	private Long id;
 
-	@Column(name = "order_name", nullable = false)
-	private String orderName;
+	@Column(name = "booking_name", nullable = false)
+	private String bookingName;
 
 	@Enumerated(EnumType.STRING)
 	@Column(name = "status", nullable = false)
-	private OrderStatus status;
+	private BookingStatus status;
 
 	@Enumerated(EnumType.STRING)
 	@Column(name = "receipt_type", nullable = false)
@@ -49,7 +49,7 @@ public class Order extends BaseEntity {
 	@Column(name = "amount", nullable = false)
 	private int amount;
 
-	@OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "booking", cascade = CascadeType.ALL)
 	private List<Ticket> tickets = new ArrayList<>();
 
 	//TODO: 회원 매핑

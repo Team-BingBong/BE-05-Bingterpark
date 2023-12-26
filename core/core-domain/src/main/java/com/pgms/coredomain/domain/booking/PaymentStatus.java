@@ -1,5 +1,8 @@
-package com.pgms.coredomain.domain.order;
+package com.pgms.coredomain.domain.booking;
 
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
 public enum PaymentStatus {
 
     DEPOSIT_PENDING("입금 대기"),
@@ -7,8 +10,4 @@ public enum PaymentStatus {
     COMPLETED("완료");
 
     private final String description;
-
-    PaymentStatus(String description) {
-        this.description = description;
-    }
 }
