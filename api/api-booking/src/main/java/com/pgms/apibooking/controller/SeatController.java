@@ -5,13 +5,11 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.pgms.apibooking.dto.request.SeatDeselectRequest;
-import com.pgms.apibooking.dto.request.SeatSelectRequest;
 import com.pgms.apibooking.dto.request.SeatsGetRequest;
 import com.pgms.apibooking.dto.response.AreaResponse;
 import com.pgms.apibooking.service.SeatService;
@@ -33,15 +31,15 @@ public class SeatController {
 		return ResponseEntity.ok().body(response);
 	}
 
-	@PostMapping("/select")
-	public ResponseEntity<Void> selectSeat(@RequestBody @Valid SeatSelectRequest request) {
-		seatService.selectSeat(request);
+	@PostMapping("/{seatId}/select")
+	public ResponseEntity<Void> selectSeat(@PathVariable Long seatId) {
+		seatService.selectSeat(seatId);
 		return ResponseEntity.ok().build();
 	}
 
-	@PostMapping("/deselect")
-	public ResponseEntity<Void> deselectSeat(@RequestBody @Valid SeatDeselectRequest request) {
-		seatService.deselectSeat(request);
+	@PostMapping("/{seatId}/deselect")
+	public ResponseEntity<Void> deselectSeat(@PathVariable Long seatId) {
+		seatService.deselectSeat(seatId);
 		return ResponseEntity.ok().build();
 	}
 }

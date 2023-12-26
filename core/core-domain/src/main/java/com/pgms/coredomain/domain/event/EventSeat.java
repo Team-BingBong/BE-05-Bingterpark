@@ -33,6 +33,10 @@ public class EventSeat extends BaseEntity {
         return status == EventSeatStatus.AVAILABLE;
     }
 
+    public boolean isBooked() {
+        return status == EventSeatStatus.BOOKED;
+    }
+
     public void updateStatus(EventSeatStatus status) {
         this.status = status;
     }

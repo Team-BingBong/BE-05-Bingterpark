@@ -7,8 +7,6 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.pgms.apibooking.dto.request.SeatSelectRequest;
-import com.pgms.apibooking.dto.request.SeatDeselectRequest;
 import com.pgms.apibooking.dto.request.SeatsGetRequest;
 import com.pgms.apibooking.dto.response.AreaResponse;
 import com.pgms.apibooking.exception.BookingErrorCode;
@@ -22,11 +20,11 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class SeatService {
+public class SeatService { //TODO: 테스트 코드 작성
 
 	private final EventSeatRepository eventSeatRepository;
+	private final SeatLockService seatLockService;
 
-	//TODO: 테스트 코드 작성
 	@Transactional(readOnly = true)
 	public List<AreaResponse> getSeats(SeatsGetRequest request) {
 		List<EventSeat> seats = eventSeatRepository.findAllWithAreaByEventTimeId(request.eventTimeId());
@@ -39,33 +37,36 @@ public class SeatService {
 			.toList();
 	}
 
-	public void selectSeat(SeatSelectRequest request) {
-		/*
-		 * TODO: (seatId, memberId) 캐시 조회
-		 * 만약 캐시에서 조회되지 않는데 상태값이 IN_PROGRESS인 경우
-		 * 캐시에 멤버아이디 다시 세팅
-		 */
+	public void selectSeat(Long seatId) {
+		Long memberId = 0L; //TODO: 인증된 memberId 지정
 
-		EventSeat seat = eventSeatRepository.findById(request.seatId())
-			.orElseThrow(() -> new BookingException(BookingErrorCode.SEAT_NOT_FOUND));
-
-		if (!seat.isAvailable()) {
+		if (seatLockService.isSeatLocked(seatId)) {
 			throw new BookingException(BookingErrorCode.SEAT_BEING_BOOKED);
 		}
 
-		//TODO: (seatId, memberId) 캐시 저장
+		EventSeat seat = getSeat(seatId);
+
+		if (seat.isBooked()) {
+			throw new BookingException(BookingErrorCode.SEAT_BOOKED);
+		}
 
 		seat.updateStatus(EventSeatStatus.BEING_BOOKED);
+		seatLockService.lockSeat(seatId, memberId);
 	}
 
-	public void deselectSeat(SeatDeselectRequest request) {
-		//TODO: (seatId, memberId) 캐시 조회
+	public void deselectSeat(Long seatId) {
+		Long memberId = 0L; //TODO: 인증된 memberId 지정
 
-		EventSeat seat = eventSeatRepository.findById(request.seatId())
-			.orElseThrow(() -> new BookingException(BookingErrorCode.SEAT_NOT_FOUND));
+		//TODO: lock 걸어둔 멤버에게 요청이 들어왔는지 검증 후, 아래 로직을 수행한다
 
-		//TODO: (seatId, memberId) 캐시 삭제
+		EventSeat seat = getSeat(seatId);
 
 		seat.updateStatus(EventSeatStatus.AVAILABLE);
+		seatLockService.unlockSeat(seatId);
+	}
+
+	private EventSeat getSeat(Long seatId) {
+		return eventSeatRepository.findById(seatId)
+			.orElseThrow(() -> new BookingException(BookingErrorCode.SEAT_NOT_FOUND));
 	}
 }
