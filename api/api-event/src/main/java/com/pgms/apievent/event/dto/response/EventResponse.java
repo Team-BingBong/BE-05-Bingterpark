@@ -23,7 +23,7 @@ public record EventResponse(
 			event.getStartDate().toString(),
 			event.getEndDate().toString(),
 			event.getRating(),
-			event.getGenreType().toString(),
+			event.getGenreType().getDescription(),
 			event.getThumbnail(),
 			event.getEventHall().getName()
 		);
