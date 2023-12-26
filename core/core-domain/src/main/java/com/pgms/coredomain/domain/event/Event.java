@@ -56,6 +56,9 @@ public class Event extends BaseEntity {
 	@Column(name = "genre")
 	@Enumerated(value = EnumType.STRING)
 	private GenreType genreType;
+	
+	@Column(name = "average_score")
+	private Double averageScore = 0.0;
 
 	@Lob
 	@Column(name = "thumbnail")
@@ -97,5 +100,9 @@ public class Event extends BaseEntity {
 		this.genreType = eventEdit.genreType();
 		this.thumbnail = eventEdit.thumbnail();
 		this.eventHall = eventEdit.eventHall();
+	}
+
+	public void updateAverageScore(Double averageScore) {
+		this.averageScore = averageScore;
 	}
 }
