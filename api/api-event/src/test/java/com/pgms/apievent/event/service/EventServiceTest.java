@@ -3,6 +3,7 @@ package com.pgms.apievent.event.service;
 import static org.assertj.core.api.Assertions.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
@@ -11,10 +12,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import com.pgms.apievent.event.dto.request.EventCreateRequest;
 import com.pgms.apievent.event.dto.request.EventUpdateRequest;
 import com.pgms.apievent.event.dto.response.EventResponse;
-import com.pgms.apievent.factory.event.EventFactory;
-import com.pgms.apievent.factory.eventhall.EventHallFactory;
 import com.pgms.coredomain.domain.event.Event;
 import com.pgms.coredomain.domain.event.EventHall;
 import com.pgms.coredomain.domain.event.GenreType;
@@ -39,9 +39,21 @@ class EventServiceTest {
 
 	@BeforeEach
 	void setUp() {
-		eventHall = EventHallFactory.createEventHall();
+		eventHall = new EventHall("테스트 공연장", "테스트 주소", new ArrayList<>());
 		eventHallRepository.save(eventHall);
-		event = eventRepository.save(EventFactory.createEvent(eventHall));
+
+		EventCreateRequest request = new EventCreateRequest(
+			"공연 1",
+			"공연1 입니다.",
+			60,
+			LocalDateTime.of(2023, 1, 1, 0, 0),  // 예시로 날짜와 시간을 지정
+			LocalDateTime.of(2023, 1, 7, 0, 0),
+			"12세 이상",
+			GenreType.MUSICAL,
+			"thumbnail.jpg",
+			1L
+		);
+		event = eventRepository.save(request.toEntity(eventHall));
 	}
 
 	@AfterEach

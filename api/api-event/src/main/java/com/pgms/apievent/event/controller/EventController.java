@@ -19,7 +19,6 @@ import com.pgms.apievent.event.dto.response.EventResponse;
 import com.pgms.apievent.event.service.EventService;
 import com.pgms.coredomain.response.ApiResponse;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -30,7 +29,7 @@ public class EventController {
 	private final EventService eventService;
 
 	@PostMapping
-	public ResponseEntity<ApiResponse> createEvent(@Valid @ModelAttribute EventCreateRequest request) {
+	public ResponseEntity<ApiResponse> createEvent(@ModelAttribute EventCreateRequest request) {
 		EventResponse response = eventService.createEvent(request);
 		URI location = ServletUriComponentsBuilder.fromCurrentRequest()
 			.path("/{id}")
