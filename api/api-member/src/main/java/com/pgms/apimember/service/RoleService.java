@@ -23,10 +23,12 @@ public class RoleService {
 	private final RoleRepository roleRepository;
 
 	public Long createRole(RoleCreateRequest request) {
+		validateRoleNameUnique(request.name());
 		Role role = roleRepository.save(request.toEntity());
 		return role.getId();
 	}
 
+	@Transactional(readOnly = true)
 	public List<RoleGetResponse> getRolesByIds(List<Long> ids) {
 		return roleRepository.findAllById(ids).stream()
 			.map(RoleGetResponse::from)
@@ -36,6 +38,7 @@ public class RoleService {
 	public void updateRole(Long id, RoleUpdateRequest request) {
 		Role role = roleRepository.findById(id)
 			.orElseThrow(() -> new AdminException(CustomErrorCode.ADMIN_ROLE_NOT_FOUND));
+		validateRoleNameUnique(request.name(), role.getId());
 		role.changeName(request.name());
 	}
 
@@ -43,5 +46,18 @@ public class RoleService {
 		Role role = roleRepository.findById(id)
 			.orElseThrow(() -> new AdminException(CustomErrorCode.ADMIN_ROLE_NOT_FOUND));
 		roleRepository.delete(role);
+	}
+
+	private void validateRoleNameUnique(String name) {
+		roleRepository.findByName(name).ifPresent(r -> {
+			throw new AdminException(CustomErrorCode.DUPLICATED_ROLE);
+		});
+	}
+
+	private void validateRoleNameUnique(String name, Long id) {
+		// 수정하려는 엔티티 자신의 id는 제외하고 중복 검사
+		roleRepository.findByNameAndIdNot(name, id).ifPresent(r -> {
+			throw new AdminException(CustomErrorCode.DUPLICATED_ROLE);
+		});
 	}
 }
