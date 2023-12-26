@@ -26,7 +26,7 @@ public record MemberDetailGetResponse(
 	LocalDateTime updatedAt,
 	Role role
 ) {
-	public static MemberDetailGetResponse from(Member member) {
+	public static MemberDetailGetResponse toDto(Member member) {
 		return new MemberDetailGetResponse(
 			member.getId(),
 			member.getName(),

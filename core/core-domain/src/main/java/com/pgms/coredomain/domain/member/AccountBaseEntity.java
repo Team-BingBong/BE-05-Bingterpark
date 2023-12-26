@@ -10,19 +10,11 @@ import lombok.Getter;
 
 @Getter
 @MappedSuperclass
-public class AccountBaseEntity extends BaseEntity {
+public abstract class AccountBaseEntity extends BaseEntity {
 
 	@Column(name = "last_login_at", nullable = false)
-	protected LocalDateTime lastLoginAt;
+	private LocalDateTime lastLoginAt;
 
 	@Column(name = "last_password_updated_at", nullable = false)
-	protected LocalDateTime lastPasswordUpdatedAt;
-
-	public void updateLastLoginAt() {
-		this.lastLoginAt = LocalDateTime.now();
-	}
-
-	public void updateLastPasswordUpdatedAt() {
-		this.lastPasswordUpdatedAt = LocalDateTime.now();
-	}
+	private LocalDateTime lastPasswordUpdatedAt;
 }

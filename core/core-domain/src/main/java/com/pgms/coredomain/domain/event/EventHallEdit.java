@@ -1,10 +1,12 @@
 package com.pgms.coredomain.domain.event;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import jakarta.persistence.Column;
+import jakarta.persistence.OneToMany;
 import lombok.Builder;
 import lombok.Getter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 public class EventHallEdit {

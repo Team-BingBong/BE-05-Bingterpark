@@ -2,6 +2,6 @@ rootProject.name = 'bingterpark'
 
 include 'api:api-event'
 include 'api:api-member'
-include 'api:api-booking'
+include 'api:api-order'
 include 'core:core-domain'
 include 'core:core-infra'
