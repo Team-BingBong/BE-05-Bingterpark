@@ -1,5 +1,11 @@
 package com.pgms.coredomain.domain.order;
 
+import com.pgms.coredomain.domain.common.BaseEntity;
+import com.pgms.coredomain.domain.event.Ticket;
+import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 import com.pgms.coredomain.domain.event.Ticket;
 import com.pgms.coredomain.domain.common.BaseEntity;
 
