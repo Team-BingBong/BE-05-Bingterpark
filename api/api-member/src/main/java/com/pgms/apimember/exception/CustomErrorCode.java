@@ -11,8 +11,9 @@ public enum CustomErrorCode {
 	DUPLICATED_ADMIN_EMAIL("DUPLICATED ADMIN EMAIL", HttpStatus.BAD_REQUEST, "이미 존재하는 관리자 이메일입니다."),
 	NOT_AUTHORIZED("NOT AUTHORIZED", HttpStatus.UNAUTHORIZED, "접근 권한이 없습니다."),
 	ADMIN_ROLE_NOT_FOUND("ADMIN ROLE NOT FOUND", HttpStatus.NOT_FOUND, "존재하지 않는 관리자 역할입니다."),
+	DUPLICATED_ROLE("DUPLICATED ROLE", HttpStatus.BAD_REQUEST, "이미 존재하는 관리자 역할입니다."),
 	ADMIN_PERMISSION_NOT_FOUND("ADMIN PERMISSION NOT FOUND", HttpStatus.NOT_FOUND, "존재하지 않는 관리자 권한입니다."),
-	
+
 	// MEMBER
 	MEMBER_NOT_FOUND("NOT FOUND", HttpStatus.NOT_FOUND, "존재하지 않는 회원입니다."),
 	DUPLICATED_MEMBER_EMAIL("DUPLICATED MEMBER EMAIL", HttpStatus.BAD_REQUEST, "이미 존재하는 회원 이메일입니다."),
