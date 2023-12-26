@@ -39,7 +39,11 @@ public class SeatService {
 	}
 
 	public void selectSeat(SeatSelectRequest request) {
-		//TODO: (seatId, memberId) 캐시 조회
+		/*
+		 * TODO: (seatId, memberId) 캐시 조회
+		 * 만약 캐시에서 조회되지 않는데 상태값이 IN_PROGRESS인 경우
+		 * 캐시에 멤버아이디 다시 세팅
+		 */
 
 		EventSeat seat = eventSeatRepository.findById(request.seatId())
 			.orElseThrow(() -> new NoSuchElementException("해당 좌석이 존재하지 않습니다.")); //TODO: 에러코드 정의
