@@ -1,4 +1,4 @@
-package com.pgms.apipayment.exception;
+package com.pgms.apibooking.exception;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

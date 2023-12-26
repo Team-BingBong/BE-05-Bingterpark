@@ -1,4 +1,4 @@
-package com.pgms.apipayment.exception;
+package com.pgms.apibooking.exception;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;

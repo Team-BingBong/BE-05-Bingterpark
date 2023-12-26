@@ -1,4 +1,4 @@
-package com.pgms.apipayment.service;
+package com.pgms.apibooking.service;
 
 import java.util.List;
 import java.util.Map;
@@ -7,8 +7,8 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.pgms.apipayment.dto.request.SeatsGetRequest;
-import com.pgms.apipayment.dto.response.AreaResponse;
+import com.pgms.apibooking.dto.request.SeatsGetRequest;
+import com.pgms.apibooking.dto.response.AreaResponse;
 import com.pgms.coredomain.domain.event.EventSeat;
 import com.pgms.coredomain.repository.event.EventSeatRepository;
 

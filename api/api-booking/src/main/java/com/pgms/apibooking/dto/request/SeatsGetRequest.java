@@ -1,4 +1,4 @@
-package com.pgms.apipayment.dto.request;
+package com.pgms.apibooking.dto.request;
 
 import jakarta.validation.constraints.NotNull;
 

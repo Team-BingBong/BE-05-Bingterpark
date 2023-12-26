@@ -1,4 +1,4 @@
-package com.pgms.apipayment.dto.response;
+package com.pgms.apibooking.dto.response;
 
 import java.util.List;
 

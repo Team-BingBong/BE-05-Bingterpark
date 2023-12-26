@@ -1,4 +1,4 @@
-package com.pgms.apipayment.controller;
+package com.pgms.apibooking.controller;
 
 import java.util.List;
 
@@ -8,9 +8,9 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.pgms.apipayment.dto.request.SeatsGetRequest;
-import com.pgms.apipayment.dto.response.AreaResponse;
-import com.pgms.apipayment.service.SeatService;
+import com.pgms.apibooking.dto.request.SeatsGetRequest;
+import com.pgms.apibooking.dto.response.AreaResponse;
+import com.pgms.apibooking.service.SeatService;
 import com.pgms.coredomain.response.ApiResponse;
 
 import jakarta.validation.Valid;
