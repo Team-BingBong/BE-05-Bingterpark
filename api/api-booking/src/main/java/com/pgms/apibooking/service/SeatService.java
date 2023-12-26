@@ -7,9 +7,14 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.pgms.apibooking.dto.request.SeatSelectRequest;
+import com.pgms.apibooking.dto.request.SeatDeselectRequest;
 import com.pgms.apibooking.dto.request.SeatsGetRequest;
 import com.pgms.apibooking.dto.response.AreaResponse;
+import com.pgms.apibooking.exception.BookingErrorCode;
+import com.pgms.apibooking.exception.BookingException;
 import com.pgms.coredomain.domain.event.EventSeat;
+import com.pgms.coredomain.domain.event.EventSeatStatus;
 import com.pgms.coredomain.repository.event.EventSeatRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -32,5 +37,35 @@ public class SeatService {
 		return seatsByArea.values().stream()
 			.map(AreaResponse::from)
 			.toList();
+	}
+
+	public void selectSeat(SeatSelectRequest request) {
+		/*
+		 * TODO: (seatId, memberId) 캐시 조회
+		 * 만약 캐시에서 조회되지 않는데 상태값이 IN_PROGRESS인 경우
+		 * 캐시에 멤버아이디 다시 세팅
+		 */
+
+		EventSeat seat = eventSeatRepository.findById(request.seatId())
+			.orElseThrow(() -> new BookingException(BookingErrorCode.SEAT_NOT_FOUND));
+
+		if (!seat.isAvailable()) {
+			throw new BookingException(BookingErrorCode.SEAT_BEING_BOOKED);
+		}
+
+		//TODO: (seatId, memberId) 캐시 저장
+
+		seat.updateStatus(EventSeatStatus.BEING_BOOKED);
+	}
+
+	public void deselectSeat(SeatDeselectRequest request) {
+		//TODO: (seatId, memberId) 캐시 조회
+
+		EventSeat seat = eventSeatRepository.findById(request.seatId())
+			.orElseThrow(() -> new BookingException(BookingErrorCode.SEAT_NOT_FOUND));
+
+		//TODO: (seatId, memberId) 캐시 삭제
+
+		seat.updateStatus(EventSeatStatus.AVAILABLE);
 	}
 }
