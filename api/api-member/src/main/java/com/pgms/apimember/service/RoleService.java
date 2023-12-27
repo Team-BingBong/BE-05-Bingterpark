@@ -10,7 +10,10 @@ import com.pgms.apimember.dto.request.RoleUpdateRequest;
 import com.pgms.apimember.dto.response.RoleGetResponse;
 import com.pgms.apimember.exception.AdminException;
 import com.pgms.apimember.exception.CustomErrorCode;
+import com.pgms.coredomain.domain.member.Permission;
 import com.pgms.coredomain.domain.member.Role;
+import com.pgms.coredomain.domain.member.RolePermission;
+import com.pgms.coredomain.domain.member.repository.PermissionRepository;
 import com.pgms.coredomain.domain.member.repository.RoleRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -21,6 +24,7 @@ import lombok.RequiredArgsConstructor;
 public class RoleService {
 
 	private final RoleRepository roleRepository;
+	private final PermissionRepository permissionRepository;
 
 	public Long createRole(RoleCreateRequest request) {
 		validateRoleNameUnique(request.name());
@@ -59,5 +63,28 @@ public class RoleService {
 		roleRepository.findByNameAndIdNot(name, id).ifPresent(r -> {
 			throw new AdminException(CustomErrorCode.DUPLICATED_ROLE);
 		});
+	}
+
+	public void addPermissionToRole(Long roleId, Long permissionId) {
+		Role role = roleRepository.findById(roleId)
+			.orElseThrow(() -> new AdminException(CustomErrorCode.ADMIN_ROLE_NOT_FOUND));
+		Permission permission = permissionRepository.findById(permissionId)
+			.orElseThrow(() -> new AdminException(CustomErrorCode.ADMIN_PERMISSION_NOT_FOUND));
+
+		role.addPermissionToRole(new RolePermission(role, permission));
+	}
+
+	public void removePermissionFromRole(Long roleId, Long permissionId) {
+		Role role = roleRepository.findById(roleId)
+			.orElseThrow(() -> new AdminException(CustomErrorCode.ADMIN_ROLE_NOT_FOUND));
+		Permission permission = permissionRepository.findById(permissionId)
+			.orElseThrow(() -> new AdminException(CustomErrorCode.ADMIN_PERMISSION_NOT_FOUND));
+
+		RolePermission rolePermission = role.getRolePermissions().stream()
+			.filter(rp -> rp.getPermission().getId().equals(permission.getId()))
+			.findFirst()
+			.orElseThrow(() -> new AdminException(CustomErrorCode.ROLE_PERMISSION_NOT_FOUND));
+
+		role.removePermissionFromRole(rolePermission);
 	}
 }

@@ -21,6 +21,7 @@ import com.pgms.apimember.dto.response.RoleGetResponse;
 import com.pgms.apimember.service.RoleService;
 import com.pgms.coredomain.response.ApiResponse;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -31,7 +32,7 @@ public class RoleController {
 	private final RoleService roleService;
 
 	@PostMapping
-	public ResponseEntity<ApiResponse<Long>> createRole(@RequestBody RoleCreateRequest request) {
+	public ResponseEntity<ApiResponse<Long>> createRole(@RequestBody @Valid RoleCreateRequest request) {
 		final Long roleId = roleService.createRole(request);
 		final URI uri = ServletUriComponentsBuilder
 			.fromCurrentRequest()
@@ -48,7 +49,7 @@ public class RoleController {
 	}
 
 	@PatchMapping("/{id}")
-	public ResponseEntity<Void> updateRole(@PathVariable Long id, @RequestBody RoleUpdateRequest request) {
+	public ResponseEntity<Void> updateRole(@PathVariable Long id, @RequestBody @Valid RoleUpdateRequest request) {
 		roleService.updateRole(id, request);
 		return ResponseEntity.noContent().build();
 	}
@@ -56,6 +57,18 @@ public class RoleController {
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> deleteRole(@PathVariable Long id) {
 		roleService.deleteRole(id);
+		return ResponseEntity.noContent().build();
+	}
+
+	@PostMapping("/{roleId}/permissions")
+	public ResponseEntity<Void> addPermissionToRole(@PathVariable Long roleId, @RequestParam Long permissionId) {
+		roleService.addPermissionToRole(roleId, permissionId);
+		return ResponseEntity.noContent().build();
+	}
+
+	@DeleteMapping("/{roleId}/permissions")
+	public ResponseEntity<Void> removePermissionsFromRole(@PathVariable Long roleId, @RequestParam Long permissionId) {
+		roleService.removePermissionFromRole(roleId, permissionId);
 		return ResponseEntity.noContent().build();
 	}
 }

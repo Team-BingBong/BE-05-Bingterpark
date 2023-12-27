@@ -32,7 +32,7 @@ public class Role extends BaseEntity {
 	private String name;
 
 	@OneToMany(mappedBy = "role", cascade = CascadeType.REMOVE)
-	private List<RolePermission> permissions = new ArrayList<>();
+	private List<RolePermission> rolePermissions = new ArrayList<>();
 
 	public Role(String name) {
 		this.name = name;
@@ -40,5 +40,15 @@ public class Role extends BaseEntity {
 
 	public void changeName(String name) {
 		this.name = name;
+	}
+
+	public void addPermissionToRole(RolePermission rolePermission) {
+		if (!rolePermissions.contains(rolePermission)) {
+			rolePermissions.add(rolePermission);
+		}
+	}
+
+	public void removePermissionFromRole(RolePermission rolePermission) {
+		rolePermissions.remove(rolePermission);
 	}
 }
