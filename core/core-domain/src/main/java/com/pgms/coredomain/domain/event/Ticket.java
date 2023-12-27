@@ -17,9 +17,11 @@ public class Ticket extends BaseEntity {
 	@Column(name = "id")
 	private Long id;
 
+	@OneToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "booking_id", nullable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+	private EventSeat eventSeat;
+
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "booking_id", nullable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
 	private Booking booking;
-
-	//TODO: 공연 좌석 매핑
 }
