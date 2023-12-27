@@ -8,4 +8,6 @@ import com.pgms.coredomain.domain.member.Role;
 
 public interface RoleRepository extends JpaRepository<Role, Long> {
 	Optional<Role> findByName(String name);
+
+	Optional<Object> findByNameAndIdNot(String name, Long id);
 }

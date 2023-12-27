@@ -13,9 +13,14 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "role")
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Role extends BaseEntity {
 
 	@Id
@@ -28,4 +33,12 @@ public class Role extends BaseEntity {
 
 	@OneToMany(mappedBy = "role", cascade = CascadeType.REMOVE)
 	private List<RolePermission> permissions = new ArrayList<>();
+
+	public Role(String name) {
+		this.name = name;
+	}
+
+	public void changeName(String name) {
+		this.name = name;
+	}
 }
