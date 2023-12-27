@@ -12,7 +12,8 @@ public record EventResponse(
 	String rating,
 	String genreType,
 	String thumbnail,
-	String eventHall
+	String eventHall,
+	Double averageScore
 ) {
 	public static EventResponse of(Event event) {
 		return new EventResponse(
@@ -25,7 +26,8 @@ public record EventResponse(
 			event.getRating(),
 			event.getGenreType().getDescription(),
 			event.getThumbnail(),
-			event.getEventHall().getName()
+			event.getEventHall().getName(),
+			event.getAverageScore()
 		);
 	}
 }

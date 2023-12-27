@@ -1,17 +1,29 @@
 package com.pgms.coredomain.domain.booking;
 
-import com.pgms.coredomain.domain.event.Ticket;
-import com.pgms.coredomain.domain.common.BaseEntity;
-
-import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-
 import java.util.ArrayList;
 import java.util.List;
 
+import com.pgms.coredomain.domain.common.BaseEntity;
+import com.pgms.coredomain.domain.event.Ticket;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
 @Entity
 @Table(name = "booking")
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Booking extends BaseEntity {
 
@@ -52,5 +64,7 @@ public class Booking extends BaseEntity {
 	@OneToMany(mappedBy = "booking", cascade = CascadeType.ALL)
 	private List<Ticket> tickets = new ArrayList<>();
 
+	@OneToOne(mappedBy = "booking", cascade = CascadeType.ALL)
+	private Payment payment;
 	//TODO: 회원 매핑
 }
