@@ -3,6 +3,7 @@ package com.pgms.apimember.controller;
 import java.net.URI;
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -61,9 +62,10 @@ public class RoleController {
 	}
 
 	@PostMapping("/{roleId}/permissions")
-	public ResponseEntity<Void> addPermissionToRole(@PathVariable Long roleId, @RequestParam Long permissionId) {
+	public ResponseEntity<ApiResponse<Long>> addPermissionToRole(@PathVariable Long roleId,
+		@RequestParam Long permissionId) {
 		roleService.addPermissionToRole(roleId, permissionId);
-		return ResponseEntity.noContent().build();
+		return new ResponseEntity<>(ApiResponse.created(roleId), HttpStatus.CREATED);
 	}
 
 	@DeleteMapping("/{roleId}/permissions")
