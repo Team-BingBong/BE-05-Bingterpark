@@ -41,6 +41,10 @@ public class EventSeat extends BaseEntity {
         return status == EventSeatStatus.BOOKED;
     }
 
+    public void updateEventSeatArea(EventSeatArea eventSeatArea){
+        this.eventSeatArea = eventSeatArea;
+    }
+
     public void updateStatus(EventSeatStatus status) {
         this.status = status;
     }

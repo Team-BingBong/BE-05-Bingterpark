@@ -142,4 +142,34 @@ public class EventService {
 		eventSeatsByEventTimes
 				.forEach(eventSeatRepository::saveAll);
 	}
+
+	// TODO bulk update 도 고려
+	public void updateEventSeatsSeatArea(List<Long> ids, Long seatAreaId) {
+		EventSeatArea eventSeatArea = eventSeatAreaRepository.findById(seatAreaId)
+				.orElseThrow(EventSeatAreaNotFoundException::new);
+
+		ids.forEach(id -> {
+					EventSeat eventSeat = eventSeatRepository.findById(id)
+							.orElseThrow(() -> new CustomException(EVENT_NOT_FOUND));
+					eventSeat.updateEventSeatArea(eventSeatArea);
+				});
+	}
+
+	public void updateEventSeatsStatus(List<Long> ids, EventSeatStatus eventSeatStatus) {
+		ids.forEach(id -> {
+					EventSeat eventSeat = eventSeatRepository.findById(id)
+							.orElseThrow(() -> new CustomException(EVENT_NOT_FOUND));
+					eventSeat.updateStatus(eventSeatStatus);
+				});
+	}
+
+	public void deleteEventSeats(List<Long> ids) {
+		List<EventSeat> eventSeats = ids.stream()
+				.map(id ->
+						eventSeatRepository.findById(id)
+								.orElseThrow(() -> new CustomException(EVENT_NOT_FOUND)))
+				.toList();
+
+		eventSeatRepository.deleteAllInBatch(eventSeats);
+	}
 }

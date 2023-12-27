@@ -4,6 +4,7 @@ import com.pgms.apievent.event.dto.request.*;
 import com.pgms.apievent.event.dto.response.EventResponse;
 import com.pgms.apievent.event.dto.response.EventSeatAreaResponse;
 import com.pgms.apievent.event.service.EventService;
+import com.pgms.coredomain.domain.event.EventSeatStatus;
 import com.pgms.coredomain.response.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -77,10 +78,31 @@ public class EventController {
 		return ResponseEntity.noContent().build();
 	}
 
-	@PostMapping("/events/{id}/seats")
-	public ResponseEntity<ApiResponse> createEventSeats(@PathVariable Long id,
+	@PostMapping("/{id}/seats")
+	public ResponseEntity<Void> createEventSeats(@PathVariable Long id,
 								 @RequestBody EventSeatsCreateRequest eventSeatsCreateRequest){
 		eventService.createEventSeats(id, eventSeatsCreateRequest);
-		return ResponseEntity.ok(ApiResponse.ok(null));
+		return ResponseEntity.noContent().build();
 	}
+
+	@PatchMapping("/seats/seat-area")
+	public ResponseEntity<Void> updateEventSeatSeatArea(@RequestParam List<Long> ids,
+															   @RequestParam(value = "seat-area-id") Long seatAreaId) {
+		eventService.updateEventSeatsSeatArea(ids, seatAreaId);
+		return ResponseEntity.noContent().build();
+	}
+
+	@PatchMapping("/seats/seat-status")
+	public ResponseEntity<Void> updateEventSeatSeatStatus(@RequestParam List<Long> ids,
+																 @RequestParam(value = "seat-status")EventSeatStatus eventSeatStatus) {
+		eventService.updateEventSeatsStatus(ids, eventSeatStatus);
+		return ResponseEntity.noContent().build();
+	}
+
+	@DeleteMapping("/seats")
+	public ResponseEntity<Void> deleteEventSeats(@RequestParam List<Long> ids) {
+		eventService.deleteEventSeats(ids);
+		return ResponseEntity.noContent().build();
+	}
+
 }
