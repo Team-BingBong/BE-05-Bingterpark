@@ -13,7 +13,7 @@ import com.pgms.apibooking.exception.BookingErrorCode;
 import com.pgms.apibooking.exception.BookingException;
 import com.pgms.coredomain.domain.event.EventSeat;
 import com.pgms.coredomain.domain.event.EventSeatStatus;
-import com.pgms.coredomain.repository.event.EventSeatRepository;
+import com.pgms.coredomain.domain.event.repository.EventSeatRepository;
 
 import lombok.RequiredArgsConstructor;
 
