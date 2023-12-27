@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum BookingErrorCode {
 	SEAT_NOT_FOUND(HttpStatus.BAD_REQUEST, "SEAT_NOT_FOUND", "존재하지 않는 좌석입니다."),
-	SEAT_BEING_BOOKED(HttpStatus.BAD_REQUEST, "SEAT_BEING_PURCHASED", "예매중인 좌석입니다."),
+	SEAT_BEING_BOOKED(HttpStatus.BAD_REQUEST, "SEAT_BEING_BOOKED", "예매중인 좌석입니다."),
 	SEAT_BOOKED(HttpStatus.BAD_REQUEST, "SEAT_BOOKED", "예매된 좌석입니다."),
 
 	INVALID_INPUT_VALUE(HttpStatus.BAD_REQUEST, "INVALID_INPUT_VALUE", "입력값을 확인해 주세요."),
