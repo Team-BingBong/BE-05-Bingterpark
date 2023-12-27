@@ -5,7 +5,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Base64;
 import java.util.Collections;
-import java.util.NoSuchElementException;
 
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -14,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import com.pgms.apibooking.config.TossPaymentConfig;
@@ -23,6 +21,8 @@ import com.pgms.apibooking.dto.request.PaymentCreateRequest;
 import com.pgms.apibooking.dto.response.PaymentCreateResponse;
 import com.pgms.apibooking.dto.response.PaymentFailResponse;
 import com.pgms.apibooking.dto.response.PaymentSuccessResponse;
+import com.pgms.apibooking.exception.BookingErrorCode;
+import com.pgms.apibooking.exception.BookingException;
 import com.pgms.coredomain.domain.booking.Booking;
 import com.pgms.coredomain.domain.booking.Payment;
 import com.pgms.coredomain.domain.booking.repository.BookingRepository;
@@ -42,7 +42,7 @@ public class PaymentService {
 	public PaymentCreateResponse createPayment(PaymentCreateRequest request) {
 		// TODO: booking 생성 로직 추가하기
 		Booking booking = bookingRepository.findById(request.bookingId())
-			.orElseThrow(() -> new NoSuchElementException("Booking not found"));
+			.orElseThrow(() -> new BookingException(BookingErrorCode.BOOKING_NOT_FOUND));
 		Payment payment = paymentRepository.save(request.toEntity(booking));
 		return PaymentCreateResponse.of(payment, tossPaymentConfig.getSuccessUrl(), tossPaymentConfig.getFailUrl());
 	}
@@ -55,7 +55,7 @@ public class PaymentService {
 			case CARD -> payment.updateCardInfo(response.card().number(), response.card().installmentPlanMonths(),
 				response.card().isInterestFree());
 			case VIRTUAL_ACCOUNT -> System.out.println("아직 안함");
-			default -> throw new IllegalArgumentException("결제 수단이 올바르지 않습니다.");
+			default -> throw new BookingException(BookingErrorCode.INVALID_PAYMENT_METHOD);
 		}
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXXX");
 		payment.updateConfirmInfo(paymentKey, LocalDateTime.parse(response.approvedAt(), formatter),
@@ -65,8 +65,7 @@ public class PaymentService {
 
 	public PaymentFailResponse failPayment(String errorCode, String errorMessage, String orderId) {
 		// TODO: orderId String 형식으로 바뀌면 수정 필요
-		Payment payment = paymentRepository.findByBookingId(1L)
-			.orElseThrow(() -> new NoSuchElementException("Booking not found"));
+		Payment payment = getPaymentByBookingId(1L);
 		payment.toAborted();
 		payment.updateFailedMsg(errorMessage);
 		return new PaymentFailResponse(errorCode, errorMessage, orderId);
@@ -81,21 +80,17 @@ public class PaymentService {
 				TossPaymentConfig.URL, new HttpEntity<>(request, headers), PaymentSuccessResponse.class);
 			return response.getBody();
 		} catch (HttpClientErrorException e) {
-			throw new RuntimeException("Toss Payments API 오류", e);
-		} catch (HttpServerErrorException e) {
-			throw new RuntimeException("Toss Payments API 서버 오류", e);
+			throw new BookingException(BookingErrorCode.TOSS_PAYMENTS_ERROR);
 		} catch (Exception e) {
-			throw new RuntimeException("Toss Payments 결제 승인 요청 오류", e);
+			throw new BookingException(BookingErrorCode.INTERNAL_SERVER_ERROR);
 		}
 	}
 
 	private Payment getAndVerifyPayment(String bookingId, int amount) {
 		// TODO: bookingId String으로 변경시 수정 필요.
-		Payment payment = paymentRepository.findByBookingId(1L).orElseThrow(() -> {
-			throw new NoSuchElementException("해당 주문에 대한 payment 정보가 없습니다.");
-		});
+		Payment payment = getPaymentByBookingId(1L);
 		if (payment.getAmount() != amount) {
-			throw new IllegalArgumentException("결제 가격 정보가 일치하지 않습니다.");
+			throw new BookingException(BookingErrorCode.PAYMENT_AMOUNT_MISMATCH);
 		}
 		return payment;
 	}
@@ -109,5 +104,11 @@ public class PaymentService {
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
 		return headers;
+	}
+
+	private Payment getPaymentByBookingId(Long bookingId) {
+		return paymentRepository.findByBookingId(bookingId).orElseThrow(() -> {
+			throw new BookingException(BookingErrorCode.PAYMENT_NOT_FOUND);
+		});
 	}
 }
