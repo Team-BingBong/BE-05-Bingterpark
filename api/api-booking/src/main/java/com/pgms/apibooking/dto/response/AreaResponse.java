@@ -1,13 +1,13 @@
 package com.pgms.apibooking.dto.response;
 
-import java.util.List;
-
 import com.pgms.coredomain.domain.event.EventSeat;
+
+import java.util.List;
 
 public record AreaResponse(
 	String type,
 	int price,
-	int availableSeatCount,
+//	int availableSeatCount,
 	List<SeatResponse> seats
 ) {
 
@@ -15,7 +15,7 @@ public record AreaResponse(
 		return new AreaResponse(
 			seats.get(0).getEventSeatArea().getSeatAreaType().getDescription(),
 			seats.get(0).getEventSeatArea().getPrice(),
-			seats.get(0).getEventSeatArea().getAvailableSeatCount(),
+//			seats.get(0).getEventSeatArea().getAvailableSeatCount(),
 			seats.stream().map(SeatResponse::from).toList()
 		);
 	}

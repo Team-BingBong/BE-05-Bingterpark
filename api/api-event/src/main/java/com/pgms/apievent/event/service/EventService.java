@@ -1,17 +1,13 @@
 package com.pgms.apievent.event.service;
 
-import com.pgms.apievent.event.dto.request.EventCreateRequest;
-import com.pgms.apievent.event.dto.request.EventSeatAreaCreateRequest;
-import com.pgms.apievent.event.dto.request.EventSeatAreaUpdateRequest;
-import com.pgms.apievent.event.dto.request.EventUpdateRequest;
+import com.pgms.apievent.event.dto.request.*;
 import com.pgms.apievent.event.dto.response.EventResponse;
 import com.pgms.apievent.event.dto.response.EventSeatAreaResponse;
+import com.pgms.apievent.event.dto.response.EventSeatResponse;
 import com.pgms.apievent.exception.CustomException;
 import com.pgms.apievent.exception.EventSeatAreaNotFoundException;
 import com.pgms.coredomain.domain.event.*;
-import com.pgms.coredomain.domain.event.repository.EventHallRepository;
-import com.pgms.coredomain.domain.event.repository.EventRepository;
-import com.pgms.coredomain.domain.event.repository.EventSeatAreaRepository;
+import com.pgms.coredomain.domain.event.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +23,8 @@ public class EventService {
 
 	private final EventRepository eventRepository;
 	private final EventHallRepository eventHallRepository;
+	private final EventTimeRepository eventTimeRepository;
+	private final EventSeatRepository eventSeatRepository;
 	private final EventSeatAreaRepository eventSeatAreaRepository;
 
 	public EventResponse createEvent(EventCreateRequest request) {
@@ -115,11 +113,74 @@ public class EventService {
 
 	public List<EventSeatAreaResponse> getEventSeatAreas(Long id) {
 		Event event = eventRepository.findById(id)
-				.orElseThrow();
+				.orElseThrow(() -> new CustomException(EVENT_NOT_FOUND));
 		List<EventSeatArea> eventSeatAreas = eventSeatAreaRepository.findEventSeatAreasByEvent(event);
 
 		return eventSeatAreas.stream()
 				.map(EventSeatAreaResponse::of)
 				.toList();
+	}
+
+	public void createEventSeats(Long id, EventSeatsCreateRequest eventSeatsCreateRequest) {
+		Event event = eventRepository.findById(id)
+				.orElseThrow(() -> new CustomException(EVENT_NOT_FOUND));
+		List<EventTime> eventTimes = eventTimeRepository.findEventTimesByEvent(event);
+
+		List<List<EventSeat>> eventSeatsByEventTimes = eventTimes.stream()
+				.map(eventTime ->
+						eventSeatsCreateRequest
+								.requests()
+								.stream()
+								.map(request -> EventSeat.builder()
+										.eventTime(eventTime)
+										.status(request.status())
+										.eventSeatArea(request.eventSeatArea())
+										.name(request.name())
+										.build())
+								.toList())
+				.toList();
+
+		eventSeatsByEventTimes
+				.forEach(eventSeatRepository::saveAll);
+	}
+
+	// TODO bulk update 도 고려
+	public void updateEventSeatsSeatArea(List<Long> ids, Long seatAreaId) {
+		EventSeatArea eventSeatArea = eventSeatAreaRepository.findById(seatAreaId)
+				.orElseThrow(EventSeatAreaNotFoundException::new);
+
+		ids.forEach(id -> {
+					EventSeat eventSeat = eventSeatRepository.findById(id)
+							.orElseThrow(() -> new CustomException(EVENT_NOT_FOUND));
+					eventSeat.updateEventSeatArea(eventSeatArea);
+				});
+	}
+
+	public void updateEventSeatsStatus(List<Long> ids, EventSeatStatus eventSeatStatus) {
+		ids.forEach(id -> {
+					EventSeat eventSeat = eventSeatRepository.findById(id)
+							.orElseThrow(() -> new CustomException(EVENT_NOT_FOUND));
+					eventSeat.updateStatus(eventSeatStatus);
+				});
+	}
+
+	public void deleteEventSeats(List<Long> ids) {
+		List<EventSeat> eventSeats = ids.stream()
+				.map(id ->
+						eventSeatRepository.findById(id)
+								.orElseThrow(() -> new CustomException(EVENT_NOT_FOUND)))
+				.toList();
+
+		eventSeatRepository.deleteAllInBatch(eventSeats);
+	}
+
+	public List<EventSeatResponse> getEventSeatsByEventTime(Long id) {
+		List<EventSeat> eventSeats = eventSeatRepository.findAllWithAreaByEventTimeId(id);
+
+		List<EventSeatResponse> eventSeatResponses = eventSeats.stream()
+				.map(EventSeatResponse::of)
+				.toList();
+
+		return eventSeatResponses;
 	}
 }
