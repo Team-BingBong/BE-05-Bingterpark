@@ -11,7 +11,10 @@ public record PermissionGetResponse(
 	LocalDateTime updatedAt
 ) {
 	public static PermissionGetResponse from(Permission permission) {
-		return new PermissionGetResponse(permission.getId(), permission.getName(), permission.getCreatedAt(),
+		return new PermissionGetResponse(
+			permission.getId(),
+			permission.getName(),
+			permission.getCreatedAt(),
 			permission.getUpdatedAt());
 	}
 }
