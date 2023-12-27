@@ -3,6 +3,7 @@ package com.pgms.apievent.event.controller;
 import com.pgms.apievent.event.dto.request.*;
 import com.pgms.apievent.event.dto.response.EventResponse;
 import com.pgms.apievent.event.dto.response.EventSeatAreaResponse;
+import com.pgms.apievent.event.dto.response.EventSeatResponse;
 import com.pgms.apievent.event.service.EventService;
 import com.pgms.coredomain.domain.event.EventSeatStatus;
 import com.pgms.coredomain.response.ApiResponse;
@@ -105,4 +106,9 @@ public class EventController {
 		return ResponseEntity.noContent().build();
 	}
 
+	@GetMapping("/event-time/{id}/seats")
+	public ResponseEntity<ApiResponse> getEventSeatsByEventTime(@PathVariable Long id){
+		List<EventSeatResponse> responses = eventService.getEventSeatsByEventTime(id);
+		return ResponseEntity.ok(ApiResponse.ok(responses));
+	}
 }

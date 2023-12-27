@@ -3,6 +3,7 @@ package com.pgms.apievent.event.service;
 import com.pgms.apievent.event.dto.request.*;
 import com.pgms.apievent.event.dto.response.EventResponse;
 import com.pgms.apievent.event.dto.response.EventSeatAreaResponse;
+import com.pgms.apievent.event.dto.response.EventSeatResponse;
 import com.pgms.apievent.exception.CustomException;
 import com.pgms.apievent.exception.EventSeatAreaNotFoundException;
 import com.pgms.coredomain.domain.event.*;
@@ -171,5 +172,15 @@ public class EventService {
 				.toList();
 
 		eventSeatRepository.deleteAllInBatch(eventSeats);
+	}
+
+	public List<EventSeatResponse> getEventSeatsByEventTime(Long id) {
+		List<EventSeat> eventSeats = eventSeatRepository.findAllWithAreaByEventTimeId(id);
+
+		List<EventSeatResponse> eventSeatResponses = eventSeats.stream()
+				.map(EventSeatResponse::of)
+				.toList();
+
+		return eventSeatResponses;
 	}
 }
