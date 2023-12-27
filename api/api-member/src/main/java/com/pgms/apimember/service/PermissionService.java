@@ -12,6 +12,7 @@ import com.pgms.apimember.exception.AdminException;
 import com.pgms.apimember.exception.CustomErrorCode;
 import com.pgms.coredomain.domain.member.Permission;
 import com.pgms.coredomain.domain.member.repository.PermissionRepository;
+import com.pgms.coredomain.domain.member.repository.RolePermissionRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -21,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 public class PermissionService {
 
 	private final PermissionRepository permissionRepository;
+	private final RolePermissionRepository rolePermissionRepository;
 
 	public Long createPermission(PermissionCreateRequest request) {
 		validatePermissionNameUnique(request.name());
@@ -34,12 +36,6 @@ public class PermissionService {
 			.toList();
 	}
 
-	public List<PermissionGetResponse> getPermissions(List<Long> ids) {
-		return permissionRepository.findAllById(ids).stream()
-			.map(PermissionGetResponse::from)
-			.toList();
-	}
-
 	public void updatePermission(Long id, PermissionUpdateRequest request) {
 		validatePermissionNameUnique(request.name(), id);
 		Permission permission = permissionRepository.findById(id)
@@ -48,6 +44,9 @@ public class PermissionService {
 	}
 
 	public void deletePermission(Long id) {
+		if (rolePermissionRepository.countByPermissionId(id) > 0) {
+			throw new AdminException(CustomErrorCode.PERMISSION_ASSIGNED);
+		}
 		permissionRepository.deleteById(id);
 	}
 

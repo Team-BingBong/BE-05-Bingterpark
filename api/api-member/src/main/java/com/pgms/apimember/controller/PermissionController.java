@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -42,15 +41,9 @@ public class PermissionController {
 		return ResponseEntity.created(uri).body(ApiResponse.created(permissionId));
 	}
 
-	@GetMapping("/details")
+	@GetMapping
 	public ResponseEntity<ApiResponse<List<PermissionGetResponse>>> getAllPermissions() {
 		List<PermissionGetResponse> permissions = permissionService.getAllPermissions();
-		return ResponseEntity.ok(ApiResponse.ok(permissions));
-	}
-
-	@GetMapping
-	public ResponseEntity<ApiResponse<List<PermissionGetResponse>>> getPermissionDetails(@RequestParam List<Long> ids) {
-		List<PermissionGetResponse> permissions = permissionService.getPermissions(ids);
 		return ResponseEntity.ok(ApiResponse.ok(permissions));
 	}
 
