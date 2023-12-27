@@ -5,16 +5,15 @@ import com.pgms.coredomain.domain.booking.Payment;
 import com.pgms.coredomain.domain.booking.PaymentMethod;
 import com.pgms.coredomain.domain.booking.PaymentStatus;
 
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
 public record PaymentCreateRequest(
 
-	@NotBlank(message = "[결제 수단] 선택은 필수입니다.")
+	@NotNull(message = "[결제 수단] 선택은 필수입니다.")
 	PaymentMethod method,
 
-	@NotBlank(message = "[예매 ID]는 필수 입력값 입니다.")
+	@NotNull(message = "[예매 ID]는 필수 입력값 입니다.")
 	Long bookingId,
 
 	@NotNull(message = "[결제 가격]은 필수 입력값 입니다.")
