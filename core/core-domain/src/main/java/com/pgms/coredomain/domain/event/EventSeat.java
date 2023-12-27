@@ -2,11 +2,15 @@ package com.pgms.coredomain.domain.event;
 
 import com.pgms.coredomain.domain.common.BaseEntity;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "event_seat")
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class EventSeat extends BaseEntity {
 
     @Id
@@ -39,5 +43,13 @@ public class EventSeat extends BaseEntity {
 
     public void updateStatus(EventSeatStatus status) {
         this.status = status;
+    }
+
+    @Builder
+    public EventSeat(String name, EventSeatStatus status, EventTime eventTime, EventSeatArea eventSeatArea) {
+        this.name = name;
+        this.status = status;
+        this.eventTime = eventTime;
+        this.eventSeatArea = eventSeatArea;
     }
 }

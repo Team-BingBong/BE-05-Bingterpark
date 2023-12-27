@@ -1,12 +1,11 @@
-package com.pgms.coredomain.repository.event;
+package com.pgms.coredomain.domain.event.repository;
 
-import java.util.List;
-
+import com.pgms.coredomain.domain.event.EventSeat;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import com.pgms.coredomain.domain.event.EventSeat;
+import java.util.List;
 
 public interface EventSeatRepository extends JpaRepository<EventSeat, Long> {
 

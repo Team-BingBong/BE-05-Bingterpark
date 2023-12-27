@@ -1,14 +1,10 @@
 package com.pgms.apievent.event.controller;
 
-import com.pgms.apievent.event.dto.request.EventCreateRequest;
-import com.pgms.apievent.event.dto.request.EventSeatAreaCreateRequest;
-import com.pgms.apievent.event.dto.request.EventSeatAreaUpdateRequest;
-import com.pgms.apievent.event.dto.request.EventUpdateRequest;
+import com.pgms.apievent.event.dto.request.*;
 import com.pgms.apievent.event.dto.response.EventResponse;
 import com.pgms.apievent.event.dto.response.EventSeatAreaResponse;
 import com.pgms.apievent.event.service.EventService;
 import com.pgms.coredomain.response.ApiResponse;
-
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -68,16 +64,23 @@ public class EventController {
 		return ResponseEntity.ok(ApiResponse.ok(response));
 	}
 
-	@DeleteMapping("seat-area/{areaId}")
+	@DeleteMapping("/seat-area/{areaId}")
 	public ResponseEntity<Void> deleteEventSeatArea(@PathVariable Long areaId){
 		eventService.deleteEventSeatArea(areaId);
 		return ResponseEntity.noContent().build();
 	}
 
-	@PutMapping("seat-area/{areaId}")
+	@PutMapping("/seat-area/{areaId}")
 	public ResponseEntity<Void> updateEventSeatArea(@PathVariable Long areaId,
 													@RequestBody EventSeatAreaUpdateRequest request){
 		eventService.updateEventSeatArea(areaId, request);
 		return ResponseEntity.noContent().build();
+	}
+
+	@PostMapping("/events/{id}/seats")
+	public ResponseEntity<ApiResponse> createEventSeats(@PathVariable Long id,
+								 @RequestBody EventSeatsCreateRequest eventSeatsCreateRequest){
+		eventService.createEventSeats(id, eventSeatsCreateRequest);
+		return ResponseEntity.ok(ApiResponse.ok(null));
 	}
 }
