@@ -13,6 +13,9 @@ public enum CustomErrorCode {
 	ADMIN_ROLE_NOT_FOUND("ADMIN ROLE NOT FOUND", HttpStatus.NOT_FOUND, "존재하지 않는 관리자 역할입니다."),
 	DUPLICATED_ROLE("DUPLICATED ROLE", HttpStatus.BAD_REQUEST, "이미 존재하는 관리자 역할입니다."),
 	ADMIN_PERMISSION_NOT_FOUND("ADMIN PERMISSION NOT FOUND", HttpStatus.NOT_FOUND, "존재하지 않는 관리자 권한입니다."),
+	DUPLICATED_PERMISSION("DUPLICATED PERMISSION", HttpStatus.BAD_REQUEST, "이미 존재하는 권한입니다"),
+	PERMISSION_ASSIGNED("PERMISSION ASSIGNED", HttpStatus.BAD_REQUEST, "이미 할당된 권한은 삭제할 수 없습니다."),
+	ROLE_PERMISSION_NOT_FOUND("ROLE PERMISSION NOT FOUND", HttpStatus.BAD_REQUEST, "존재하지 않는 역할 권한입니다."),
 
 	// MEMBER
 	MEMBER_NOT_FOUND("NOT FOUND", HttpStatus.NOT_FOUND, "존재하지 않는 회원입니다."),
