@@ -1,11 +1,15 @@
 package com.pgms.apibooking.exception;
 
+import java.util.Objects;
+
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindException;
+import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
@@ -50,9 +54,20 @@ public class BookingExceptionHandler extends ResponseEntityExceptionHandler {
 		return ResponseEntity.badRequest().body(response);
 	}
 
+	@Override
+	protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
+		HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+		BindingResult bindingResult = ex.getBindingResult();
+		String errorMessage = Objects.requireNonNull(bindingResult.getFieldError()).getDefaultMessage();
+		log.warn("Validation Failed: {}", errorMessage);
+		ErrorResponse response = new ErrorResponse(BookingErrorCode.INVALID_INPUT_VALUE.getCode(), errorMessage);
+		return ResponseEntity.status(status).body(response);
+	}
+
 	@ExceptionHandler(BookingException.class)
 	protected ResponseEntity<ErrorResponse> handleBookingException(BookingException ex) {
 		ErrorResponse response = new ErrorResponse(ex.getErrorCode().getCode(), ex.getErrorCode().getMessage());
+		log.warn("Booking Exception Occurred : {}", response.getErrorMessage());
 		return ResponseEntity.status(ex.getErrorCode().getStatus()).body(response);
 	}
 }
