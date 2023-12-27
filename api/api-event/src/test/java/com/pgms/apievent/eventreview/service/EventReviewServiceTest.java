@@ -122,10 +122,10 @@ class EventReviewServiceTest {
 			.forEach(i -> eventReviewRepository.save(new EventReview(i, "리뷰 내용 " + i, event)));
 
 		// When
-		List<EventReviewResponse> response = eventReviewService.getEventReviewsForEventByEventId(eventId);
+		List<EventReviewResponse> responses = eventReviewService.getEventReviewsForEventByEventId(eventId);
 
 		// Then
-		assertThat(response).hasSize(REQUEST_NUMBER);
+		assertThat(responses).hasSize(REQUEST_NUMBER);
 	}
 
 	@Test
