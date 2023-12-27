@@ -14,6 +14,7 @@ import com.pgms.apibooking.dto.response.PaymentFailResponse;
 import com.pgms.apibooking.service.PaymentService;
 import com.pgms.coredomain.response.ApiResponse;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -40,9 +41,9 @@ public class PaymentController {
 
 	@GetMapping("/fail")
 	public ResponseEntity<ApiResponse> confirmPaymentFail(
-		@RequestParam(name = "code") String errorCode,
-		@RequestParam(name = "message") String errorMessage,
-		@RequestParam(name = "orderId") String orderId
+		@RequestParam(name = "code") @Valid String errorCode,
+		@RequestParam(name = "message") @Valid String errorMessage,
+		@RequestParam(name = "orderId") @Valid String orderId
 	) {
 		ApiResponse<PaymentFailResponse> response = ApiResponse.ok(
 			paymentService.failPayment(errorCode, errorMessage, orderId));
