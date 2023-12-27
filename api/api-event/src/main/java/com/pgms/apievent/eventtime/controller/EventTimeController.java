@@ -1,6 +1,7 @@
 package com.pgms.apievent.eventtime.controller;
 
 import java.net.URI;
+import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -44,6 +45,12 @@ public class EventTimeController {
 	@GetMapping("/{eventTimeId}")
 	public ResponseEntity<ApiResponse> getEventTimeForEventById(@PathVariable Long eventTimeId) {
 		EventTimeResponse response = eventTimeService.getEventTimeById(eventTimeId);
+		return ResponseEntity.ok(ApiResponse.ok(response));
+	}
+
+	@GetMapping("/events/{eventId}")
+	public ResponseEntity<ApiResponse> getEventTimesByEventId(@PathVariable Long eventId) {
+		List<EventTimeResponse> response = eventTimeService.getEventTimesByEventId(eventId);
 		return ResponseEntity.ok(ApiResponse.ok(response));
 	}
 

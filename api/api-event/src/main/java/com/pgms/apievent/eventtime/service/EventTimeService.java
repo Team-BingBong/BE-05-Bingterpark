@@ -2,6 +2,8 @@ package com.pgms.apievent.eventtime.service;
 
 import static com.pgms.apievent.exception.EventErrorCode.*;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,6 +39,12 @@ public class EventTimeService {
 		EventTime eventTime = eventTimeRepository.findById(eventTimeId)
 			.orElseThrow(() -> new CustomException(EVENT_TIME_NOT_FOUND));
 		return EventTimeResponse.of(eventTime);
+	}
+
+	@Transactional(readOnly = true)
+	public List<EventTimeResponse> getEventTimesByEventId(Long eventId) {
+		List<EventTime> eventTimes = eventTimeRepository.findEventTimesByEventId(eventId);
+		return eventTimes.stream().map(EventTimeResponse::of).toList();
 	}
 
 	public EventTimeResponse updateEventTime(Long eventTimeId, EventTimeUpdateRequest request) {
