@@ -3,6 +3,8 @@ package com.pgms.apievent.eventtime.service;
 import static org.assertj.core.api.Assertions.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.IntStream;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,6 +27,8 @@ import com.pgms.coredomain.domain.event.repository.EventTimeRepository;
 
 @SpringBootTest
 class EventTimeServiceTest {
+
+	private static final int REQUEST_NUMBER = 5;
 
 	@Autowired
 	private EventTimeService eventTimeService;
@@ -78,7 +82,7 @@ class EventTimeServiceTest {
 	}
 
 	@Test
-	void 공연_단건_조회_테스트() {
+	void 공연_회차_단건_조회_테스트() {
 		// Given
 		EventTime eventTime = eventTimeRepository.save(
 			new EventTime(1, event.getStartDate(), event.getEndDate(), event));
@@ -92,7 +96,25 @@ class EventTimeServiceTest {
 	}
 
 	@Test
-	void 공연_수정_테스트() {
+	void 공연_아이디로_회차_전체_조회_테스트() {
+		// Given
+		Long eventId = event.getId();
+		IntStream.range(0, REQUEST_NUMBER)
+			.forEach(i -> eventTimeRepository.save(new EventTime(
+				i + 1,
+				event.getStartDate(),
+				event.getEndDate(),
+				event)));
+
+		// When
+		List<EventTimeResponse> responses = eventTimeService.getEventTimesByEventId(eventId);
+
+		// Then
+		assertThat(responses).hasSize(REQUEST_NUMBER);
+	}
+
+	@Test
+	void 공연_회차_수정_테스트() {
 		// Given
 		EventTime eventTime = eventTimeRepository.save(
 			new EventTime(1, event.getStartDate(), event.getEndDate(), event));
@@ -109,7 +131,7 @@ class EventTimeServiceTest {
 	}
 
 	@Test
-	void 공연_삭제_테스트() {
+	void 공연_회차_삭제_테스트() {
 		// Given
 		EventTime eventTime = eventTimeRepository.save(
 			new EventTime(1, event.getStartDate(), event.getEndDate(), event));

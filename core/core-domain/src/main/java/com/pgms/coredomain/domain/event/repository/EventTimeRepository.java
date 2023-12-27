@@ -1,7 +1,9 @@
 package com.pgms.coredomain.domain.event.repository;
 
+
 import com.pgms.coredomain.domain.event.Event;
 import com.pgms.coredomain.domain.event.EventTime;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -12,4 +14,5 @@ public interface EventTimeRepository extends JpaRepository<EventTime, Long> {
 	boolean existsEventTimeForEventByRound(Long eventId, int round);
 
 	List<EventTime> findEventTimesByEvent(Event event);
+	List<EventTime> findEventTimesByEventId(Long eventId);
 }
