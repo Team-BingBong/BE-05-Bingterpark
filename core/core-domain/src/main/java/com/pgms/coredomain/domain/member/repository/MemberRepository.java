@@ -8,4 +8,6 @@ import com.pgms.coredomain.domain.member.Member;
 
 public interface MemberRepository extends JpaRepository<Member, Long> {
 	Slice<Member> findSliceBy(Pageable pageable);
+
+	boolean existsByRoleId(Long roleId);
 }

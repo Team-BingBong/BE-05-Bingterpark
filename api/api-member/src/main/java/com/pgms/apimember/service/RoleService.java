@@ -14,6 +14,8 @@ import com.pgms.apimember.exception.AdminException;
 import com.pgms.coredomain.domain.member.Permission;
 import com.pgms.coredomain.domain.member.Role;
 import com.pgms.coredomain.domain.member.RolePermission;
+import com.pgms.coredomain.domain.member.repository.AdminRepository;
+import com.pgms.coredomain.domain.member.repository.MemberRepository;
 import com.pgms.coredomain.domain.member.repository.PermissionRepository;
 import com.pgms.coredomain.domain.member.repository.RoleRepository;
 
@@ -26,6 +28,8 @@ public class RoleService {
 
 	private final RoleRepository roleRepository;
 	private final PermissionRepository permissionRepository;
+	private final AdminRepository adminRepository;
+	private final MemberRepository memberRepository;
 
 	public Long createRole(RoleCreateRequest request) {
 		validateRoleNameUnique(request.name());
@@ -34,8 +38,8 @@ public class RoleService {
 	}
 
 	@Transactional(readOnly = true)
-	public List<RoleGetResponse> getRolesByIds(List<Long> ids) {
-		return roleRepository.findAllById(ids).stream()
+	public List<RoleGetResponse> getAllRoles() {
+		return roleRepository.findAll().stream()
 			.map(RoleGetResponse::from)
 			.toList();
 	}
@@ -44,13 +48,22 @@ public class RoleService {
 		Role role = roleRepository.findById(id)
 			.orElseThrow(() -> new AdminException(ADMIN_ROLE_NOT_FOUND));
 		validateRoleNameUnique(request.name(), role.getId());
-		role.changeName(request.name());
+		role.updateName(request.name());
 	}
 
 	public void deleteRole(Long id) {
 		Role role = roleRepository.findById(id)
 			.orElseThrow(() -> new AdminException(ADMIN_ROLE_NOT_FOUND));
+
+		if (isRoleInUse(id)) {
+			throw new AdminException(ROLE_IN_USE);
+		}
+
 		roleRepository.delete(role);
+	}
+
+	private boolean isRoleInUse(Long roleId) {
+		return adminRepository.existsByRoleId(roleId) || memberRepository.existsByRoleId(roleId);
 	}
 
 	private void validateRoleNameUnique(String name) {
