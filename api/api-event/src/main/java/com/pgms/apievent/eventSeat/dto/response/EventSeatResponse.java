@@ -1,4 +1,4 @@
-package com.pgms.apievent.event.dto.response;
+package com.pgms.apievent.eventSeat.dto.response;
 
 import com.pgms.coredomain.domain.event.EventSeat;
 import com.pgms.coredomain.domain.event.EventSeatArea;

@@ -10,4 +10,6 @@ public interface AdminRepository extends JpaRepository<Admin, Long> {
 	boolean existsByEmail(String email);
 
 	Slice<Admin> findSliceBy(Pageable pageable);
+
+	boolean existsByRoleId(Long roleId);
 }

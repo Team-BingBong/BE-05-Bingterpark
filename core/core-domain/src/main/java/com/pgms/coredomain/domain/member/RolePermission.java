@@ -9,9 +9,14 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "role_permission")
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class RolePermission {
 
 	@Id
@@ -26,4 +31,9 @@ public class RolePermission {
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "permission_id", nullable = false)
 	private Permission permission;
+
+	public RolePermission(Role role, Permission permission) {
+		this.role = role;
+		this.permission = permission;
+	}
 }
