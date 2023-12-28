@@ -8,7 +8,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.pgms.apibooking.dto.request.PaymentCancelRequest;
 import com.pgms.apibooking.dto.request.PaymentCreateRequest;
+import com.pgms.apibooking.dto.response.PaymentCancelResponse;
 import com.pgms.apibooking.dto.response.PaymentCreateResponse;
 import com.pgms.apibooking.dto.response.PaymentFailResponse;
 import com.pgms.apibooking.service.PaymentService;
@@ -41,12 +43,22 @@ public class PaymentController {
 
 	@GetMapping("/fail")
 	public ResponseEntity<ApiResponse> confirmPaymentFail(
-		@RequestParam(name = "code") @Valid String errorCode,
-		@RequestParam(name = "message") @Valid String errorMessage,
-		@RequestParam(name = "orderId") @Valid String orderId
+		@RequestParam(name = "code") String errorCode,
+		@RequestParam(name = "message") String errorMessage,
+		@RequestParam(name = "orderId") String orderId
 	) {
 		ApiResponse<PaymentFailResponse> response = ApiResponse.ok(
 			paymentService.failPayment(errorCode, errorMessage, orderId));
+		return ResponseEntity.ok(response);
+	}
+
+	@PostMapping("/cancel")
+	public ResponseEntity<ApiResponse> cancelPayment(
+		@RequestParam String paymentKey,
+		@RequestParam String cancelReason
+	) {
+		ApiResponse<PaymentCancelResponse> response = ApiResponse.ok(
+			paymentService.cancelPayment(new PaymentCancelRequest(paymentKey, cancelReason)));
 		return ResponseEntity.ok(response);
 	}
 }

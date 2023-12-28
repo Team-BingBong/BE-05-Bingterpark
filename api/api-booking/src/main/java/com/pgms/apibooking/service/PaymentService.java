@@ -1,5 +1,6 @@
 package com.pgms.apibooking.service;
 
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -9,15 +10,16 @@ import java.util.Collections;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import com.pgms.apibooking.config.TossPaymentConfig;
+import com.pgms.apibooking.dto.request.PaymentCancelRequest;
 import com.pgms.apibooking.dto.request.PaymentConfirmRequest;
 import com.pgms.apibooking.dto.request.PaymentCreateRequest;
+import com.pgms.apibooking.dto.response.PaymentCancelResponse;
 import com.pgms.apibooking.dto.response.PaymentCreateResponse;
 import com.pgms.apibooking.dto.response.PaymentFailResponse;
 import com.pgms.apibooking.dto.response.PaymentSuccessResponse;
@@ -76,11 +78,30 @@ public class PaymentService {
 		HttpHeaders headers = buildTossApiHeaders();
 		PaymentConfirmRequest request = new PaymentConfirmRequest(paymentKey, bookingId, amount);
 		try { // tossPayments post 요청 (url , HTTP 객체 ,응답 Dto)
-			ResponseEntity<PaymentSuccessResponse> response = restTemplate.postForEntity(
-				TossPaymentConfig.URL, new HttpEntity<>(request, headers), PaymentSuccessResponse.class);
-			return response.getBody();
+			return restTemplate.postForObject(
+				TossPaymentConfig.TOSS_CONFIRM_URL, new HttpEntity<>(request, headers), PaymentSuccessResponse.class);
 		} catch (HttpClientErrorException e) {
 			throw new BookingException(BookingErrorCode.TOSS_PAYMENTS_ERROR);
+		} catch (Exception e) {
+			throw new BookingException(BookingErrorCode.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	public PaymentCancelResponse cancelPayment(PaymentCancelRequest request) {
+		Payment payment = getPaymentByPaymentKey(request.paymentKey());
+		PaymentCancelResponse response = requestPaymentCancellation(request);
+		payment.toCanceled();
+		// TODO: booking, ticket 상태 변경
+		return response;
+	}
+
+	public PaymentCancelResponse requestPaymentCancellation(PaymentCancelRequest request) {
+		RestTemplate restTemplate = new RestTemplate();
+		HttpHeaders headers = buildTossApiHeaders();
+		URI uri = URI.create(TossPaymentConfig.TOSS_ORIGIN_URL + request.paymentKey() + "/cancel");
+		try {
+			return restTemplate.postForObject(
+				uri, new HttpEntity<>(request, headers), PaymentCancelResponse.class);
 		} catch (Exception e) {
 			throw new BookingException(BookingErrorCode.INTERNAL_SERVER_ERROR);
 		}
@@ -93,6 +114,11 @@ public class PaymentService {
 			throw new BookingException(BookingErrorCode.PAYMENT_AMOUNT_MISMATCH);
 		}
 		return payment;
+	}
+
+	private Payment getPaymentByPaymentKey(String paymentKey) {
+		return paymentRepository.findByPaymentKey(paymentKey)
+			.orElseThrow(() -> new BookingException(BookingErrorCode.PAYMENT_NOT_FOUND));
 	}
 
 	private HttpHeaders buildTossApiHeaders() {
