@@ -5,6 +5,7 @@ import com.pgms.coredomain.domain.booking.Booking;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.NoArgsConstructor;
 
 @Entity
@@ -18,10 +19,16 @@ public class Ticket extends BaseEntity {
 	private Long id;
 
 	@OneToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "booking_id", nullable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+	@JoinColumn(name = "seat_id", nullable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
 	private EventSeat eventSeat;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "booking_id", nullable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
 	private Booking booking;
+
+	@Builder
+	public Ticket(EventSeat eventSeat, Booking booking) {
+		this.eventSeat = eventSeat;
+		this.booking = booking;
+	}
 }
