@@ -72,7 +72,7 @@ public class BookingService {
 	}
 
 	private EventTime getBookableTimeWithEvent(Long timeId) {
-		EventTime time = eventTimeRepository.findEventTimeWithEventById(timeId)
+		EventTime time = eventTimeRepository.findWithEventById(timeId)
 			.orElseThrow(() -> new BookingException(BookingErrorCode.TIME_NOT_FOUND));
 
 		if (!time.getEvent().isBookable()) {
@@ -83,8 +83,7 @@ public class BookingService {
 	}
 
 	private List<EventSeat> geBookableSeatsWithArea(Long timeId, List<Long> seatIds) {
-		List<EventSeat> seats = eventSeatRepository
-			.findAllWithAreaByTimeIdAndSeatIds(timeId, seatIds);
+		List<EventSeat> seats = eventSeatRepository.findAllWithAreaByTimeIdAndSeatIds(timeId, seatIds);
 
 		if (seats.size() != seatIds.size()) {
 			throw new BookingException(BookingErrorCode.NON_EXISTENT_SEAT_INCLUSION);

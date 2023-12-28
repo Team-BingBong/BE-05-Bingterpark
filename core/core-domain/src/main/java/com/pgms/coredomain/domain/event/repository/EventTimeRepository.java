@@ -19,5 +19,5 @@ public interface EventTimeRepository extends JpaRepository<EventTime, Long> {
 	List<EventTime> findEventTimesByEventId(Long eventId);
 
 	@Query("SELECT et FROM EventTime et JOIN FETCH et.event e WHERE et.id = :id")
-	Optional<EventTime> findEventTimeWithEventById(@Param("id") Long id);
+	Optional<EventTime> findWithEventById(@Param("id") Long id);
 }
