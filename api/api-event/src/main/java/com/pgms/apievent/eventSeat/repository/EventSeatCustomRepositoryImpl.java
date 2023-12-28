@@ -35,6 +35,20 @@ public class EventSeatCustomRepositoryImpl implements EventSeatCustomRepository{
     }
 
     @Override
+    public void updateEventSeatsStatus(Long[] ids, EventSeatStatus eventSeatStatus) {
+        QEventSeat qEventSeat = QEventSeat.eventSeat;
+
+        jpaQueryFactory
+                .update(qEventSeat)
+                .set(qEventSeat.status, eventSeatStatus)
+                .where(qEventSeat.id.in(ids))
+                .execute();
+
+        // 벌크 연산 시 DB엔 반영, 영속성 컨텍스트에는 반영되지 않음
+        em.clear();
+    }
+
+    @Override
     public List<LeftEventSeatNumDto> getLeftEventSeatNumberByEventTime(EventTime eventTime) {
         QEventSeat qEventSeat = QEventSeat.eventSeat;
 

@@ -58,11 +58,7 @@ public class EventSeatService {
     }
 
     public void updateEventSeatsStatus(List<Long> ids, EventSeatStatus eventSeatStatus) {
-        ids.forEach(id -> {
-            EventSeat eventSeat = eventSeatRepository.findById(id)
-                    .orElseThrow(() -> new CustomException(EVENT_NOT_FOUND));
-            eventSeat.updateStatus(eventSeatStatus);
-        });
+        eventSeatCustomRepository.updateEventSeatsStatus(ids.toArray(new Long[0]), eventSeatStatus);
     }
 
     public void deleteEventSeats(List<Long> ids) {
