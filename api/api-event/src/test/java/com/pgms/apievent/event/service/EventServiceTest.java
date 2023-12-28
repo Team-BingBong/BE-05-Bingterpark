@@ -75,6 +75,8 @@ class EventServiceTest {
 			"15세 이상",
 			GenreType.MUSICAL,
 			"thumbnail.jpg",
+			LocalDateTime.of(2023, 2, 1, 0, 0),
+			LocalDateTime.of(2023, 2, 1, 0, 0),
 			eventHall.getId());
 
 		// When

@@ -84,6 +84,8 @@ public class Event extends BaseEntity {
 		String rating,
 		GenreType genreType,
 		String thumbnail,
+		LocalDateTime bookingStartedAt,
+		LocalDateTime bookingEndedAt,
 		EventHall eventHall) {
 		this.title = title;
 		this.description = description;
@@ -93,6 +95,8 @@ public class Event extends BaseEntity {
 		this.rating = rating;
 		this.genreType = genreType;
 		this.thumbnail = thumbnail;
+		this.bookingStartedAt = bookingStartedAt;
+		this.bookingEndedAt = bookingEndedAt;
 		this.eventHall = eventHall;
 	}
 
@@ -105,6 +109,8 @@ public class Event extends BaseEntity {
 		this.rating = eventEdit.rating();
 		this.genreType = eventEdit.genreType();
 		this.thumbnail = eventEdit.thumbnail();
+		this.bookingStartedAt = eventEdit.bookingStartedAt();
+		this.bookingEndedAt = eventEdit.bookingEndedAt();
 		this.eventHall = eventEdit.eventHall();
 	}
 
