@@ -2,6 +2,7 @@ package com.pgms.apievent.eventSeat.service;
 
 import com.pgms.apievent.eventSeat.dto.request.EventSeatsCreateRequest;
 import com.pgms.apievent.eventSeat.dto.response.EventSeatResponse;
+import com.pgms.apievent.eventSeat.repository.EventSeatCustomRepository;
 import com.pgms.apievent.exception.CustomException;
 import com.pgms.apievent.exception.EventSeatAreaNotFoundException;
 import com.pgms.coredomain.domain.event.*;
@@ -24,6 +25,7 @@ public class EventSeatService {
     private final EventTimeRepository eventTimeRepository;
     private final EventSeatRepository eventSeatRepository;
     private final EventSeatAreaRepository eventSeatAreaRepository;
+    private final EventSeatCustomRepository eventSeatCustomRepository;
 
     public void createEventSeats(Long id, EventSeatsCreateRequest eventSeatsCreateRequest) {
         Event event = eventRepository.findById(id)
@@ -48,16 +50,11 @@ public class EventSeatService {
                 .forEach(eventSeatRepository::saveAll);
     }
 
-    // TODO bulk update 도 고려
     public void updateEventSeatsSeatArea(List<Long> ids, Long seatAreaId) {
         EventSeatArea eventSeatArea = eventSeatAreaRepository.findById(seatAreaId)
                 .orElseThrow(EventSeatAreaNotFoundException::new);
 
-        ids.forEach(id -> {
-            EventSeat eventSeat = eventSeatRepository.findById(id)
-                    .orElseThrow(() -> new CustomException(EVENT_NOT_FOUND));
-            eventSeat.updateEventSeatArea(eventSeatArea);
-        });
+        eventSeatCustomRepository.updateEventSeatsSeatArea(ids.toArray(new Long[0]), eventSeatArea);
     }
 
     public void updateEventSeatsStatus(List<Long> ids, EventSeatStatus eventSeatStatus) {
