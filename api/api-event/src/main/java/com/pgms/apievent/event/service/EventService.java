@@ -110,6 +110,7 @@ public class EventService {
 		eventSeatArea.updateEventSeatAreaPriceAndType(request.seatAreaType(), request.price());
 	}
 
+	@Transactional(readOnly = true)
 	public List<EventSeatAreaResponse> getEventSeatAreas(Long id) {
 		Event event = eventRepository.findById(id)
 				.orElseThrow(() -> new CustomException(EVENT_NOT_FOUND));

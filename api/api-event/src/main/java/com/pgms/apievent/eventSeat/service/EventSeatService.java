@@ -12,6 +12,7 @@ import com.pgms.coredomain.domain.event.repository.EventSeatRepository;
 import com.pgms.coredomain.domain.event.repository.EventTimeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -65,6 +66,7 @@ public class EventSeatService {
         eventSeatCustomRepository.deleteEventSeats(ids.toArray(new Long[0]));
     }
 
+    @Transactional(readOnly = true)
     public List<EventSeatResponse> getEventSeatsByEventTime(Long id) {
         List<EventSeat> eventSeats = eventSeatRepository.findAllWithAreaByEventTimeId(id);
 
