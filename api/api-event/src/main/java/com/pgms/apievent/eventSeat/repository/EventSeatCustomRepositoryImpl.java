@@ -49,6 +49,19 @@ public class EventSeatCustomRepositoryImpl implements EventSeatCustomRepository{
     }
 
     @Override
+    public void deleteEventSeats(Long[] ids) {
+        QEventSeat qEventSeat = QEventSeat.eventSeat;
+
+        jpaQueryFactory
+                .delete(qEventSeat)
+                .where(qEventSeat.id.in(ids))
+                .execute();
+
+        // 벌크 연산 시 DB엔 반영, 영속성 컨텍스트에는 반영되지 않음
+        em.clear();
+    }
+
+    @Override
     public List<LeftEventSeatNumDto> getLeftEventSeatNumberByEventTime(EventTime eventTime) {
         QEventSeat qEventSeat = QEventSeat.eventSeat;
 

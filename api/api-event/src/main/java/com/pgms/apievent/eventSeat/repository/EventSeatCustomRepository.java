@@ -13,5 +13,7 @@ public interface EventSeatCustomRepository {
 
     void updateEventSeatsStatus(Long[] ids, EventSeatStatus eventSeatStatus);
 
+    void deleteEventSeats(Long[] ids);
+
     List<LeftEventSeatNumDto> getLeftEventSeatNumberByEventTime(EventTime eventTime);
 }

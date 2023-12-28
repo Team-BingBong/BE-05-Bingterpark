@@ -62,13 +62,7 @@ public class EventSeatService {
     }
 
     public void deleteEventSeats(List<Long> ids) {
-        List<EventSeat> eventSeats = ids.stream()
-                .map(id ->
-                        eventSeatRepository.findById(id)
-                                .orElseThrow(() -> new CustomException(EVENT_NOT_FOUND)))
-                .toList();
-
-        eventSeatRepository.deleteAllInBatch(eventSeats);
+        eventSeatCustomRepository.deleteEventSeats(ids.toArray(new Long[0]));
     }
 
     public List<EventSeatResponse> getEventSeatsByEventTime(Long id) {
