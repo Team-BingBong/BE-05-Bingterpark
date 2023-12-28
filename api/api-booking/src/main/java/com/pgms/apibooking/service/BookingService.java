@@ -58,11 +58,12 @@ public class BookingService {
 			.member(null) //TODO: 인증된 멤버 지정
 			.build();
 
-		seats.forEach(seat -> booking.addTicket(Ticket.builder()
-			.eventSeat(seat)
-			.booking(booking)
-			.build()))
-		;
+		seats.forEach(seat -> booking.addTicket(
+			Ticket.builder()
+				.eventSeat(seat)
+				.booking(booking)
+				.build())
+		);
 
 		bookingRepository.save(booking);
 
