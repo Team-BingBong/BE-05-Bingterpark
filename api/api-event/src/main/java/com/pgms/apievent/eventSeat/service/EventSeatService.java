@@ -2,6 +2,7 @@ package com.pgms.apievent.eventSeat.service;
 
 import com.pgms.apievent.eventSeat.dto.request.EventSeatsCreateRequest;
 import com.pgms.apievent.eventSeat.dto.response.EventSeatResponse;
+import com.pgms.apievent.eventSeat.dto.response.LeftEventSeatResponse;
 import com.pgms.apievent.eventSeat.repository.EventSeatCustomRepository;
 import com.pgms.apievent.exception.CustomException;
 import com.pgms.apievent.exception.EventSeatAreaNotFoundException;
@@ -17,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 import static com.pgms.apievent.exception.EventErrorCode.EVENT_NOT_FOUND;
+import static com.pgms.apievent.exception.EventErrorCode.EVENT_TIME_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
@@ -75,5 +77,16 @@ public class EventSeatService {
                 .toList();
 
         return eventSeatResponses;
+    }
+
+    public List<LeftEventSeatResponse> getLeftEventSeatNumberByEventTime(Long id) {
+        EventTime eventTime = eventTimeRepository.findById(id)
+                .orElseThrow(() -> new CustomException(EVENT_TIME_NOT_FOUND));
+
+        return eventSeatCustomRepository.getLeftEventSeatNumberByEventTime(eventTime)
+                .stream()
+                .map(leftEventSeatNumDto ->
+                        new LeftEventSeatResponse(leftEventSeatNumDto.eventSeatArea().getSeatAreaType(), leftEventSeatNumDto.leftSeatNumber()))
+                .toList();
     }
 }

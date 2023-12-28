@@ -2,6 +2,7 @@ package com.pgms.apievent.eventSeat.controller;
 
 import com.pgms.apievent.eventSeat.dto.request.EventSeatsCreateRequest;
 import com.pgms.apievent.eventSeat.dto.response.EventSeatResponse;
+import com.pgms.apievent.eventSeat.dto.response.LeftEventSeatResponse;
 import com.pgms.apievent.eventSeat.service.EventSeatService;
 import com.pgms.coredomain.domain.event.EventSeatStatus;
 import com.pgms.coredomain.response.ApiResponse;
@@ -18,28 +19,28 @@ public class EventSeatController {
 
     private EventSeatService eventSeatService;
 
-    @PostMapping("/seats/events/{id}")
+    @PostMapping("/events/{id}")
     public ResponseEntity<Void> createEventSeats(@PathVariable Long id,
                                                  @RequestBody EventSeatsCreateRequest eventSeatsCreateRequest){
         eventSeatService.createEventSeats(id, eventSeatsCreateRequest);
         return ResponseEntity.noContent().build();
     }
 
-    @PatchMapping("/seats/seat-area")
+    @PatchMapping("/seat-area")
     public ResponseEntity<Void> updateEventSeatSeatArea(@RequestParam List<Long> ids,
                                                         @RequestParam(value = "seat-area-id") Long seatAreaId) {
         eventSeatService.updateEventSeatsSeatArea(ids, seatAreaId);
         return ResponseEntity.noContent().build();
     }
 
-    @PatchMapping("/seats/seat-status")
+    @PatchMapping("/seat-status")
     public ResponseEntity<Void> updateEventSeatSeatStatus(@RequestParam List<Long> ids,
                                                           @RequestParam(value = "seat-status") EventSeatStatus eventSeatStatus) {
         eventSeatService.updateEventSeatsStatus(ids, eventSeatStatus);
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping("/seats")
+    @DeleteMapping
     public ResponseEntity<Void> deleteEventSeats(@RequestParam List<Long> ids) {
         eventSeatService.deleteEventSeats(ids);
         return ResponseEntity.noContent().build();
@@ -48,6 +49,12 @@ public class EventSeatController {
     @GetMapping("/event-time/{id}/seats")
     public ResponseEntity<ApiResponse> getEventSeatsByEventTime(@PathVariable Long id){
         List<EventSeatResponse> responses = eventSeatService.getEventSeatsByEventTime(id);
+        return ResponseEntity.ok(ApiResponse.ok(responses));
+    }
+
+    @GetMapping("/event-time/{id}/availabe-numbers")
+    public ResponseEntity<ApiResponse> getLeftEventSeatNumberByEventTime(@PathVariable Long id){
+        List<LeftEventSeatResponse> responses = eventSeatService.getLeftEventSeatNumberByEventTime(id);
         return ResponseEntity.ok(ApiResponse.ok(responses));
     }
 }
