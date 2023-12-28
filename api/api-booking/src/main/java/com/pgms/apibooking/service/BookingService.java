@@ -34,7 +34,7 @@ public class BookingService {
 
 	//TODO: 리팩터링
 	//TODO: 테스트 코드 작성
-	public Booking generateBooking(PaymentCreateRequest request) {
+	public Booking createBooking(PaymentCreateRequest request) {
 		// 결제할 좌석이 담겨져 왔는지 확인
 		if (request.seatIds().isEmpty()) {
 			throw new BookingException(BookingErrorCode.SEAT_SELECTION_REQUIRED);
@@ -68,7 +68,7 @@ public class BookingService {
 		// 예매 정보 저장
 		Booking booking = Booking.builder()
 			.id(String.valueOf(System.currentTimeMillis()))
-			.bookingName(time.getEvent().getTitle() + " " + time.getRound() + " ")
+			.bookingName(time.getEvent().getTitle() + " " + time.getRound())
 			.status(BookingStatus.WAITING_FOR_DEPOSIT)
 			.receiptType(request.receiptType())
 			.buyerName(request.buyerName())
@@ -100,5 +100,4 @@ public class BookingService {
 
 		return booking;
 	}
-
 }

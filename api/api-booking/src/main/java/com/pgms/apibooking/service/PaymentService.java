@@ -39,7 +39,7 @@ public class PaymentService {
 	private final BookingService bookingService;
 
 	public PaymentCreateResponse createPayment(PaymentCreateRequest request) {
-		Booking booking = bookingService.generateBooking(request);
+		Booking booking = bookingService.createBooking(request);
 		Payment payment = request.toEntity(booking);
 		paymentRepository.save(payment);
 		return PaymentCreateResponse.of(payment, tossPaymentConfig.getSuccessUrl(), tossPaymentConfig.getFailUrl());
