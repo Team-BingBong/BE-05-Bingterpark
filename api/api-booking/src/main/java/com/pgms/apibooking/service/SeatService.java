@@ -27,7 +27,7 @@ public class SeatService { //TODO: 테스트 코드 작성
 
 	@Transactional(readOnly = true)
 	public List<AreaResponse> getSeats(SeatsGetRequest request) {
-		List<EventSeat> seats = eventSeatRepository.findAllWithAreaByEventTimeId(request.eventTimeId());
+		List<EventSeat> seats = eventSeatRepository.findAllWithAreaByTimeId(request.eventTimeId());
 
 		Map<Long, List<EventSeat>> seatsByArea = seats.stream()
 			.collect(Collectors.groupingBy(es -> es.getEventSeatArea().getId()));

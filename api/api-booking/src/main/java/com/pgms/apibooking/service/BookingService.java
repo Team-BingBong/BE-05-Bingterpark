@@ -34,33 +34,33 @@ public class BookingService {
 
 	//TODO: 리팩터링
 	//TODO: 테스트 코드 작성
-	public Booking generateBooking(PaymentCreateRequest bookingInfo) {
+	public Booking generateBooking(PaymentCreateRequest request) {
 		// 결제할 좌석이 담겨져 왔는지 확인
-		if (bookingInfo.seatIds().isEmpty()) {
+		if (request.seatIds().isEmpty()) {
 			throw new BookingException(BookingErrorCode.SEAT_SELECTION_REQUIRED);
 		}
 
 		// 존재하는 공연 회차인지 확인
-		EventTime eventTime = eventTimeRepository.findEventTimeWithEventById(bookingInfo.eventTimeId())
+		EventTime time = eventTimeRepository.findEventTimeWithEventById(request.timeId())
 			.orElseThrow(() -> new BookingException(BookingErrorCode.EVENT_TIME_NOT_FOUND));
 
 		// 예매가능한 공연 회차인지 확인
-		if (!eventTime.getEvent().isBookingAvailable()) {
+		if (!time.getEvent().isBookingAvailable()) {
 			throw new BookingException(BookingErrorCode.BOOKING_UNAVAILABLE);
 		}
 
 		// 요청한 공연 회차의 예매 가능한 좌석인지 확인
 		List<EventSeat> seats = eventSeatRepository
-			.findAllWithAreaByEventTimeIdAndSeatIdsAndStatus(bookingInfo.eventTimeId(), bookingInfo.seatIds(),
+			.findAllWithAreaByTimeIdAndSeatIdsAndStatus(request.timeId(), request.seatIds(),
 				EventSeatStatus.BEING_BOOKED);
 
-		if (seats.size() != bookingInfo.seatIds().size()) {
+		if (seats.size() != request.seatIds().size()) {
 			throw new BookingException(BookingErrorCode.EVENT_TIME_SEAT_MISMATCH);
 		}
 
 		// 수령 방법이 배송이라면 배송지 정보가 있는지 확인
-		if (bookingInfo.receiptType() == ReceiptType.DELIVERY) {
-			if (bookingInfo.deliveryAddress().isEmpty()) {
+		if (request.receiptType() == ReceiptType.DELIVERY) {
+			if (request.deliveryAddress().isEmpty()) {
 				throw new BookingException(BookingErrorCode.DELIVERY_ADDRESS_REQUIRED);
 			}
 		}
@@ -68,15 +68,15 @@ public class BookingService {
 		// 예매 정보 저장
 		Booking booking = Booking.builder()
 			.id(String.valueOf(System.currentTimeMillis()))
-			.bookingName(eventTime.getEvent().getTitle() + " " + eventTime.getRound() + " ")
+			.bookingName(time.getEvent().getTitle() + " " + time.getRound() + " ")
 			.status(BookingStatus.WAITING_FOR_DEPOSIT)
-			.receiptType(bookingInfo.receiptType())
-			.buyerName(bookingInfo.buyerName())
-			.buyerPhoneNumber(bookingInfo.buyerPhoneNumber())
-			.recipientName(bookingInfo.deliveryAddress().get().recipientName())
-			.recipientPhoneNumber(bookingInfo.deliveryAddress().get().recipientPhoneNumber())
-			.streetAddress(bookingInfo.deliveryAddress().get().streetAddress())
-			.detailAddress(bookingInfo.deliveryAddress().get().detailAddress())
+			.receiptType(request.receiptType())
+			.buyerName(request.buyerName())
+			.buyerPhoneNumber(request.buyerPhoneNumber())
+			.recipientName(request.deliveryAddress().get().recipientName())
+			.recipientPhoneNumber(request.deliveryAddress().get().recipientPhoneNumber())
+			.streetAddress(request.deliveryAddress().get().streetAddress())
+			.detailAddress(request.deliveryAddress().get().detailAddress())
 			.amount(seats.stream()
 				.map(seat -> seat.getEventSeatArea().getPrice())
 				.reduce(0, Integer::sum))

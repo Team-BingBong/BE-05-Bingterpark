@@ -17,7 +17,7 @@ import jakarta.validation.constraints.NotNull;
 public record PaymentCreateRequest(
 
 	@NotNull
-	Long eventTimeId,
+	Long timeId,
 
 	@NotNull
 	@NotEmpty
