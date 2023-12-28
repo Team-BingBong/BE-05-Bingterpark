@@ -25,7 +25,6 @@ import com.pgms.apibooking.exception.BookingErrorCode;
 import com.pgms.apibooking.exception.BookingException;
 import com.pgms.coredomain.domain.booking.Booking;
 import com.pgms.coredomain.domain.booking.Payment;
-import com.pgms.coredomain.domain.booking.repository.BookingRepository;
 import com.pgms.coredomain.domain.booking.repository.PaymentRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -36,14 +35,13 @@ import lombok.RequiredArgsConstructor;
 public class PaymentService {
 
 	private final PaymentRepository paymentRepository;
-	private final BookingRepository bookingRepository;
 	private final TossPaymentConfig tossPaymentConfig;
+	private final BookingService bookingService;
 
 	public PaymentCreateResponse createPayment(PaymentCreateRequest request) {
-		// TODO: booking 생성 로직 추가하기
-		Booking booking = bookingRepository.findById(request.bookingId())
-			.orElseThrow(() -> new BookingException(BookingErrorCode.BOOKING_NOT_FOUND));
-		Payment payment = paymentRepository.save(request.toEntity(booking));
+		Booking booking = bookingService.generateBooking(request);
+		Payment payment = request.toEntity(booking);
+		paymentRepository.save(payment);
 		return PaymentCreateResponse.of(payment, tossPaymentConfig.getSuccessUrl(), tossPaymentConfig.getFailUrl());
 	}
 
@@ -57,18 +55,19 @@ public class PaymentService {
 			case VIRTUAL_ACCOUNT -> System.out.println("아직 안함");
 			default -> throw new BookingException(BookingErrorCode.INVALID_PAYMENT_METHOD);
 		}
+
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXXX");
 		payment.updateConfirmInfo(paymentKey, LocalDateTime.parse(response.approvedAt(), formatter),
 			LocalDateTime.parse(response.requestedAt(), formatter));
+
 		return response;
 	}
 
-	public PaymentFailResponse failPayment(String errorCode, String errorMessage, String orderId) {
-		// TODO: orderId String 형식으로 바뀌면 수정 필요
-		Payment payment = getPaymentByBookingId(1L);
+	public PaymentFailResponse failPayment(String errorCode, String errorMessage, String bookingId) {
+		Payment payment = getPaymentByBookingId(bookingId);
 		payment.toAborted();
 		payment.updateFailedMsg(errorMessage);
-		return new PaymentFailResponse(errorCode, errorMessage, orderId);
+		return new PaymentFailResponse(errorCode, errorMessage, bookingId);
 	}
 
 	public PaymentSuccessResponse requestPaymentConfirmation(String paymentKey, String bookingId, int amount) {
@@ -76,7 +75,7 @@ public class PaymentService {
 		HttpHeaders headers = buildTossApiHeaders();
 		PaymentConfirmRequest request = new PaymentConfirmRequest(paymentKey, bookingId, amount);
 		try { // tossPayments post 요청 (url , HTTP 객체 ,응답 Dto)
-			ResponseEntity<PaymentSuccessResponse> response = restTemplate.postForEntity(
+			ResponseEntity<PaymentSuccessResponse> response = restTemplate.postForEntity( //TODO: error fix
 				TossPaymentConfig.URL, new HttpEntity<>(request, headers), PaymentSuccessResponse.class);
 			return response.getBody();
 		} catch (HttpClientErrorException e) {
@@ -87,8 +86,7 @@ public class PaymentService {
 	}
 
 	private Payment getAndVerifyPayment(String bookingId, int amount) {
-		// TODO: bookingId String으로 변경시 수정 필요.
-		Payment payment = getPaymentByBookingId(1L);
+		Payment payment = getPaymentByBookingId(bookingId);
 		if (payment.getAmount() != amount) {
 			throw new BookingException(BookingErrorCode.PAYMENT_AMOUNT_MISMATCH);
 		}
@@ -106,9 +104,8 @@ public class PaymentService {
 		return headers;
 	}
 
-	private Payment getPaymentByBookingId(Long bookingId) {
-		return paymentRepository.findByBookingId(bookingId).orElseThrow(() -> {
-			throw new BookingException(BookingErrorCode.PAYMENT_NOT_FOUND);
-		});
+	private Payment getPaymentByBookingId(String bookingId) {
+		return paymentRepository.findByBookingId(bookingId)
+			.orElseThrow(() -> new BookingException(BookingErrorCode.PAYMENT_NOT_FOUND));
 	}
 }
