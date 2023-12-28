@@ -52,6 +52,8 @@ public class BookingService {
 				? request.deliveryAddress().get().streetAddress() : null)
 			.detailAddress(request.deliveryAddress().isPresent()
 				? request.deliveryAddress().get().detailAddress() : null)
+			.zipCode(request.deliveryAddress().isPresent()
+				? request.deliveryAddress().get().zipCode() : null)
 			.amount(seats.stream()
 				.map(seat -> seat.getEventSeatArea().getPrice())
 				.reduce(0, Integer::sum))
