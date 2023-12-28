@@ -24,7 +24,9 @@ import com.pgms.apibooking.dto.response.PaymentSuccessResponse;
 import com.pgms.apibooking.exception.BookingErrorCode;
 import com.pgms.apibooking.exception.BookingException;
 import com.pgms.coredomain.domain.booking.Booking;
+import com.pgms.coredomain.domain.booking.BookingStatus;
 import com.pgms.coredomain.domain.booking.Payment;
+import com.pgms.coredomain.domain.booking.repository.BookingRepository;
 import com.pgms.coredomain.domain.booking.repository.PaymentRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -35,6 +37,7 @@ import lombok.RequiredArgsConstructor;
 public class PaymentService {
 
 	private final PaymentRepository paymentRepository;
+	private final BookingRepository bookingRepository;
 	private final TossPaymentConfig tossPaymentConfig;
 	private final BookingService bookingService;
 
@@ -46,7 +49,14 @@ public class PaymentService {
 	}
 
 	public PaymentSuccessResponse successPayment(String paymentKey, String bookingId, int amount) {
-		Payment payment = getAndVerifyPayment(bookingId, amount);
+		Booking booking = bookingRepository.findWithPaymentById(bookingId)
+			.orElseThrow(() -> new BookingException(BookingErrorCode.BOOKING_NOT_FOUND));
+		Payment payment = booking.getPayment();
+
+		if (payment.getAmount() != amount) {
+			throw new BookingException(BookingErrorCode.PAYMENT_AMOUNT_MISMATCH);
+		}
+
 		PaymentSuccessResponse response = requestPaymentConfirmation(paymentKey, bookingId, amount);
 
 		switch (payment.getMethod()) {
@@ -59,6 +69,7 @@ public class PaymentService {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXXX");
 		payment.updateConfirmInfo(paymentKey, LocalDateTime.parse(response.approvedAt(), formatter),
 			LocalDateTime.parse(response.requestedAt(), formatter));
+		booking.updateStatus(BookingStatus.PAYMENT_COMPLETED);
 
 		return response;
 	}
@@ -83,14 +94,6 @@ public class PaymentService {
 		} catch (Exception e) {
 			throw new BookingException(BookingErrorCode.INTERNAL_SERVER_ERROR);
 		}
-	}
-
-	private Payment getAndVerifyPayment(String bookingId, int amount) {
-		Payment payment = getPaymentByBookingId(bookingId);
-		if (payment.getAmount() != amount) {
-			throw new BookingException(BookingErrorCode.PAYMENT_AMOUNT_MISMATCH);
-		}
-		return payment;
 	}
 
 	private HttpHeaders buildTossApiHeaders() {
