@@ -77,6 +77,8 @@ public class EventService {
 			.rating(request.rating())
 			.genreType(request.genreType())
 			.thumbnail(request.thumbnail())
+			.bookingStartedAt(request.bookingStartedAt())
+			.bookingEndedAt(request.bookingEndedAt())
 			.eventHall(eventHall)
 			.build();
 	}

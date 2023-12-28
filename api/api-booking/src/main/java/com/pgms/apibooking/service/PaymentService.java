@@ -26,6 +26,7 @@ import com.pgms.apibooking.dto.response.PaymentSuccessResponse;
 import com.pgms.apibooking.exception.BookingErrorCode;
 import com.pgms.apibooking.exception.BookingException;
 import com.pgms.coredomain.domain.booking.Booking;
+import com.pgms.coredomain.domain.booking.BookingStatus;
 import com.pgms.coredomain.domain.booking.Payment;
 import com.pgms.coredomain.domain.booking.repository.BookingRepository;
 import com.pgms.coredomain.domain.booking.repository.PaymentRepository;
@@ -40,17 +41,24 @@ public class PaymentService {
 	private final PaymentRepository paymentRepository;
 	private final BookingRepository bookingRepository;
 	private final TossPaymentConfig tossPaymentConfig;
+	private final BookingService bookingService;
 
 	public PaymentCreateResponse createPayment(PaymentCreateRequest request) {
-		// TODO: booking 생성 로직 추가하기
-		Booking booking = bookingRepository.findById(request.bookingId())
-			.orElseThrow(() -> new BookingException(BookingErrorCode.BOOKING_NOT_FOUND));
-		Payment payment = paymentRepository.save(request.toEntity(booking));
+		Booking booking = bookingService.createBooking(request);
+		Payment payment = request.toEntity(booking);
+		paymentRepository.save(payment);
 		return PaymentCreateResponse.of(payment, tossPaymentConfig.getSuccessUrl(), tossPaymentConfig.getFailUrl());
 	}
 
 	public PaymentSuccessResponse successPayment(String paymentKey, String bookingId, int amount) {
-		Payment payment = getAndVerifyPayment(bookingId, amount);
+		Booking booking = bookingRepository.findWithPaymentById(bookingId)
+			.orElseThrow(() -> new BookingException(BookingErrorCode.BOOKING_NOT_FOUND));
+		Payment payment = booking.getPayment();
+
+		if (payment.getAmount() != amount) {
+			throw new BookingException(BookingErrorCode.PAYMENT_AMOUNT_MISMATCH);
+		}
+
 		PaymentSuccessResponse response = requestPaymentConfirmation(paymentKey, bookingId, amount);
 
 		switch (payment.getMethod()) {
@@ -59,18 +67,20 @@ public class PaymentService {
 			case VIRTUAL_ACCOUNT -> System.out.println("아직 안함");
 			default -> throw new BookingException(BookingErrorCode.INVALID_PAYMENT_METHOD);
 		}
+
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXXX");
 		payment.updateConfirmInfo(paymentKey, LocalDateTime.parse(response.approvedAt(), formatter),
 			LocalDateTime.parse(response.requestedAt(), formatter));
+		booking.updateStatus(BookingStatus.PAYMENT_COMPLETED);
+
 		return response;
 	}
 
-	public PaymentFailResponse failPayment(String errorCode, String errorMessage, String orderId) {
-		// TODO: orderId String 형식으로 바뀌면 수정 필요
-		Payment payment = getPaymentByBookingId(1L);
+	public PaymentFailResponse failPayment(String errorCode, String errorMessage, String bookingId) {
+		Payment payment = getPaymentByBookingId(bookingId);
 		payment.toAborted();
 		payment.updateFailedMsg(errorMessage);
-		return new PaymentFailResponse(errorCode, errorMessage, orderId);
+		return new PaymentFailResponse(errorCode, errorMessage, bookingId);
 	}
 
 	public PaymentSuccessResponse requestPaymentConfirmation(String paymentKey, String bookingId, int amount) {
@@ -107,14 +117,6 @@ public class PaymentService {
 		}
 	}
 
-	private Payment getAndVerifyPayment(String bookingId, int amount) {
-		// TODO: bookingId String으로 변경시 수정 필요.
-		Payment payment = getPaymentByBookingId(1L);
-		if (payment.getAmount() != amount) {
-			throw new BookingException(BookingErrorCode.PAYMENT_AMOUNT_MISMATCH);
-		}
-		return payment;
-	}
 
 	private Payment getPaymentByPaymentKey(String paymentKey) {
 		return paymentRepository.findByPaymentKey(paymentKey)
@@ -132,9 +134,8 @@ public class PaymentService {
 		return headers;
 	}
 
-	private Payment getPaymentByBookingId(Long bookingId) {
-		return paymentRepository.findByBookingId(bookingId).orElseThrow(() -> {
-			throw new BookingException(BookingErrorCode.PAYMENT_NOT_FOUND);
-		});
+	private Payment getPaymentByBookingId(String bookingId) {
+		return paymentRepository.findByBookingId(bookingId)
+			.orElseThrow(() -> new BookingException(BookingErrorCode.PAYMENT_NOT_FOUND));
 	}
 }
