@@ -67,7 +67,7 @@ public class BookingExceptionHandler extends ResponseEntityExceptionHandler {
 	@ExceptionHandler(BookingException.class)
 	protected ResponseEntity<ErrorResponse> handleBookingException(BookingException ex) {
 		ErrorResponse response = new ErrorResponse(ex.getErrorCode().getCode(), ex.getErrorCode().getMessage());
-		log.warn("Booking Exception Occurred : {}", response.getErrorMessage());
+		log.warn("Booking Exception Occurred : {}", response.getErrorMessage(), ex);
 		return ResponseEntity.status(ex.getErrorCode().getStatus()).body(response);
 	}
 }
