@@ -113,6 +113,10 @@ public class Payment extends BaseEntity {
 		this.status = PaymentStatus.ABORTED;
 	}
 
+	public void toCanceled() {
+		this.status = PaymentStatus.CANCELLED;
+	}
+
 	public void updateFailedMsg(String failedMsg) {
 		this.failedMsg = failedMsg;
 	}

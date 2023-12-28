@@ -9,4 +9,6 @@ import com.pgms.coredomain.domain.booking.Payment;
 public interface PaymentRepository extends JpaRepository<Payment, Long> {
 
 	Optional<Payment> findByBookingId(String bookingId);
+
+	Optional<Payment> findByPaymentKey(String paymentKey);
 }
