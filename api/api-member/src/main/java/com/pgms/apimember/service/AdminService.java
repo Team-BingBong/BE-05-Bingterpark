@@ -54,7 +54,7 @@ public class AdminService {
 	public void updateAdmin(Long adminId, AdminUpdateRequest requestDto) {
 		validatePasswordConfirmMatch(requestDto.password(), requestDto.passwordConfirm());
 
-		final Admin admin = adminRepository.findById(adminId)
+		final Admin admin = adminRepository.findByIdWithRole(adminId)
 			.orElseThrow(() -> new AdminException(ADMIN_NOT_FOUND));
 
 		final Role role = getRole(requestDto.roleName());
@@ -76,7 +76,7 @@ public class AdminService {
 
 	@Transactional(readOnly = true)
 	public AdminGetResponse getAdmin(Long adminId) {
-		final Admin admin = adminRepository.findById(adminId)
+		final Admin admin = adminRepository.findByIdWithRole(adminId)
 			.orElseThrow(() -> new AdminException(ADMIN_NOT_FOUND));
 		return AdminGetResponse.from(admin);
 	}
