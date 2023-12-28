@@ -44,8 +44,8 @@ public class RoleController {
 	}
 
 	@GetMapping
-	public ResponseEntity<ApiResponse<List<RoleGetResponse>>> getRolesByIds(@RequestParam List<Long> ids) {
-		List<RoleGetResponse> roles = roleService.getRolesByIds(ids);
+	public ResponseEntity<ApiResponse<List<RoleGetResponse>>> getAllPermissions() {
+		List<RoleGetResponse> roles = roleService.getAllRoles();
 		return ResponseEntity.ok(ApiResponse.ok(roles));
 	}
 
