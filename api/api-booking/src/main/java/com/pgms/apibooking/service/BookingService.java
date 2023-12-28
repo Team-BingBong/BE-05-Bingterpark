@@ -45,7 +45,7 @@ public class BookingService {
 			.orElseThrow(() -> new BookingException(BookingErrorCode.EVENT_TIME_NOT_FOUND));
 
 		// 예매가능한 공연 회차인지 확인
-		if (!eventTime.isBookingAvailable()) {
+		if (!eventTime.getEvent().isBookingAvailable()) {
 			throw new BookingException(BookingErrorCode.BOOKING_UNAVAILABLE);
 		}
 

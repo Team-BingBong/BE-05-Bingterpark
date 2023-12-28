@@ -39,12 +39,6 @@ public class EventTime extends BaseEntity {
 	@Column(name = "end_time")
 	private LocalDateTime endTime;
 
-	@Column(name = "booking_started_at")
-	private LocalDateTime bookingStartedAt;
-
-	@Column(name = "booking_ended_at")
-	private LocalDateTime bookingEndedAt;
-
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "event_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
 	private Event event;
@@ -59,10 +53,5 @@ public class EventTime extends BaseEntity {
 	public void updateEventTime(LocalDateTime startTime, LocalDateTime endTime) {
 		this.startTime = startTime;
 		this.endTime = endTime;
-	}
-
-	public boolean isBookingAvailable() {
-		LocalDateTime now = LocalDateTime.now();
-		return now.isAfter(bookingStartedAt) && now.isBefore(bookingEndedAt);
 	}
 }
