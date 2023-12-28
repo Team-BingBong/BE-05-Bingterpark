@@ -21,5 +21,7 @@ public class TossPaymentConfig {
 	@Value("${payment.fail_url}")
 	private String failUrl;
 
-	public static final String URL = "https://api.tosspayments.com/v1/payments/confirm";
+	public static final String TOSS_CONFIRM_URL = "https://api.tosspayments.com/v1/payments/confirm";
+
+	public static final String TOSS_ORIGIN_URL = "https://api.tosspayments.com/v1/payments/";
 }
