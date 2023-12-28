@@ -47,7 +47,7 @@ public class SeatService { //TODO: 테스트 코드 작성
 		EventSeat seat = getSeat(seatId);
 
 		if (seat.isBooked()) {
-			throw new BookingException(BookingErrorCode.SEAT_BOOKED);
+			throw new BookingException(BookingErrorCode.SEAT_ALREADY_BOOKED);
 		}
 
 		seat.updateStatus(EventSeatStatus.BEING_BOOKED);

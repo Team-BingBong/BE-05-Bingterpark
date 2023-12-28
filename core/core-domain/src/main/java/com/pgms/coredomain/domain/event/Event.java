@@ -112,7 +112,7 @@ public class Event extends BaseEntity {
 		this.averageScore = averageScore;
 	}
 
-	public boolean isBookingAvailable() {
+	public boolean isBookable() {
 		LocalDateTime now = LocalDateTime.now();
 		return now.isAfter(bookingStartedAt) && now.isBefore(bookingEndedAt);
 	}

@@ -19,8 +19,8 @@ public record PaymentCreateRequest(
 	@NotNull
 	Long timeId,
 
-	@NotNull
-	@NotEmpty
+	@NotNull(message = "[공연 좌석] 선택은 필수입니다.")
+	@NotEmpty(message = "[공연 좌석] 선택은 필수입니다.")
 	List<Long> seatIds,
 
 	@NotNull(message = "[수령 방법] 선택은 필수입니다.")
