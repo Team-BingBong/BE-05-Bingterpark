@@ -5,3 +5,16 @@ spring:
 
 server:
   port: 8080
+
+cloud:
+  aws:
+    s3:
+      bucket: bingterparkbucket
+    credentials:
+      access-key: <access-key 입력>
+      secret-key: <secret-key 입력> # 노출되면 안되는 값
+    region:
+      static: ap-northeast-2
+      auto: false
+    stack:
+      auto: false
