@@ -15,7 +15,6 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/v1/members")
 @RequiredArgsConstructor
 public class MemberController {
-	private static final Long TEMP_CURRENT_ID = 1L;
 
 	private final MemberService memberService;
 
@@ -23,5 +22,11 @@ public class MemberController {
 	public ResponseEntity<ApiResponse<MemberDetailGetResponse>> getMyInfo(Long memberId) {
 		// TODO: 현재 로그인한 사용자의 ID를 가져오는 어노테이션 필요 (security)
 		return ResponseEntity.ok(ApiResponse.ok(memberService.getMemberDetail(memberId)));
+	}
+
+	@GetMapping("/me/verify-password")
+	public ResponseEntity<Void> verifyPassword(Long memberId, String password) {
+		memberService.verifyPassword(memberId, password);
+		return ResponseEntity.noContent().build();
 	}
 }

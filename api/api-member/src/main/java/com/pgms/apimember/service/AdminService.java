@@ -96,7 +96,7 @@ public class AdminService {
 
 	private void validatePasswordConfirmMatch(String password, String passwordConfirm) {
 		if (!password.equals(passwordConfirm)) {
-			throw new AdminException(NOT_MATCH_PASSWORD_CONFIRM);
+			throw new AdminException(PASSWORD_CONFIRM_NOT_MATCHED);
 		}
 	}
 
