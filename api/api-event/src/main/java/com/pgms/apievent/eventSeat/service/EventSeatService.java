@@ -79,6 +79,7 @@ public class EventSeatService {
         return eventSeatResponses;
     }
 
+    @Transactional(readOnly = true)
     public List<LeftEventSeatResponse> getLeftEventSeatNumberByEventTime(Long id) {
         EventTime eventTime = eventTimeRepository.findById(id)
                 .orElseThrow(() -> new CustomException(EVENT_TIME_NOT_FOUND));
