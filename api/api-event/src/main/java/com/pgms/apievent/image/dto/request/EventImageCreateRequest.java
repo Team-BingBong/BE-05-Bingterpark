@@ -4,6 +4,5 @@ import java.util.List;
 
 import org.springframework.web.multipart.MultipartFile;
 
-public record EventImageCreateRequest(
-	List<MultipartFile> eventImages) {
+public record EventImageCreateRequest(List<MultipartFile> eventImages) {
 }

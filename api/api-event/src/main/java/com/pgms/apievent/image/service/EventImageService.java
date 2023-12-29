@@ -12,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.pgms.apievent.exception.CustomException;
-import com.pgms.apievent.image.dto.request.EventImageAddRequest;
 import com.pgms.apievent.image.dto.request.EventImageCreateRequest;
 import com.pgms.apievent.image.dto.request.ThumbnailUpdateRequest;
 import com.pgms.apievent.util.ImageUtil;
@@ -32,38 +31,32 @@ public class EventImageService {
 	private final EventRepository eventRepository;
 	private final EventImageRepository eventImageRepository;
 
-	public URL createThumbnail(MultipartFile thumbnail) {
+	public void createThumbnail(Long eventId, MultipartFile thumbnail) {
+		Event event = getEvent(eventId);
 		String storedFileName = extractExtAndGenerateUniqueName(thumbnail.getOriginalFilename());
-		return uploadThumbnailImageToServer(thumbnail, storedFileName);
+		URL url = uploadThumbnailImageToServer(thumbnail, storedFileName);
+		event.updateThumbnail(url.toString());
 	}
 
-	public void createEventDetailImages(Long eventId, EventImageCreateRequest request) {
+	public void addEventDetailImages(Long eventId, EventImageCreateRequest request) {
 		Event event = getEvent(eventId);
-		List<EventImage> eventImages = getEventImages(request.eventImages(), event);
+		List<EventImage> eventImages = getEventImagesAndUpload(request.eventImages(), event);
 		eventImageRepository.saveAll(eventImages);
 	}
 
 	public void updateThumbnail(Long eventId, ThumbnailUpdateRequest request) {
 		Event event = getEvent(eventId);
 		String storedFileName = extractExtAndGenerateUniqueName(request.thumbnail().getOriginalFilename());
-		event.updateThumbnail(storedFileName);
-		updateEventThumbnailFromS3(event.getThumbnail(), request.thumbnail(), storedFileName);
+		URL url = updateEventThumbnailFromS3(event.getThumbnail(), request.thumbnail(), storedFileName);
+		event.updateThumbnail(url.toString());
 	}
 
-	public void updateEventThumbnailFromS3(String eventThumbnail, MultipartFile file, String updateThumbnail) {
+	public URL updateEventThumbnailFromS3(String eventThumbnail, MultipartFile file, String updateThumbnail) {
 		if (!eventThumbnail.isBlank()) {
 			String fileName = eventThumbnail.substring(1);
 			s3Service.delete(fileName);
 		}
-		s3Service.upload(file, updateThumbnail);
-	}
-
-	public void addEventImages(Long id, EventImageAddRequest request) {
-		Event event = getEvent(id);
-		List<MultipartFile> addedImages = request.addedImages();
-		List<EventImage> eventImages = convertMultiPartFileToEventImages(addedImages, event);
-		uploadEventImagesToServer(eventImages, addedImages);
-		eventImageRepository.saveAll(eventImages);
+		return s3Service.upload(file, updateThumbnail);
 	}
 
 	public void removeEventImages(Long id, List<Long> removedImageIds) {
@@ -82,7 +75,7 @@ public class EventImageService {
 		return s3Service.upload(file, storedFileName);
 	}
 
-	private List<EventImage> getEventImages(List<MultipartFile> multipartFiles, Event event) {
+	private List<EventImage> getEventImagesAndUpload(List<MultipartFile> multipartFiles, Event event) {
 		if (multipartFiles != null) {
 			List<EventImage> eventImages = convertMultiPartFileToEventImages(multipartFiles, event);
 			uploadEventImagesToServer(eventImages, multipartFiles);

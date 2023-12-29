@@ -2,7 +2,6 @@ package com.pgms.apievent.event.service;
 
 import static com.pgms.apievent.exception.EventErrorCode.*;
 
-import java.net.URL;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -41,8 +40,7 @@ public class EventService {
 		EventHall eventHall = getEventHall(request.eventHallId());
 		validateDuplicateEvent(request.title());
 
-		URL thumbnail = eventImageService.createThumbnail(request.thumbnail());
-		Event event = request.toEntity(eventHall, thumbnail.toString());
+		Event event = request.toEntity(eventHall);
 		eventRepository.save(event);
 		return EventResponse.of(event);
 	}

@@ -43,7 +43,7 @@ public record EventCreateRequest(
 	@NotNull(message = "이벤트 홀 ID는 필수 입력값 입니다.")
 	Long eventHallId
 ) {
-	public Event toEntity(EventHall eventHall, String thumbnail) {
+	public Event toEntity(EventHall eventHall) {
 		return Event.builder()
 			.title(title)
 			.description(description)
@@ -52,7 +52,7 @@ public record EventCreateRequest(
 			.endedAt(endDate)
 			.rating(rating)
 			.genreType(genreType)
-			.thumbnail(thumbnail)
+			.thumbnail("defaultThumbnail.jpg")
 			.eventHall(eventHall)
 			.build();
 	}
