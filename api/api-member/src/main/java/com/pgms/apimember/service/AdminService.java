@@ -35,7 +35,7 @@ public class AdminService {
 
 	// 슈퍼 관리자 기능
 	public Long createAdmin(AdminCreateRequest requestDto) {
-		validatePasswordConfirmMatch(requestDto.password(), requestDto.passwordConfirm());
+		validatePasswordAndConfirm(requestDto.password(), requestDto.passwordConfirm());
 
 		if (isAdminExistsByEmail(requestDto.email()))
 			throw new AdminException(DUPLICATED_ADMIN_EMAIL);
@@ -52,7 +52,7 @@ public class AdminService {
 	}
 
 	public void updateAdmin(Long adminId, AdminUpdateRequest requestDto) {
-		validatePasswordConfirmMatch(requestDto.password(), requestDto.passwordConfirm());
+		validatePasswordAndConfirm(requestDto.password(), requestDto.passwordConfirm());
 
 		final Admin admin = adminRepository.findByIdWithRole(adminId)
 			.orElseThrow(() -> new AdminException(ADMIN_NOT_FOUND));
@@ -94,7 +94,7 @@ public class AdminService {
 		return adminRepository.existsByEmail(email);
 	}
 
-	private void validatePasswordConfirmMatch(String password, String passwordConfirm) {
+	private void validatePasswordAndConfirm(String password, String passwordConfirm) {
 		if (!password.equals(passwordConfirm)) {
 			throw new AdminException(PASSWORD_CONFIRM_NOT_MATCHED);
 		}
