@@ -86,7 +86,7 @@ public class EventSeatService {
         return eventSeatCustomRepository.getLeftEventSeatNumberByEventTime(eventTime)
                 .stream()
                 .map(leftEventSeatNumDto ->
-                        new LeftEventSeatResponse(leftEventSeatNumDto.eventSeatArea().getSeatAreaType(), leftEventSeatNumDto.leftSeatNumber()))
+                        new LeftEventSeatResponse(leftEventSeatNumDto.getEventSeatArea().getSeatAreaType(), leftEventSeatNumDto.getLeftSeatNumber()))
                 .toList();
     }
 }
