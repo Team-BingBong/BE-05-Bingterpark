@@ -42,6 +42,7 @@ class EventSeatServiceTest {
 
     @BeforeEach
     void setUp() {
+        eventSeatRepository.deleteAll();
         eventHall = EventHallFactory.createEventHall();
         eventHallRepository.save(eventHall);
         event = eventRepository.save(EventFactory.createEvent(eventHall));
