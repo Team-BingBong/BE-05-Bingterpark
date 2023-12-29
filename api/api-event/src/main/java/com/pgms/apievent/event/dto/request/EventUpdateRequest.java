@@ -3,7 +3,6 @@ package com.pgms.apievent.event.dto.request;
 import java.time.LocalDateTime;
 
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.pgms.coredomain.domain.event.GenreType;
 
@@ -36,9 +35,6 @@ public record EventUpdateRequest(
 
 	@Nullable
 	GenreType genreType,
-
-	@Nullable
-	MultipartFile thumbnail,
 
 	@Nullable
 	@DateTimeFormat(pattern = "yyyy-MM-dd")

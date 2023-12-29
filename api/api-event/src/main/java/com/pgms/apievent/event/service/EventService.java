@@ -1,7 +1,6 @@
 package com.pgms.apievent.event.service;
 
 import static com.pgms.apievent.exception.EventErrorCode.*;
-import static com.pgms.apievent.util.ImageUtil.*;
 
 import java.net.URL;
 import java.util.List;
@@ -58,10 +57,6 @@ public class EventService {
 		Event event = getEvent(id);
 		EventEdit eventEdit = getEventEdit(request);
 		event.updateEvent(eventEdit);
-
-		String storedFileName = extractExtAndGenerateUniqueName(request.thumbnail().getOriginalFilename());
-		event.updateThumbnail(storedFileName);
-		eventImageService.updateEventThumbnailFromS3(event.getThumbnail(), request.thumbnail(), storedFileName);
 		return EventResponse.of(event);
 	}
 

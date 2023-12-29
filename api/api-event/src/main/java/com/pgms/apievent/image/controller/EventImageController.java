@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.pgms.apievent.image.dto.request.EventImageAddRequest;
 import com.pgms.apievent.image.dto.request.EventImageCreateRequest;
+import com.pgms.apievent.image.dto.request.ThumbnailUpdateRequest;
 import com.pgms.apievent.image.service.EventImageService;
 
 import lombok.RequiredArgsConstructor;
@@ -28,8 +29,15 @@ public class EventImageController {
 	public ResponseEntity<Void> createEventImages(
 		@PathVariable Long eventId,
 		@ModelAttribute EventImageCreateRequest request) {
-
 		eventImageService.createEventDetailImages(eventId, request);
+		return ResponseEntity.noContent().build();
+	}
+
+	@PostMapping("/{eventId}/thumbnail")
+	public ResponseEntity<Void> updateEventThumbnail(
+		@PathVariable Long eventId,
+		@ModelAttribute ThumbnailUpdateRequest request) {
+		eventImageService.updateThumbnail(eventId, request);
 		return ResponseEntity.noContent().build();
 	}
 

@@ -14,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.pgms.apievent.exception.CustomException;
 import com.pgms.apievent.image.dto.request.EventImageAddRequest;
 import com.pgms.apievent.image.dto.request.EventImageCreateRequest;
+import com.pgms.apievent.image.dto.request.ThumbnailUpdateRequest;
 import com.pgms.apievent.util.ImageUtil;
 import com.pgms.coredomain.domain.event.Event;
 import com.pgms.coredomain.domain.event.EventImage;
@@ -37,14 +38,16 @@ public class EventImageService {
 	}
 
 	public void createEventDetailImages(Long eventId, EventImageCreateRequest request) {
-		Event event = eventRepository.findById(eventId)
-			.orElseThrow(() -> new CustomException(EVENT_NOT_FOUND));
+		Event event = getEvent(eventId);
 		List<EventImage> eventImages = getEventImages(request.eventImages(), event);
 		eventImageRepository.saveAll(eventImages);
 	}
 
-	private URL uploadThumbnailImageToServer(MultipartFile file, String storedFileName) {
-		return s3Service.upload(file, storedFileName);
+	public void updateThumbnail(Long eventId, ThumbnailUpdateRequest request) {
+		Event event = getEvent(eventId);
+		String storedFileName = extractExtAndGenerateUniqueName(request.thumbnail().getOriginalFilename());
+		event.updateThumbnail(storedFileName);
+		updateEventThumbnailFromS3(event.getThumbnail(), request.thumbnail(), storedFileName);
 	}
 
 	public void updateEventThumbnailFromS3(String eventThumbnail, MultipartFile file, String updateThumbnail) {
@@ -56,9 +59,7 @@ public class EventImageService {
 	}
 
 	public void addEventImages(Long id, EventImageAddRequest request) {
-		Event event = eventRepository.findById(id)
-			.orElseThrow(() -> new CustomException(EVENT_NOT_FOUND));
-
+		Event event = getEvent(id);
 		List<MultipartFile> addedImages = request.addedImages();
 		List<EventImage> eventImages = convertMultiPartFileToEventImages(addedImages, event);
 		uploadEventImagesToServer(eventImages, addedImages);
@@ -66,12 +67,19 @@ public class EventImageService {
 	}
 
 	public void removeEventImages(Long id, List<Long> removedImageIds) {
-		eventRepository.findById(id)
-			.orElseThrow(() -> new CustomException(EVENT_NOT_FOUND));
-
+		getEvent(id);
 		List<EventImage> removedImages = eventImageRepository.findByIdIn(removedImageIds);
 		deleteEventImagesFromServer(removedImages);
 		eventImageRepository.deleteAllByIdIn(removedImageIds);
+	}
+
+	private Event getEvent(Long eventId) {
+		return eventRepository.findById(eventId)
+			.orElseThrow(() -> new CustomException(EVENT_NOT_FOUND));
+	}
+
+	private URL uploadThumbnailImageToServer(MultipartFile file, String storedFileName) {
+		return s3Service.upload(file, storedFileName);
 	}
 
 	private List<EventImage> getEventImages(List<MultipartFile> multipartFiles, Event event) {
