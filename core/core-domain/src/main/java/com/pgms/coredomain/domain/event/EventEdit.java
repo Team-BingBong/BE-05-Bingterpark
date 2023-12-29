@@ -13,7 +13,6 @@ public record EventEdit(
 	LocalDateTime endDate,
 	String rating,
 	GenreType genreType,
-	String thumbnail,
 	EventHall eventHall
 ) {
 }

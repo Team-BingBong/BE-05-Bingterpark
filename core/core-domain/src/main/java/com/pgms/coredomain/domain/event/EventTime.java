@@ -33,25 +33,25 @@ public class EventTime extends BaseEntity {
 	@Column(name = "round")
 	private int round;
 
-	@Column(name = "start_time")
-	private LocalDateTime startTime;
+	@Column(name = "started_at")
+	private LocalDateTime startedAt;
 
-	@Column(name = "end_time")
-	private LocalDateTime endTime;
+	@Column(name = "ended_at")
+	private LocalDateTime endedAt;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "event_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
 	private Event event;
 
-	public EventTime(int round, LocalDateTime startTime, LocalDateTime endTime, Event event) {
+	public EventTime(int round, LocalDateTime startTime, LocalDateTime endedAt, Event event) {
 		this.round = round;
-		this.startTime = startTime;
-		this.endTime = endTime;
+		this.startedAt = startTime;
+		this.endedAt = endedAt;
 		this.event = event;
 	}
 
 	public void updateEventTime(LocalDateTime startTime, LocalDateTime endTime) {
-		this.startTime = startTime;
-		this.endTime = endTime;
+		this.startedAt = startTime;
+		this.endedAt = endTime;
 	}
 }
