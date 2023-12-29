@@ -35,7 +35,7 @@ public class AdminService {
 
 	// 슈퍼 관리자 기능
 	public Long createAdmin(AdminCreateRequest requestDto) {
-		checkPasswordMatched(requestDto.password(), requestDto.passwordConfirm());
+		validatePasswordConfirmMatch(requestDto.password(), requestDto.passwordConfirm());
 
 		if (isAdminExistsByEmail(requestDto.email()))
 			throw new AdminException(DUPLICATED_ADMIN_EMAIL);
@@ -52,9 +52,9 @@ public class AdminService {
 	}
 
 	public void updateAdmin(Long adminId, AdminUpdateRequest requestDto) {
-		checkPasswordMatched(requestDto.password(), requestDto.passwordConfirm());
+		validatePasswordConfirmMatch(requestDto.password(), requestDto.passwordConfirm());
 
-		final Admin admin = adminRepository.findById(adminId)
+		final Admin admin = adminRepository.findByIdWithRole(adminId)
 			.orElseThrow(() -> new AdminException(ADMIN_NOT_FOUND));
 
 		final Role role = getRole(requestDto.roleName());
@@ -76,7 +76,7 @@ public class AdminService {
 
 	@Transactional(readOnly = true)
 	public AdminGetResponse getAdmin(Long adminId) {
-		final Admin admin = adminRepository.findById(adminId)
+		final Admin admin = adminRepository.findByIdWithRole(adminId)
 			.orElseThrow(() -> new AdminException(ADMIN_NOT_FOUND));
 		return AdminGetResponse.from(admin);
 	}
@@ -94,14 +94,13 @@ public class AdminService {
 		return adminRepository.existsByEmail(email);
 	}
 
-	private void checkPasswordMatched(String password, String passwordConfirm) {
+	private void validatePasswordConfirmMatch(String password, String passwordConfirm) {
 		if (!password.equals(passwordConfirm)) {
 			throw new AdminException(NOT_MATCH_PASSWORD_CONFIRM);
 		}
 	}
 
 	private Role getRole(String roleName) {
-		// return null; // 테스트용
 		return roleRepository.findByName(roleName)
 			.orElseThrow(() -> new AdminException(ADMIN_ROLE_NOT_FOUND));
 	}
