@@ -40,6 +40,14 @@ public record EventUpdateRequest(
 	String thumbnail,
 
 	@Nullable
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+	LocalDateTime bookingStartedAt,
+
+	@Nullable
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+	LocalDateTime bookingEndedAt,
+
+	@Nullable
 	Long eventHallId
 ) {
 }

@@ -64,6 +64,12 @@ public class Event extends BaseEntity {
 	@Column(name = "thumbnail")
 	private String thumbnail;
 
+	@Column(name = "booking_started_at", nullable = false)
+	private LocalDateTime bookingStartedAt;
+
+	@Column(name = "booking_ended_at", nullable = false)
+	private LocalDateTime bookingEndedAt;
+
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "event_hall_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
 	private EventHall eventHall;
@@ -78,6 +84,8 @@ public class Event extends BaseEntity {
 		String rating,
 		GenreType genreType,
 		String thumbnail,
+		LocalDateTime bookingStartedAt,
+		LocalDateTime bookingEndedAt,
 		EventHall eventHall) {
 		this.title = title;
 		this.description = description;
@@ -87,6 +95,8 @@ public class Event extends BaseEntity {
 		this.rating = rating;
 		this.genreType = genreType;
 		this.thumbnail = thumbnail;
+		this.bookingStartedAt = bookingStartedAt;
+		this.bookingEndedAt = bookingEndedAt;
 		this.eventHall = eventHall;
 	}
 
@@ -99,10 +109,17 @@ public class Event extends BaseEntity {
 		this.rating = eventEdit.rating();
 		this.genreType = eventEdit.genreType();
 		this.thumbnail = eventEdit.thumbnail();
+		this.bookingStartedAt = eventEdit.bookingStartedAt();
+		this.bookingEndedAt = eventEdit.bookingEndedAt();
 		this.eventHall = eventEdit.eventHall();
 	}
 
 	public void updateAverageScore(Double averageScore) {
 		this.averageScore = averageScore;
+	}
+
+	public boolean isBookable() {
+		LocalDateTime now = LocalDateTime.now();
+		return now.isAfter(bookingStartedAt) && now.isBefore(bookingEndedAt);
 	}
 }
