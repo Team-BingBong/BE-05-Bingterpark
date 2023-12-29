@@ -21,8 +21,8 @@ public class EventSeatController {
 
     @PostMapping("/events/{id}")
     public ResponseEntity<Void> createEventSeats(@PathVariable Long id,
-                                                 @RequestBody EventSeatsCreateRequest eventSeatsCreateRequest){
-        eventSeatService.createEventSeats(id, eventSeatsCreateRequest);
+                                                 @RequestBody List<EventSeatsCreateRequest> eventSeatsCreateRequests){
+        eventSeatService.createEventSeats(id, eventSeatsCreateRequests);
         return ResponseEntity.noContent().build();
     }
 

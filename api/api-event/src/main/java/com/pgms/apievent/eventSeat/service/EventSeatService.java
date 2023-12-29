@@ -30,15 +30,14 @@ public class EventSeatService {
     private final EventSeatAreaRepository eventSeatAreaRepository;
     private final EventSeatCustomRepository eventSeatCustomRepository;
 
-    public void createEventSeats(Long id, EventSeatsCreateRequest eventSeatsCreateRequest) {
+    public void createEventSeats(Long id, List<EventSeatsCreateRequest> eventSeatsCreateRequests) {
         Event event = eventRepository.findById(id)
                 .orElseThrow(() -> new CustomException(EVENT_NOT_FOUND));
         List<EventTime> eventTimes = eventTimeRepository.findEventTimesByEvent(event);
 
         List<List<EventSeat>> eventSeatsByEventTimes = eventTimes.stream()
                 .map(eventTime ->
-                        eventSeatsCreateRequest
-                                .requests()
+                        eventSeatsCreateRequests
                                 .stream()
                                 .map(request -> EventSeat.builder()
                                         .eventTime(eventTime)
