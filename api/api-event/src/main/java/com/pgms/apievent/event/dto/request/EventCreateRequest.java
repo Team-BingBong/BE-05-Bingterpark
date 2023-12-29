@@ -3,6 +3,7 @@ package com.pgms.apievent.event.dto.request;
 import java.time.LocalDateTime;
 
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.pgms.coredomain.domain.event.Event;
 import com.pgms.coredomain.domain.event.EventHall;
@@ -37,19 +38,18 @@ public record EventCreateRequest(
 	@NotNull(message = "공연 장르 타입은 필수 입력값 입니다.")
 	GenreType genreType,
 
-	// TODO : MultipartFile로 입력 받도록 수정 , S3 연동 및 이미지 파일 Url로 변환 로직 추가 해야함
-	String thumbnail,
+	MultipartFile thumbnail,
 
 	@NotNull(message = "이벤트 홀 ID는 필수 입력값 입니다.")
 	Long eventHallId
 ) {
-	public Event toEntity(EventHall eventHall) {
+	public Event toEntity(EventHall eventHall, String thumbnail) {
 		return Event.builder()
 			.title(title)
 			.description(description)
 			.runningTime(runningTime)
-			.startDate(startDate)
-			.endDate(endDate)
+			.startedAt(startDate)
+			.endedAt(endDate)
 			.rating(rating)
 			.genreType(genreType)
 			.thumbnail(thumbnail)
