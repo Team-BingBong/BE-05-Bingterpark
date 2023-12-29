@@ -35,13 +35,13 @@ public record PaymentCreateRequest(
 	@Valid
 	Optional<DeliveryAddress> deliveryAddress,
 
-	@NotNull(message = "[결제 수단] 선택은 필수입니다.")
-	PaymentMethod method
+	@NotBlank(message = "[결제 수단] 선택은 필수입니다.")
+	String method
 ) {
 
 	public Payment toEntity(Booking booking) {
 		return Payment.builder()
-			.method(method)
+			.method(PaymentMethod.fromDescription(method))
 			.booking(booking)
 			.amount(booking.getAmount())
 			.status(PaymentStatus.WAITING_FOR_DEPOSIT)
