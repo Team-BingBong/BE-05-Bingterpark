@@ -2,8 +2,6 @@ package com.pgms.apibooking.service;
 
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Base64;
 import java.util.Collections;
 
@@ -20,11 +18,14 @@ import com.pgms.apibooking.dto.request.PaymentCancelRequest;
 import com.pgms.apibooking.dto.request.PaymentConfirmRequest;
 import com.pgms.apibooking.dto.request.PaymentCreateRequest;
 import com.pgms.apibooking.dto.response.PaymentCancelResponse;
+import com.pgms.apibooking.dto.response.PaymentCardResponse;
 import com.pgms.apibooking.dto.response.PaymentCreateResponse;
 import com.pgms.apibooking.dto.response.PaymentFailResponse;
 import com.pgms.apibooking.dto.response.PaymentSuccessResponse;
+import com.pgms.apibooking.dto.response.PaymentVirtualResponse;
 import com.pgms.apibooking.exception.BookingErrorCode;
 import com.pgms.apibooking.exception.BookingException;
+import com.pgms.apibooking.util.DateTimeUtil;
 import com.pgms.coredomain.domain.booking.Booking;
 import com.pgms.coredomain.domain.booking.BookingStatus;
 import com.pgms.coredomain.domain.booking.Payment;
@@ -32,9 +33,11 @@ import com.pgms.coredomain.domain.booking.repository.BookingRepository;
 import com.pgms.coredomain.domain.booking.repository.PaymentRepository;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Transactional
+@Slf4j
 @RequiredArgsConstructor
 public class PaymentService {
 
@@ -62,15 +65,27 @@ public class PaymentService {
 		PaymentSuccessResponse response = requestPaymentConfirmation(paymentKey, bookingId, amount);
 
 		switch (payment.getMethod()) {
-			case CARD -> payment.updateCardInfo(response.card().number(), response.card().installmentPlanMonths(),
-				response.card().isInterestFree());
-			case VIRTUAL_ACCOUNT -> System.out.println("아직 안함");
+			case CARD -> {
+				PaymentCardResponse card = response.card();
+				payment.updateCardInfo(
+					card.number(),
+					card.installmentPlanMonths(),
+					card.isInterestFree()
+				);
+				payment.updateCardSuccess(DateTimeUtil.parse(response.approvedAt()));
+			}
+			case VIRTUAL_ACCOUNT -> {
+				PaymentVirtualResponse virtualAccount = response.virtualAccount();
+				payment.updateVirtualWaiting(
+					virtualAccount.accountNumber(),
+					virtualAccount.bankCode(),
+					virtualAccount.customerName(),
+					DateTimeUtil.parse(virtualAccount.dueDate())
+				);
+			}
 			default -> throw new BookingException(BookingErrorCode.INVALID_PAYMENT_METHOD);
 		}
-
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXXX");
-		payment.updateConfirmInfo(paymentKey, LocalDateTime.parse(response.approvedAt(), formatter),
-			LocalDateTime.parse(response.requestedAt(), formatter));
+		payment.updateConfirmInfo(paymentKey, DateTimeUtil.parse(response.requestedAt()));
 		booking.updateStatus(BookingStatus.PAYMENT_COMPLETED);
 
 		return response;
@@ -93,6 +108,7 @@ public class PaymentService {
 		} catch (HttpClientErrorException e) {
 			throw new BookingException(BookingErrorCode.TOSS_PAYMENTS_ERROR);
 		} catch (Exception e) {
+			log.warn(e.getMessage());
 			throw new BookingException(BookingErrorCode.INTERNAL_SERVER_ERROR);
 		}
 	}
@@ -113,10 +129,10 @@ public class PaymentService {
 			return restTemplate.postForObject(
 				uri, new HttpEntity<>(request, headers), PaymentCancelResponse.class);
 		} catch (Exception e) {
+			log.warn(e.getMessage());
 			throw new BookingException(BookingErrorCode.INTERNAL_SERVER_ERROR);
 		}
 	}
-
 
 	private Payment getPaymentByPaymentKey(String paymentKey) {
 		return paymentRepository.findByPaymentKey(paymentKey)
