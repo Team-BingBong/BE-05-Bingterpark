@@ -57,11 +57,11 @@ public class EventService {
 	public EventResponse updateEvent(Long id, EventUpdateRequest request) {
 		Event event = getEvent(id);
 		EventEdit eventEdit = getEventEdit(request);
-
 		event.updateEvent(eventEdit);
 
 		String storedFileName = extractExtAndGenerateUniqueName(request.thumbnail().getOriginalFilename());
-		eventImageService.updateEventThumbnail(event, request.thumbnail(), storedFileName);
+		event.updateThumbnail(storedFileName);
+		eventImageService.updateEventThumbnailFromS3(event.getThumbnail(), request.thumbnail(), storedFileName);
 		return EventResponse.of(event);
 	}
 
@@ -87,6 +87,8 @@ public class EventService {
 			.endDate(request.endDate())
 			.rating(request.rating())
 			.genreType(request.genreType())
+			.bookingStartedAt(request.bookingStartedAt())
+			.bookingEndedAt(request.bookingEndedAt())
 			.eventHall(eventHall)
 			.build();
 	}

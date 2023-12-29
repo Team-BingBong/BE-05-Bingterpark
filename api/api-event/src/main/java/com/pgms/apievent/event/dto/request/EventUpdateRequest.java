@@ -41,6 +41,14 @@ public record EventUpdateRequest(
 	MultipartFile thumbnail,
 
 	@Nullable
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+	LocalDateTime bookingStartedAt,
+
+	@Nullable
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+	LocalDateTime bookingEndedAt,
+
+	@Nullable
 	Long eventHallId
 ) {
 }

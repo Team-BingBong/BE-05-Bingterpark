@@ -18,6 +18,8 @@ public class EventFactory {
 			.rating("12세 이상")
 			.genreType(GenreType.MUSICAL)
 			.thumbnail("thumbnail.jpg")
+			.bookingStartedAt(LocalDateTime.of(2023, 1, 1, 0, 0))
+			.bookingEndedAt(LocalDateTime.of(2023, 1, 1, 0, 0))
 			.eventHall(eventHall)
 			.build();
 	}

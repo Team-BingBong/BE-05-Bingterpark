@@ -47,12 +47,11 @@ public class EventImageService {
 		return s3Service.upload(file, storedFileName);
 	}
 
-	public void updateEventThumbnail(Event event, MultipartFile file, String updateThumbnail) {
-		if (!event.getThumbnail().isBlank()) {
-			String fileName = event.getThumbnail().substring(1);
+	public void updateEventThumbnailFromS3(String eventThumbnail, MultipartFile file, String updateThumbnail) {
+		if (!eventThumbnail.isBlank()) {
+			String fileName = eventThumbnail.substring(1);
 			s3Service.delete(fileName);
 		}
-		event.updateThumbnail(updateThumbnail);
 		s3Service.upload(file, updateThumbnail);
 	}
 

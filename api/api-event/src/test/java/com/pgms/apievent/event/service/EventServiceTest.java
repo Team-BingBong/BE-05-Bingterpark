@@ -39,6 +39,7 @@ class EventServiceTest {
 
 	@BeforeEach
 	void setUp() {
+		eventRepository.deleteAll();
 		eventHall = EventHallFactory.createEventHall();
 		eventHallRepository.save(eventHall);
 		event = eventRepository.save(EventFactory.createEvent(eventHall));
@@ -75,6 +76,8 @@ class EventServiceTest {
 			"15세 이상",
 			GenreType.MUSICAL,
 			"thumbnail.jpg",
+			LocalDateTime.of(2023, 2, 1, 0, 0),
+			LocalDateTime.of(2023, 2, 1, 0, 0),
 			eventHall.getId());
 
 		// When

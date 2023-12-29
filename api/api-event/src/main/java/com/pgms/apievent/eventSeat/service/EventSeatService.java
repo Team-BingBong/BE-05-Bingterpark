@@ -75,7 +75,7 @@ public class EventSeatService {
 
 	@Transactional(readOnly = true)
 	public List<EventSeatResponse> getEventSeatsByEventTime(Long id) {
-		List<EventSeat> eventSeats = eventSeatRepository.findAllWithAreaByEventTimeId(id);
+		List<EventSeat> eventSeats = eventSeatRepository.findAllWithAreaByTimeId(id);
 		return eventSeats.stream()
 			.map(EventSeatResponse::of)
 			.toList();
