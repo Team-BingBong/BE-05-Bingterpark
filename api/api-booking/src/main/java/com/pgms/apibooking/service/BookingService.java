@@ -5,12 +5,16 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.pgms.apibooking.config.TossPaymentConfig;
 import com.pgms.apibooking.dto.request.DeliveryAddress;
-import com.pgms.apibooking.dto.request.PaymentCreateRequest;
+import com.pgms.apibooking.dto.request.BookingCreateRequest;
+import com.pgms.apibooking.dto.response.BookingCreateResponse;
 import com.pgms.apibooking.exception.BookingErrorCode;
 import com.pgms.apibooking.exception.BookingException;
 import com.pgms.coredomain.domain.booking.Booking;
 import com.pgms.coredomain.domain.booking.BookingStatus;
+import com.pgms.coredomain.domain.booking.Payment;
+import com.pgms.coredomain.domain.booking.PaymentStatus;
 import com.pgms.coredomain.domain.booking.ReceiptType;
 import com.pgms.coredomain.domain.booking.repository.BookingRepository;
 import com.pgms.coredomain.domain.event.EventSeat;
@@ -30,9 +34,10 @@ public class BookingService {
 	private final BookingRepository bookingRepository;
 	private final EventTimeRepository eventTimeRepository;
 	private final EventSeatRepository eventSeatRepository;
+	private final TossPaymentConfig tossPaymentConfig;
 
 	//TODO: 테스트 코드 작성
-	public Booking createBooking(PaymentCreateRequest request) {
+	public BookingCreateResponse createBooking(BookingCreateRequest request) {
 		EventTime time = getBookableTimeWithEvent(request.timeId());
 		List<EventSeat> seats = geBookableSeatsWithArea(request.timeId(), request.seatIds());
 		validateDeliveryAddress(request.receiptType(), request.deliveryAddress().orElse(null));
@@ -63,15 +68,22 @@ public class BookingService {
 		seats.forEach(seat -> booking.addTicket(
 			Ticket.builder()
 				.eventSeat(seat)
-				.booking(booking)
 				.build())
+		);
+
+		booking.updatePayment(
+			Payment.builder()
+				.method(request.method())
+				.amount(booking.getAmount())
+				.status(PaymentStatus.WAITING_FOR_DEPOSIT)
+				.build()
 		);
 
 		bookingRepository.save(booking);
 
 		seats.forEach(seat -> seat.updateStatus(EventSeatStatus.BOOKED));
 
-		return booking;
+		return BookingCreateResponse.of(booking, tossPaymentConfig.getSuccessUrl(), tossPaymentConfig.getFailUrl());
 	}
 
 	private EventTime getBookableTimeWithEvent(Long timeId) {
