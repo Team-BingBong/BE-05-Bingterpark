@@ -14,6 +14,7 @@ import com.pgms.apibooking.dto.response.BookingCreateResponse;
 import com.pgms.apibooking.service.BookingService;
 import com.pgms.coredomain.response.ApiResponse;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -26,10 +27,12 @@ public class BookingController {
 
 	@PostMapping
 	public ResponseEntity<ApiResponse<BookingCreateResponse>> createBooking(
-		@RequestBody @Valid BookingCreateRequest request) {
+		@RequestBody @Valid BookingCreateRequest request,
+		HttpServletRequest httpRequest) {
 		BookingCreateResponse response = bookingService.createBooking(request);
 		URI location = UriComponentsBuilder
-			.fromPath("/api/v1/bookings/{bookingId}")
+			.fromHttpUrl(httpRequest.getRequestURL().toString())
+			.path("/{id}")
 			.buildAndExpand(response.bookingId())
 			.toUri();
 		return ResponseEntity.created(location).body(ApiResponse.created(response));
