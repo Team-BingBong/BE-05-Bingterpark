@@ -5,18 +5,18 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.pgms.apibooking.config.TossPaymentConfig;
+import com.pgms.apibooking.dto.request.BookingCreateRequest;
 import com.pgms.apibooking.dto.request.DeliveryAddress;
-import com.pgms.apibooking.dto.request.PaymentCreateRequest;
+import com.pgms.apibooking.dto.response.BookingCreateResponse;
 import com.pgms.apibooking.exception.BookingErrorCode;
 import com.pgms.apibooking.exception.BookingException;
 import com.pgms.coredomain.domain.booking.Booking;
-import com.pgms.coredomain.domain.booking.BookingStatus;
 import com.pgms.coredomain.domain.booking.ReceiptType;
 import com.pgms.coredomain.domain.booking.repository.BookingRepository;
 import com.pgms.coredomain.domain.event.EventSeat;
 import com.pgms.coredomain.domain.event.EventSeatStatus;
 import com.pgms.coredomain.domain.event.EventTime;
-import com.pgms.coredomain.domain.event.Ticket;
 import com.pgms.coredomain.domain.event.repository.EventSeatRepository;
 import com.pgms.coredomain.domain.event.repository.EventTimeRepository;
 
@@ -30,48 +30,20 @@ public class BookingService {
 	private final BookingRepository bookingRepository;
 	private final EventTimeRepository eventTimeRepository;
 	private final EventSeatRepository eventSeatRepository;
+	private final TossPaymentConfig tossPaymentConfig;
 
 	//TODO: 테스트 코드 작성
-	public Booking createBooking(PaymentCreateRequest request) {
+	public BookingCreateResponse createBooking(BookingCreateRequest request) {
 		EventTime time = getBookableTimeWithEvent(request.timeId());
 		List<EventSeat> seats = geBookableSeatsWithArea(request.timeId(), request.seatIds());
 		validateDeliveryAddress(request.receiptType(), request.deliveryAddress().orElse(null));
 
-		Booking booking = Booking.builder()
-			.id(String.valueOf(System.currentTimeMillis()))
-			.bookingName(time.getEvent().getTitle() + " " + time.getRound())
-			.status(BookingStatus.WAITING_FOR_DEPOSIT)
-			.receiptType(request.receiptType())
-			.buyerName(request.buyerName())
-			.buyerPhoneNumber(request.buyerPhoneNumber())
-			.recipientName(request.deliveryAddress().isPresent()
-				? request.deliveryAddress().get().recipientName() : null)
-			.recipientPhoneNumber(request.deliveryAddress().isPresent()
-				? request.deliveryAddress().get().recipientPhoneNumber() : null)
-			.streetAddress(request.deliveryAddress().isPresent()
-				? request.deliveryAddress().get().streetAddress() : null)
-			.detailAddress(request.deliveryAddress().isPresent()
-				? request.deliveryAddress().get().detailAddress() : null)
-			.zipCode(request.deliveryAddress().isPresent()
-				? request.deliveryAddress().get().zipCode() : null)
-			.amount(seats.stream()
-				.map(seat -> seat.getEventSeatArea().getPrice())
-				.reduce(0, Integer::sum))
-			.member(null) //TODO: 인증된 멤버 지정
-			.build();
-
-		seats.forEach(seat -> booking.addTicket(
-			Ticket.builder()
-				.eventSeat(seat)
-				.booking(booking)
-				.build())
-		);
-
+		Booking booking = request.toEntity(time, seats, null); //TODO: 인증된 멤버 지정
 		bookingRepository.save(booking);
 
 		seats.forEach(seat -> seat.updateStatus(EventSeatStatus.BOOKED));
 
-		return booking;
+		return BookingCreateResponse.of(booking, tossPaymentConfig.getSuccessUrl(), tossPaymentConfig.getFailUrl());
 	}
 
 	private EventTime getBookableTimeWithEvent(Long timeId) {

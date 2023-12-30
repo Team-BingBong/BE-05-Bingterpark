@@ -17,68 +17,69 @@ import lombok.RequiredArgsConstructor;
 
 @Repository
 @RequiredArgsConstructor
-public class EventSeatCustomRepositoryImpl implements EventSeatCustomRepository {
+public class EventSeatCustomRepositoryImpl implements EventSeatCustomRepository{
 
-	private final JPAQueryFactory jpaQueryFactory;
-	private final EntityManager em;
+    private final JPAQueryFactory jpaQueryFactory;
+    private final EntityManager em;
 
-	@Override
-	public void updateEventSeatsSeatArea(Long[] ids, EventSeatArea eventSeatArea) {
-		QEventSeat qEventSeat = QEventSeat.eventSeat;
+    @Override
+    public void updateEventSeatsSeatArea(Long[] ids, EventSeatArea eventSeatArea) {
+        QEventSeat qEventSeat = QEventSeat.eventSeat;
 
-		jpaQueryFactory
-			.update(qEventSeat)
-			.set(qEventSeat.eventSeatArea, eventSeatArea)
-			.where(qEventSeat.id.in(ids))
-			.execute();
+        jpaQueryFactory
+                .update(qEventSeat)
+                .set(qEventSeat.eventSeatArea, eventSeatArea)
+                .where(qEventSeat.id.in(ids))
+                .execute();
 
-		// 벌크 연산 시 DB엔 반영, 영속성 컨텍스트에는 반영되지 않음
-		em.clear();
-	}
+        // 벌크 연산 시 DB엔 반영, 영속성 컨텍스트에는 반영되지 않음
+        em.clear();
+    }
 
-	@Override
-	public void updateEventSeatsStatus(Long[] ids, EventSeatStatus eventSeatStatus) {
-		QEventSeat qEventSeat = QEventSeat.eventSeat;
+    @Override
+    public void updateEventSeatsStatus(Long[] ids, EventSeatStatus eventSeatStatus) {
+        QEventSeat qEventSeat = QEventSeat.eventSeat;
 
-		jpaQueryFactory
-			.update(qEventSeat)
-			.set(qEventSeat.status, eventSeatStatus)
-			.where(qEventSeat.id.in(ids))
-			.execute();
+        jpaQueryFactory
+                .update(qEventSeat)
+                .set(qEventSeat.status, eventSeatStatus)
+                .where(qEventSeat.id.in(ids))
+                .execute();
 
-		// 벌크 연산 시 DB엔 반영, 영속성 컨텍스트에는 반영되지 않음
-		em.clear();
-	}
+        // 벌크 연산 시 DB엔 반영, 영속성 컨텍스트에는 반영되지 않음
+        em.clear();
+    }
 
-	@Override
-	public void deleteEventSeats(Long[] ids) {
-		QEventSeat qEventSeat = QEventSeat.eventSeat;
+    @Override
+    public void deleteEventSeats(Long[] ids) {
+        QEventSeat qEventSeat = QEventSeat.eventSeat;
 
-		jpaQueryFactory
-			.delete(qEventSeat)
-			.where(qEventSeat.id.in(ids))
-			.execute();
+        jpaQueryFactory
+                .delete(qEventSeat)
+                .where(qEventSeat.id.in(ids))
+                .execute();
 
-		// 벌크 연산 시 DB엔 반영, 영속성 컨텍스트에는 반영되지 않음
-		em.clear();
-	}
+        // 벌크 연산 시 DB엔 반영, 영속성 컨텍스트에는 반영되지 않음
+        em.clear();
+    }
 
-	@Override
-	public List<LeftEventSeatNumDto> getLeftEventSeatNumberByEventTime(EventTime eventTime) {
-		QEventSeat qEventSeat = QEventSeat.eventSeat;
+    @Override
+    public List<LeftEventSeatNumDto> getLeftEventSeatNumberByEventTime(EventTime eventTime) {
+        QEventSeat qEventSeat = QEventSeat.eventSeat;
 
-		return jpaQueryFactory
-			.select(
-				Projections.bean(
-					LeftEventSeatNumDto.class,
-					qEventSeat.eventSeatArea,
-					qEventSeat.count()
-				)
-			)
-			.from(qEventSeat)
-			.where(qEventSeat.eventTime.eq(eventTime),
-				qEventSeat.status.eq(EventSeatStatus.AVAILABLE))
-			.groupBy(qEventSeat.eventSeatArea)
-			.fetch();
-	}
+        return jpaQueryFactory
+                .select(
+                        Projections.bean(
+                                LeftEventSeatNumDto.class,
+                                qEventSeat.eventSeatArea,
+                                qEventSeat.count().as("leftSeatNumber")
+                        )
+
+                )
+                .from(qEventSeat)
+                .where(qEventSeat.eventTime.eq(eventTime),
+                        qEventSeat.status.eq(EventSeatStatus.AVAILABLE))
+                .groupBy(qEventSeat.eventSeatArea)
+                .fetch();
+    }
 }

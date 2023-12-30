@@ -114,6 +114,12 @@ public class Booking extends BaseEntity {
 
 	public void addTicket(Ticket ticket) {
 		this.tickets.add(ticket);
+		ticket.updateBooking(this);
+	}
+
+	public void updatePayment(Payment payment) {
+		this.payment = payment;
+		payment.updateBooking(this);
 	}
 
 	public void updateStatus(BookingStatus status) {
