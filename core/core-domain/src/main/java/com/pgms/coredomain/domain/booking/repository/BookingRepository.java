@@ -8,7 +8,7 @@ import org.springframework.data.repository.query.Param;
 
 import com.pgms.coredomain.domain.booking.Booking;
 
-public interface BookingRepository extends JpaRepository<Booking, Long> {
+public interface BookingRepository extends JpaRepository<Booking, String> {
 
 	@Query("SELECT b FROM Booking b JOIN FETCH b.payment WHERE b.id = :id")
 	Optional<Booking> findWithPaymentById(@Param("id") String id);

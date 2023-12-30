@@ -13,6 +13,7 @@ import com.pgms.apibooking.exception.BookingErrorCode;
 import com.pgms.apibooking.exception.BookingException;
 import com.pgms.coredomain.domain.booking.Booking;
 import com.pgms.coredomain.domain.booking.ReceiptType;
+import com.pgms.coredomain.domain.booking.repository.BookingCancelRepository;
 import com.pgms.coredomain.domain.booking.repository.BookingRepository;
 import com.pgms.coredomain.domain.event.EventSeat;
 import com.pgms.coredomain.domain.event.EventSeatStatus;
@@ -27,9 +28,10 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class BookingService {
 
-	private final BookingRepository bookingRepository;
 	private final EventTimeRepository eventTimeRepository;
 	private final EventSeatRepository eventSeatRepository;
+	private final BookingRepository bookingRepository;
+	private final BookingCancelRepository bookingCancelRepository;
 	private final TossPaymentConfig tossPaymentConfig;
 
 	//TODO: 테스트 코드 작성
@@ -77,5 +79,13 @@ public class BookingService {
 				throw new BookingException(BookingErrorCode.DELIVERY_ADDRESS_REQUIRED);
 			}
 		}
+	}
+
+	//TODO
+	public void cancelBooking(String id) {
+		// 공연 회차 시작 전인지 확인
+		// 결제된 좌석인지 확인
+		// 결제 취소
+		// 상태 변경
 	}
 }
