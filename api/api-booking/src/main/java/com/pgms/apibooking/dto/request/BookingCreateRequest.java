@@ -70,7 +70,7 @@ public record BookingCreateRequest(
 
 		seats.forEach(seat -> booking.addTicket(
 			Ticket.builder()
-				.eventSeat(seat)
+				.seat(seat)
 				.build())
 		);
 
