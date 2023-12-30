@@ -1,12 +1,5 @@
 package com.pgms.apievent.event.service;
 
-import static com.pgms.apievent.exception.EventErrorCode.*;
-
-import java.util.List;
-
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.pgms.apievent.event.dto.request.EventCreateRequest;
 import com.pgms.apievent.event.dto.request.EventSeatAreaCreateRequest;
 import com.pgms.apievent.event.dto.request.EventSeatAreaUpdateRequest;
@@ -15,7 +8,6 @@ import com.pgms.apievent.event.dto.response.EventResponse;
 import com.pgms.apievent.event.dto.response.EventSeatAreaResponse;
 import com.pgms.apievent.exception.CustomException;
 import com.pgms.apievent.exception.EventSeatAreaNotFoundException;
-import com.pgms.apievent.image.service.EventImageService;
 import com.pgms.coredomain.domain.event.Event;
 import com.pgms.coredomain.domain.event.EventEdit;
 import com.pgms.coredomain.domain.event.EventHall;
@@ -23,8 +15,15 @@ import com.pgms.coredomain.domain.event.EventSeatArea;
 import com.pgms.coredomain.domain.event.repository.EventHallRepository;
 import com.pgms.coredomain.domain.event.repository.EventRepository;
 import com.pgms.coredomain.domain.event.repository.EventSeatAreaRepository;
-
+import com.pgms.coreinfraes.document.EventDocument;
+import com.pgms.coreinfraes.repository.EventSearchRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+import static com.pgms.apievent.exception.EventErrorCode.*;
 
 @Service
 @Transactional
@@ -34,14 +33,16 @@ public class EventService {
 	private final EventRepository eventRepository;
 	private final EventHallRepository eventHallRepository;
 	private final EventSeatAreaRepository eventSeatAreaRepository;
-	private final EventImageService eventImageService;
+	private final EventSearchRepository eventSearchRepository;
 
 	public EventResponse createEvent(EventCreateRequest request) {
 		EventHall eventHall = getEventHall(request.eventHallId());
 		validateDuplicateEvent(request.title());
 
 		Event event = request.toEntity(eventHall);
-		eventRepository.save(event);
+		Event savedEvent = eventRepository.save(event);
+		EventDocument from = EventDocument.from(savedEvent);
+		eventSearchRepository.save(from);
 		return EventResponse.of(event);
 	}
 

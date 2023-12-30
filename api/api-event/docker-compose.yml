@@ -36,3 +36,4 @@ services:
 networks:
   es-bridge:
     driver: bridge
+    name: es-bridge
