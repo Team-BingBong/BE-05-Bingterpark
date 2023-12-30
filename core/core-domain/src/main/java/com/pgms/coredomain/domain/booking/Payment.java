@@ -89,10 +89,13 @@ public class Payment extends BaseEntity {
 	private Booking booking;
 
 	@Builder
-	public Payment(PaymentMethod method, PaymentStatus status, int amount, Booking booking) {
+	public Payment(PaymentMethod method, PaymentStatus status, int amount) {
 		this.method = method;
 		this.status = status;
 		this.amount = amount;
+	}
+
+	public void updateBooking(Booking booking) {
 		this.booking = booking;
 	}
 
