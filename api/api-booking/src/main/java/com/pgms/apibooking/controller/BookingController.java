@@ -29,12 +29,13 @@ public class BookingController {
 	public ResponseEntity<ApiResponse<BookingCreateResponse>> createBooking(
 		@RequestBody @Valid BookingCreateRequest request,
 		HttpServletRequest httpRequest) {
-		BookingCreateResponse response = bookingService.createBooking(request);
+		BookingCreateResponse createdBooking = bookingService.createBooking(request);
+		ApiResponse<BookingCreateResponse> response = ApiResponse.ok(createdBooking);
 		URI location = UriComponentsBuilder
 			.fromHttpUrl(httpRequest.getRequestURL().toString())
 			.path("/{id}")
-			.buildAndExpand(response.bookingId())
+			.buildAndExpand(createdBooking.bookingId())
 			.toUri();
-		return ResponseEntity.created(location).body(ApiResponse.created(response));
+		return ResponseEntity.created(location).body(response);
 	}
 }
