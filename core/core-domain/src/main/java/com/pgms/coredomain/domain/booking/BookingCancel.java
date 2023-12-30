@@ -26,5 +26,7 @@ public class BookingCancel extends BaseEntity {
     @Column(name = "createdBy", nullable = false)
     private String created_by;
 
-    // TODO: 예매 매칭
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "booking_id", nullable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    private Booking booking;
 }
