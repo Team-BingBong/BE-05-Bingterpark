@@ -18,9 +18,7 @@ import org.springframework.web.client.RestTemplate;
 import com.pgms.apibooking.config.TossPaymentConfig;
 import com.pgms.apibooking.dto.request.PaymentCancelRequest;
 import com.pgms.apibooking.dto.request.PaymentConfirmRequest;
-import com.pgms.apibooking.dto.request.PaymentCreateRequest;
 import com.pgms.apibooking.dto.response.PaymentCancelResponse;
-import com.pgms.apibooking.dto.response.PaymentCreateResponse;
 import com.pgms.apibooking.dto.response.PaymentFailResponse;
 import com.pgms.apibooking.dto.response.PaymentSuccessResponse;
 import com.pgms.apibooking.exception.BookingErrorCode;
@@ -32,23 +30,17 @@ import com.pgms.coredomain.domain.booking.repository.BookingRepository;
 import com.pgms.coredomain.domain.booking.repository.PaymentRepository;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Transactional
+@Slf4j
 @RequiredArgsConstructor
 public class PaymentService {
 
 	private final PaymentRepository paymentRepository;
 	private final BookingRepository bookingRepository;
 	private final TossPaymentConfig tossPaymentConfig;
-	private final BookingService bookingService;
-
-	public PaymentCreateResponse createPayment(PaymentCreateRequest request) {
-		Booking booking = bookingService.createBooking(request);
-		Payment payment = request.toEntity(booking);
-		paymentRepository.save(payment);
-		return PaymentCreateResponse.of(payment, tossPaymentConfig.getSuccessUrl(), tossPaymentConfig.getFailUrl());
-	}
 
 	public PaymentSuccessResponse successPayment(String paymentKey, String bookingId, int amount) {
 		Booking booking = bookingRepository.findWithPaymentById(bookingId)
@@ -60,7 +52,6 @@ public class PaymentService {
 		}
 
 		PaymentSuccessResponse response = requestPaymentConfirmation(paymentKey, bookingId, amount);
-
 		switch (payment.getMethod()) {
 			case CARD -> payment.updateCardInfo(response.card().number(), response.card().installmentPlanMonths(),
 				response.card().isInterestFree());
@@ -91,8 +82,10 @@ public class PaymentService {
 			return restTemplate.postForObject(
 				TossPaymentConfig.TOSS_CONFIRM_URL, new HttpEntity<>(request, headers), PaymentSuccessResponse.class);
 		} catch (HttpClientErrorException e) {
+			log.warn("HttpClientErrorException: {}", e.getMessage());
 			throw new BookingException(BookingErrorCode.TOSS_PAYMENTS_ERROR);
 		} catch (Exception e) {
+			log.error("Exception: {}", e.getMessage(), e);
 			throw new BookingException(BookingErrorCode.INTERNAL_SERVER_ERROR);
 		}
 	}
@@ -116,7 +109,6 @@ public class PaymentService {
 			throw new BookingException(BookingErrorCode.INTERNAL_SERVER_ERROR);
 		}
 	}
-
 
 	private Payment getPaymentByPaymentKey(String paymentKey) {
 		return paymentRepository.findByPaymentKey(paymentKey)
