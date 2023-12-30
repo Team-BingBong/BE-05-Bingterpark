@@ -70,8 +70,9 @@ public class EventSeatCustomRepositoryImpl implements EventSeatCustomRepository{
                         Projections.bean(
                                 LeftEventSeatNumDto.class,
                                 qEventSeat.eventSeatArea,
-                                qEventSeat.count()
+                                qEventSeat.count().as("leftSeatNumber")
                         )
+
                 )
                 .from(qEventSeat)
                 .where(qEventSeat.eventTime.eq(eventTime),
