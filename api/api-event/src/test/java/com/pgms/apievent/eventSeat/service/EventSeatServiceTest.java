@@ -105,5 +105,4 @@ class EventSeatServiceTest {
         // then
         assertThat(responses.get(0).leftSeatNumber(), is(10L));
     }
-
 }
