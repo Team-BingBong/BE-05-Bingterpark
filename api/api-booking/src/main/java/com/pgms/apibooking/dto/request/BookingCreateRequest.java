@@ -66,6 +66,7 @@ public record BookingCreateRequest(
 				.map(seat -> seat.getEventSeatArea().getPrice())
 				.reduce(0, Integer::sum))
 			.member(member)
+			.time(time)
 			.build();
 
 		seats.forEach(seat -> booking.addTicket(

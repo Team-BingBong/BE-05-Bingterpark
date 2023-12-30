@@ -14,7 +14,7 @@ public enum BookingErrorCode {
 
 	TIME_NOT_FOUND(HttpStatus.BAD_REQUEST, "TIME_NOT_FOUND", "존재하지 않는 공연 회차입니다."),
 	UNBOOKABLE_EVENT(HttpStatus.BAD_REQUEST, "UNBOOKABLE_EVENT", "현재 예매가 불가능한 공연입니다."),
-	NON_EXISTENT_SEAT_INCLUSION(HttpStatus.BAD_REQUEST, "NON_EXISTENT_SEAT_INCLUSION", "존재하지 않는 좌석이 포함되어 있습니다."),
+	NON_EXISTENT_SEAT_INCLUSION(HttpStatus.BAD_REQUEST, "NON_EXISTENT_SEAT_INCLUSION", "선택한 공연 회차에 존재하지 않는 좌석이 포함되어 있습니다."),
 	UNBOOKABLE_SEAT_INCLUSION(HttpStatus.BAD_REQUEST, "UNBOOKABLE_SEAT_INCLUSION", "예매가 불가능한 좌석이 포함되어 있습니다."),
 	DELIVERY_ADDRESS_REQUIRED(HttpStatus.BAD_REQUEST, "DELIVERY_ADDRESS_REQUIRED", "배송지 정보를 입력해주세요."),
 

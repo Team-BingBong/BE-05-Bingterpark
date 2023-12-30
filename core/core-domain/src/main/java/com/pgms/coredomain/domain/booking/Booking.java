@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.pgms.coredomain.domain.common.BaseEntity;
+import com.pgms.coredomain.domain.event.EventTime;
 import com.pgms.coredomain.domain.event.Ticket;
 import com.pgms.coredomain.domain.member.Member;
 
@@ -75,6 +76,10 @@ public class Booking extends BaseEntity {
 	@JoinColumn(name = "member_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT)) //TODO: nullalbe = false 추가
 	private Member member;
 
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "time_id", nullable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+	EventTime time;
+
 	@OneToMany(mappedBy = "booking", cascade = CascadeType.ALL)
 	private List<Ticket> tickets = new ArrayList<>();
 
@@ -95,7 +100,8 @@ public class Booking extends BaseEntity {
 		String detailAddress,
 		String zipCode,
 		Integer amount,
-		Member member
+		Member member,
+		EventTime time
 	) {
 		this.id = id;
 		this.bookingName = bookingName;
@@ -110,6 +116,7 @@ public class Booking extends BaseEntity {
 		this.zipCode = zipCode;
 		this.amount = amount;
 		this.member = member;
+		this.time = time;
 	}
 
 	public void addTicket(Ticket ticket) {

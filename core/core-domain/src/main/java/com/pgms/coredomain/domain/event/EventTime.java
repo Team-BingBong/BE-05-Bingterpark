@@ -1,7 +1,10 @@
 package com.pgms.coredomain.domain.event;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
+import com.pgms.coredomain.domain.booking.Booking;
 import com.pgms.coredomain.domain.common.BaseEntity;
 
 import jakarta.persistence.Column;
@@ -14,6 +17,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -42,6 +46,9 @@ public class EventTime extends BaseEntity {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "event_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
 	private Event event;
+
+	@OneToMany(mappedBy = "time")
+	private List<Booking> bookings = new ArrayList<>();
 
 	public EventTime(int round, LocalDateTime startTime, LocalDateTime endTime, Event event) {
 		this.round = round;
