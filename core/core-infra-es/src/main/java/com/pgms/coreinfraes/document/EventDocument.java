@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
+import org.springframework.data.elasticsearch.annotations.FieldType;
 
 import java.time.LocalDateTime;
 
@@ -16,46 +17,42 @@ import java.time.LocalDateTime;
 @Builder
 @Document(indexName = "event")
 public class EventDocument {
+
     @Id
-    @Field(name = "id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Field(name = "title")
+    @Field(name = "title", type = FieldType.Text)
     private String title;
 
-    @Field(name = "description")
+    @Field(name = "description", type = FieldType.Text)
     private String description;
 
-    @Field(name = "running_time")
+    @Field(name = "running_time", type = FieldType.Short)
     private int runningTime;
 
-    @Field(name = "started_at")
+    @Field(name = "started_at", type = FieldType.Date)
     private LocalDateTime startedAt;
 
-    @Field(name = "ended_at")
+    @Field(name = "ended_at", type = FieldType.Date)
     private LocalDateTime endedAt;
 
-    @Field(name = "rating")
+    @Field(name = "rating", type = FieldType.Keyword)
     private String rating;
 
-    @Field(name = "genre")
+    @Field(name = "genre", type = FieldType.Keyword)
     @Enumerated(value = EnumType.STRING)
     private GenreType genreType;
 
-    @Field(name = "average_score")
+    @Field(name = "average_score", type = FieldType.Double)
     private Double averageScore = 0.0;
 
-    @Field(name = "thumbnail")
-    private String thumbnail;
-
-    @Field(name = "booking_started_at")
+    @Field(name = "booking_started_at", type = FieldType.Date)
     private LocalDateTime bookingStartedAt;
 
-    @Field(name = "booking_ended_at")
+    @Field(name = "booking_ended_at", type = FieldType.Date)
     private LocalDateTime bookingEndedAt;
 
-    @Field(name = "event_hall")
+    @Field(name = "event_hall", type = FieldType.Object)
     private EventHall eventHall;
 
     public static EventDocument from(Event event) {
@@ -69,7 +66,6 @@ public class EventDocument {
                 .rating(event.getRating())
                 .genreType(event.getGenreType())
                 .averageScore(event.getAverageScore())
-                .thumbnail(event.getThumbnail())
                 .bookingStartedAt(event.getBookingStartedAt())
                 .bookingEndedAt(event.getBookingEndedAt())
                 .eventHall(event.getEventHall())
