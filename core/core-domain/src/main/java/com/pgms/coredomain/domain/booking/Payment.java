@@ -73,8 +73,9 @@ public class Payment extends BaseEntity {
 	@Column(name = "refund_ account_number")
 	private String refundAccountNumber;
 
+	@Enumerated(EnumType.STRING)
 	@Column(name = "refund_ holder_name")
-	private String refundHolderName;
+	private BankCode refundHolderName;
 
 	@Column(name = "failed_msg")
 	private String failedMsg;
@@ -125,15 +126,16 @@ public class Payment extends BaseEntity {
 	public void updateRefundInfo(String refundBankCode, String refundAccountNumber, String refundHolderName) {
 		this.refundBankCode = refundBankCode;
 		this.refundAccountNumber = refundAccountNumber;
-		this.refundHolderName = refundHolderName;
+		this.refundHolderName = BankCode.getByBankNumCode(refundBankCode);
 	}
 
 	public void toAborted() {
 		this.status = PaymentStatus.ABORTED;
 	}
 
-	public void toCanceled() {
+	public void toCanceled(LocalDateTime approvedAt) {
 		this.status = PaymentStatus.CANCELLED;
+		this.approvedAt = approvedAt;
 	}
 
 	public void updateFailedMsg(String failedMsg) {

@@ -126,7 +126,7 @@ public class PaymentService {
 			);
 		}
 		Booking booking = payment.getBooking();
-		payment.toCanceled();
+		payment.toCanceled(DateTimeUtil.parse(response.approvedAt()));
 		booking.updateStatus(BookingStatus.CANCELLED);
 		// TODO: ticket(event seat) 상태 변경
 		return response;
