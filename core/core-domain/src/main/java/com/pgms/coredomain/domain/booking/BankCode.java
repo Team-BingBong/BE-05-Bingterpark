@@ -1,28 +1,40 @@
 package com.pgms.coredomain.domain.booking;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+@Getter
 @RequiredArgsConstructor
 public enum BankCode {
-	경남("경남은행"),
-	광주("광주은행"),
-	단위농협("단위농협(지역농축협)"),
-	부산("부산은행"),
-	새마을("새마을금고"),
-	신한("신한은행"),
-	신협("신협"),
-	씨티("씨티은행"),
-	우리("우리은행"),
-	우체국("우체국예금보함"),
-	저축("저축은행중앙회"),
-	전북("전북은행"),
-	제주("제주은행"),
-	카카오("카카오뱅크"),
-	토스("토스뱅크"),
-	하나("하나은행"),
-	기업("IBK기업은행"),
-	국민("KB국민은행"),
-	농협("NH농협은행");
+	경남("39"),
+	광주("34"),
+	단위농협("12"),
+	부산("32"),
+	새마을("45"),
+	신한("88"),
+	신협("48"),
+	씨티("27"),
+	우리("20"),
+	우체국("71"),
+	저축("50"),
+	전북("37"),
+	제주("35"),
+	카카오("90"),
+	토스("92"),
+	하나("81"),
+	기업("03"),
+	국민("06"),
+	농협("11"),
+	수협("07");
 
-	private final String bankName;
+	private final String bankNumCode;
+
+	public static BankCode getByBankNumCode(String bankNumCode) {
+		for (BankCode bankCode : values()) {
+			if (bankCode.getBankNumCode().equals(bankNumCode)) {
+				return bankCode;
+			}
+		}
+		throw new IllegalArgumentException("No matching constant for bankNumCode: " + bankNumCode);
+	}
 }
