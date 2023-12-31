@@ -9,6 +9,7 @@ import com.pgms.apibooking.config.TossPaymentConfig;
 import com.pgms.apibooking.dto.request.BookingCancelRequest;
 import com.pgms.apibooking.dto.request.BookingCreateRequest;
 import com.pgms.apibooking.dto.request.DeliveryAddress;
+import com.pgms.apibooking.dto.request.PaymentCancelRequest;
 import com.pgms.apibooking.dto.response.BookingCreateResponse;
 import com.pgms.apibooking.exception.BookingErrorCode;
 import com.pgms.apibooking.exception.BookingException;
@@ -16,7 +17,6 @@ import com.pgms.coredomain.domain.booking.Booking;
 import com.pgms.coredomain.domain.booking.Payment;
 import com.pgms.coredomain.domain.booking.PaymentStatus;
 import com.pgms.coredomain.domain.booking.ReceiptType;
-import com.pgms.coredomain.domain.booking.repository.BookingCancelRepository;
 import com.pgms.coredomain.domain.booking.repository.BookingRepository;
 import com.pgms.coredomain.domain.event.EventSeat;
 import com.pgms.coredomain.domain.event.EventSeatStatus;
@@ -35,7 +35,6 @@ public class BookingService { //TODO: 테스트 코드 작성
 	private final EventTimeRepository eventTimeRepository;
 	private final EventSeatRepository eventSeatRepository;
 	private final BookingRepository bookingRepository;
-	private final BookingCancelRepository bookingCancelRepository;
 	private final TossPaymentConfig tossPaymentConfig;
 	private final PaymentService paymentService;
 
@@ -100,10 +99,20 @@ public class BookingService { //TODO: 테스트 코드 작성
 		}
 	}
 
-	// TODO
 	public void cancelBooking(String id, BookingCancelRequest request) {
-		// 취소 가능한 상태인지 확인: 공연 시작일 전인지, 결제 완료 상태인지
-		// 결제 취소
-		// 상태 변경
+		Booking booking = bookingRepository.findBookingInfoById(id)
+			.orElseThrow(() -> new BookingException(BookingErrorCode.BOOKING_NOT_FOUND));
+
+		if (!booking.isCancelable()) {
+			throw new BookingException(BookingErrorCode.UNCANCELABLE_BOOKING);
+		}
+
+		paymentService.cancelPayment(
+			PaymentCancelRequest.of(booking.getPayment().getPaymentKey(), request.reason())
+		);
+
+		booking.cancel(
+			BookingCancelRequest.toEntity(request, "사용자", booking) //TODO: 취소 요청자 지정
+		);
 	}
 }

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.pgms.coredomain.domain.common.BaseEntity;
+import com.pgms.coredomain.domain.event.EventSeatStatus;
 import com.pgms.coredomain.domain.event.EventTime;
 import com.pgms.coredomain.domain.event.Ticket;
 import com.pgms.coredomain.domain.member.Member;
@@ -86,6 +87,9 @@ public class Booking extends BaseEntity {
 	@OneToOne(mappedBy = "booking", cascade = CascadeType.ALL)
 	private Payment payment;
 
+	@OneToOne(mappedBy = "booking", cascade = CascadeType.ALL)
+	private BookingCancel cancel;
+
 	@Builder
 	public Booking(
 		String id,
@@ -137,6 +141,13 @@ public class Booking extends BaseEntity {
 		return !this.time.getEvent().isStarted()
 			&& this.payment.isCancelable()
 			&& this.status == BookingStatus.WAITING_FOR_PAYMENT || this.status == BookingStatus.PAYMENT_COMPLETED;
+	}
 
+	public void cancel(BookingCancel cancel) {
+		this.tickets.forEach(ticket -> ticket.getSeat().updateStatus(EventSeatStatus.AVAILABLE));
+		this.payment.toCanceled(); //TODO: 컨벤션 논의 필요
+		this.status = BookingStatus.CANCELED;
+		this.cancel = cancel;
+		cancel.updateBooking(this);
 	}
 }

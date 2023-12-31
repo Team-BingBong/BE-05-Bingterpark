@@ -3,6 +3,7 @@ package com.pgms.coredomain.domain.booking;
 import com.pgms.coredomain.domain.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -23,10 +24,22 @@ public class BookingCancel extends BaseEntity {
     @Column(name = "amount", nullable = false)
     private int amount;
 
-    @Column(name = "createdBy", nullable = false)
-    private String created_by;
+    @Column(name = "created_by", nullable = false)
+    private String createdBy;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "booking_id", nullable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private Booking booking;
+
+    @Builder
+    public BookingCancel(String reason, int amount, String createdBy, Booking booking) {
+        this.reason = reason;
+        this.amount = amount;
+        this.createdBy = createdBy;
+        this.booking = booking;
+    }
+
+    public void updateBooking(Booking booking) {
+        this.booking = booking;
+    }
 }

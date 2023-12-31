@@ -6,10 +6,12 @@ import com.pgms.coredomain.domain.booking.Booking;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "ticket")
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Ticket extends BaseEntity {
 
