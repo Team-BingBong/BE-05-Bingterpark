@@ -5,6 +5,7 @@ import static com.pgms.apimember.exception.CustomErrorCode.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.pgms.apimember.dto.request.MemberInfoUpdateRequest;
 import com.pgms.apimember.dto.request.MemberPasswordUpdateRequest;
 import com.pgms.apimember.dto.response.MemberDetailGetResponse;
 import com.pgms.apimember.exception.CustomErrorCode;
@@ -32,6 +33,19 @@ public class MemberService {
 	public void verifyPassword(Long memberId, String password) {
 		final Member member = getAvailableMember(memberId);
 		validatePlainPassword(password, member.getPassword());
+	}
+
+	public void updateMember(Long memberId, MemberInfoUpdateRequest requestDto) {
+		final Member member = getAvailableMember(memberId);
+		member.updateMemberInfo(
+			requestDto.name(),
+			requestDto.phoneNumber(),
+			requestDto.birthDate(),
+			requestDto.gender(),
+			requestDto.streetAddress(),
+			requestDto.detailAddress(),
+			requestDto.zipCode()
+		);
 	}
 
 	public void updatePassword(Long memberId, MemberPasswordUpdateRequest requestDto) {

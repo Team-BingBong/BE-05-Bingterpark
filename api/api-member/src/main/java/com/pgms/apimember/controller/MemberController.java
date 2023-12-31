@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.pgms.apimember.dto.request.MemberInfoUpdateRequest;
 import com.pgms.apimember.dto.request.MemberPasswordUpdateRequest;
 import com.pgms.apimember.dto.request.MemberPasswordVerifyRequest;
 import com.pgms.apimember.dto.response.MemberDetailGetResponse;
@@ -29,6 +30,14 @@ public class MemberController {
 	public ResponseEntity<ApiResponse<MemberDetailGetResponse>> getMyInfo(Long memberId) {
 		// TODO: 현재 로그인한 사용자의 ID를 가져오는 어노테이션 필요 (security)
 		return ResponseEntity.ok(ApiResponse.ok(memberService.getMemberDetail(memberId)));
+	}
+
+	@PatchMapping("/me")
+	public ResponseEntity<Void> updateMyInfo(
+		Long memberId,
+		@RequestBody @Valid MemberInfoUpdateRequest requestDto) {
+		memberService.updateMember(memberId, requestDto);
+		return ResponseEntity.noContent().build();
 	}
 
 	@PatchMapping("/me/password")
