@@ -27,8 +27,11 @@ public class Ticket extends BaseEntity {
 	private Booking booking;
 
 	@Builder
-	public Ticket(EventSeat eventSeat, Booking booking) {
+	public Ticket(EventSeat eventSeat) {
 		this.eventSeat = eventSeat;
+	}
+
+	public void updateBooking(Booking booking) {
 		this.booking = booking;
 	}
 }
