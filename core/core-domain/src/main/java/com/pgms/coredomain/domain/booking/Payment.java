@@ -113,12 +113,10 @@ public class Payment extends BaseEntity {
 		this.bankCode = BankCode.getByBankNumCode(bankCode);
 		this.depositorName = depositorName;
 		this.dueDate = dueDate;
-		this.status = PaymentStatus.WAITING_FOR_DEPOSIT;
 	}
 
-	public void updateCardSuccess(LocalDateTime approvedAt) {
+	public void updateApprovedAt(LocalDateTime approvedAt) {
 		this.approvedAt = approvedAt;
-		this.status = PaymentStatus.DONE;
 	}
 
 	public void updateConfirmInfo(String paymentKey, LocalDateTime requestedAt) {
@@ -132,12 +130,8 @@ public class Payment extends BaseEntity {
 		this.refundHolderName = refundHolderName;
 	}
 
-	public void toAborted() {
-		this.status = PaymentStatus.ABORTED;
-	}
-
-	public void toCanceled() {
-		this.status = PaymentStatus.CANCELLED;
+	public void updateStatus(PaymentStatus status) {
+		this.status = status;
 	}
 
 	public void updateFailedMsg(String failedMsg) {

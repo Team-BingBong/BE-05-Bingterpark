@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 public enum PaymentStatus {
 
     READY("인증 전"),
+    IN_PROGRESS("결제 수단, 소유자 인증 완료"),
     WAITING_FOR_DEPOSIT("가상계좌 입금대기"),
     DONE("결제 승인"),
     CANCELLED("결제 취소"),

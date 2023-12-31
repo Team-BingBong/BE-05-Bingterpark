@@ -31,6 +31,7 @@ public record BookingCreateRequest(
 	@NotNull(message = "[수령 방법] 선택은 필수입니다.")
 	ReceiptType receiptType,
 
+	//TODO : 에매자명 = 로그인한 사용자 명으로 설정하기
 	@NotBlank(message = "[구매자 명] 입력은 필수입니다.")
 	String buyerName,
 

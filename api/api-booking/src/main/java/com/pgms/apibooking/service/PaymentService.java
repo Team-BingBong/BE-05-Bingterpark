@@ -28,6 +28,7 @@ import com.pgms.apibooking.util.DateTimeUtil;
 import com.pgms.coredomain.domain.booking.Booking;
 import com.pgms.coredomain.domain.booking.BookingStatus;
 import com.pgms.coredomain.domain.booking.Payment;
+import com.pgms.coredomain.domain.booking.PaymentStatus;
 import com.pgms.coredomain.domain.booking.repository.BookingRepository;
 import com.pgms.coredomain.domain.booking.repository.PaymentRepository;
 
@@ -63,7 +64,7 @@ public class PaymentService {
 					card.installmentPlanMonths(),
 					card.isInterestFree()
 				);
-				payment.updateCardSuccess(DateTimeUtil.parse(response.approvedAt()));
+				payment.updateApprovedAt(DateTimeUtil.parse(response.approvedAt()));
 			}
 			case VIRTUAL_ACCOUNT -> {
 				PaymentVirtualResponse virtualAccount = response.virtualAccount();
@@ -77,6 +78,7 @@ public class PaymentService {
 			default -> throw new BookingException(BookingErrorCode.INVALID_PAYMENT_METHOD);
 		}
 		payment.updateConfirmInfo(paymentKey, DateTimeUtil.parse(response.requestedAt()));
+		payment.updateStatus(PaymentStatus.valueOf(response.status()));
 		booking.updateStatus(BookingStatus.PAYMENT_COMPLETED);
 
 		return response;
@@ -84,7 +86,7 @@ public class PaymentService {
 
 	public PaymentFailResponse failPayment(String errorCode, String errorMessage, String bookingId) {
 		Payment payment = getPaymentByBookingId(bookingId);
-		payment.toAborted();
+		payment.updateStatus(PaymentStatus.ABORTED);
 		payment.updateFailedMsg(errorMessage);
 		return new PaymentFailResponse(errorCode, errorMessage, bookingId);
 	}
@@ -117,9 +119,8 @@ public class PaymentService {
 			);
 		}
 		Booking booking = payment.getBooking();
-		payment.toCanceled();
+		payment.updateStatus(PaymentStatus.valueOf(response.status()));
 		booking.updateStatus(BookingStatus.CANCELLED);
-		// TODO: ticket(event seat) 상태 변경
 		return response;
 	}
 
