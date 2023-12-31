@@ -2,13 +2,18 @@ package com.pgms.apimember.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.pgms.apimember.dto.request.MemberPasswordUpdateRequest;
 import com.pgms.apimember.dto.response.MemberDetailGetResponse;
 import com.pgms.apimember.service.MemberService;
 import com.pgms.coredomain.response.ApiResponse;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -25,8 +30,16 @@ public class MemberController {
 	}
 
 	@GetMapping("/me/verify-password")
-	public ResponseEntity<Void> verifyPassword(Long memberId, String password) {
+	public ResponseEntity<Void> verifyPassword(Long memberId, @RequestParam String password) {
 		memberService.verifyPassword(memberId, password);
+		return ResponseEntity.noContent().build();
+	}
+
+	@PatchMapping("/me/password")
+	public ResponseEntity<Void> updatePassword(
+		Long memberId,
+		@RequestBody @Valid MemberPasswordUpdateRequest requestDto) {
+		memberService.updatePassword(memberId, requestDto);
 		return ResponseEntity.noContent().build();
 	}
 }

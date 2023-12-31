@@ -70,4 +70,9 @@ public class Member extends AccountBaseEntity {
 	public boolean isDeleted() {
 		return this.status == AccountStatus.DELETED;
 	}
+
+	public void updatePassword(String encodedPassword) {
+		this.password = encodedPassword;
+		super.updateLastPasswordUpdatedAt();
+	}
 }

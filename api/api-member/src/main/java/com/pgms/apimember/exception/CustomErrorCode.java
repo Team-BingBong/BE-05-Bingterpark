@@ -21,6 +21,7 @@ public enum CustomErrorCode {
 	// MEMBER
 	MEMBER_NOT_FOUND("NOT FOUND", HttpStatus.NOT_FOUND, "존재하지 않는 회원입니다."),
 	DUPLICATED_MEMBER_EMAIL("DUPLICATED MEMBER EMAIL", HttpStatus.BAD_REQUEST, "이미 존재하는 회원 이메일입니다."),
+	MEMBER_ALREADY_DELETED("MEMBER ALREADY DELETED", HttpStatus.BAD_REQUEST, "이미 탈퇴한 회원입니다."),
 	PASSWORD_NOT_MATCHED("PASSWORD NOT MATCHED", HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다."),
 	PASSWORD_CONFIRM_NOT_MATCHED("PASSWORD CONFIRM NOT MATCHED", HttpStatus.BAD_REQUEST, "비밀번호 확인이 일치하지 않습니다."),
 	VALIDATION_FAILED("VALIDATION FAILED", HttpStatus.BAD_REQUEST, "입력값에 대한 검증에 실패했습니다.");
