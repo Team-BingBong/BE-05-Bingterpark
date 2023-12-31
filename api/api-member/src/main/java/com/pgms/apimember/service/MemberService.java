@@ -3,6 +3,7 @@ package com.pgms.apimember.service;
 import static com.pgms.apimember.exception.CustomErrorCode.*;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.pgms.apimember.dto.request.MemberPasswordUpdateRequest;
 import com.pgms.apimember.dto.response.MemberDetailGetResponse;
@@ -14,17 +15,20 @@ import com.pgms.coredomain.domain.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class MemberService {
 
 	private final MemberRepository memberRepository;
 
+	@Transactional(readOnly = true)
 	public MemberDetailGetResponse getMemberDetail(Long memberId) {
 		return MemberDetailGetResponse.from(
 			memberRepository.findByIdWithRole(memberId).
 				orElseThrow(() -> new MemberException(CustomErrorCode.MEMBER_NOT_FOUND)));
 	}
 
+	@Transactional(readOnly = true)
 	public void verifyPassword(Long memberId, String password) {
 		final Member member = getAvailableMember(memberId);
 		validatePlainPassword(password, member.getPassword());
@@ -56,7 +60,7 @@ public class MemberService {
 		final Member member = memberRepository.findById(memberId)
 			.orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
 
-		// 필터단에서 검증 시 필요하지 않을수도 있음
+		// 필터단에서 멤버 삭제여부 검증 시 필요하지 않을수도 있음
 		if (member.isDeleted()) {
 			throw new MemberException(MEMBER_ALREADY_DELETED);
 		}
