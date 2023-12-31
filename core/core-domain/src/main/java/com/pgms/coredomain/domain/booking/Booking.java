@@ -144,8 +144,10 @@ public class Booking extends BaseEntity {
 	}
 
 	public void cancel(BookingCancel cancel) {
+		if (!this.payment.isCanceled()) {
+			throw new IllegalStateException("결제 취소 중 오류가 발생했습니다.");
+		}
 		this.tickets.forEach(ticket -> ticket.getSeat().updateStatus(EventSeatStatus.AVAILABLE));
-		this.payment.toCanceled(); //TODO: 컨벤션 논의 필요
 		this.status = BookingStatus.CANCELED;
 		this.cancel = cancel;
 		cancel.updateBooking(this);

@@ -5,13 +5,10 @@ import java.util.Optional;
 
 import com.pgms.coredomain.domain.booking.Booking;
 import com.pgms.coredomain.domain.booking.BookingStatus;
-import com.pgms.coredomain.domain.booking.Payment;
 import com.pgms.coredomain.domain.booking.PaymentMethod;
-import com.pgms.coredomain.domain.booking.PaymentStatus;
 import com.pgms.coredomain.domain.booking.ReceiptType;
 import com.pgms.coredomain.domain.event.EventSeat;
 import com.pgms.coredomain.domain.event.EventTime;
-import com.pgms.coredomain.domain.event.Ticket;
 import com.pgms.coredomain.domain.member.Member;
 
 import jakarta.validation.Valid;

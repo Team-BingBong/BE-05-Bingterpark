@@ -127,4 +127,8 @@ public class Payment extends BaseEntity {
 	public boolean isCancelable() {
 		return this.status == PaymentStatus.WAITING_FOR_DEPOSIT || this.status == PaymentStatus.DONE;
 	}
+
+	public boolean isCanceled() {
+		return this.status == PaymentStatus.CANCELED;
+	}
 }
