@@ -1,5 +1,9 @@
 package com.pgms.apievent.eventSeat.repository;
 
+import java.util.List;
+
+import org.springframework.stereotype.Repository;
+
 import com.pgms.apievent.eventSeat.dto.LeftEventSeatNumDto;
 import com.pgms.coredomain.domain.event.EventSeatArea;
 import com.pgms.coredomain.domain.event.EventSeatStatus;
@@ -7,11 +11,9 @@ import com.pgms.coredomain.domain.event.EventTime;
 import com.pgms.coredomain.domain.event.QEventSeat;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Repository;
-
-import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
@@ -70,8 +72,9 @@ public class EventSeatCustomRepositoryImpl implements EventSeatCustomRepository{
                         Projections.bean(
                                 LeftEventSeatNumDto.class,
                                 qEventSeat.eventSeatArea,
-                                qEventSeat.count()
+                                qEventSeat.count().as("leftSeatNumber")
                         )
+
                 )
                 .from(qEventSeat)
                 .where(qEventSeat.eventTime.eq(eventTime),
