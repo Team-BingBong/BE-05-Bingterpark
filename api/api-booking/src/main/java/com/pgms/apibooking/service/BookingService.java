@@ -81,10 +81,9 @@ public class BookingService {
 		}
 	}
 
-	//TODO
+	// TODO
 	public void cancelBooking(String id) {
-		// 공연 회차 시작 전인지 확인
-		// 결제된 좌석인지 확인
+		// 취소 가능한 상태인지 확인: 공연 시작일 전인지, 결제 완료 상태인지
 		// 결제 취소
 		// 상태 변경
 	}
