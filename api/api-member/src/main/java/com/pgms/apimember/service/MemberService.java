@@ -42,6 +42,22 @@ public class MemberService {
 
 	}
 
+	public void deleteMember(Long memberId) {
+		final Member member = getAvailableMember(memberId);
+		member.updateToDeleted();
+	}
+
+	public Long restoreMember(Long memberId) {
+		final Member member = memberRepository.findById(memberId)
+			.orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
+
+		if (member.isDeleted()) {
+			member.updateToActive();
+		}
+
+		return member.getId();
+	}
+
 	private void validatePlainPassword(String plainPassword, String encodedPassword) {
 		// TODO: 비밀번호 암호화 추가 필요
 		// encoder.matches(plainPassword, encodedPassword);
@@ -66,4 +82,5 @@ public class MemberService {
 		}
 		return member;
 	}
+
 }

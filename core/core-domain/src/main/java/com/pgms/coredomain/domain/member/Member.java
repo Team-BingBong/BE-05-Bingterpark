@@ -71,6 +71,14 @@ public class Member extends AccountBaseEntity {
 		return this.status == AccountStatus.DELETED;
 	}
 
+	public void updateToDeleted() {
+		this.status = AccountStatus.DELETED;
+	}
+
+	public void updateToActive() {
+		this.status = AccountStatus.ACTIVE;
+	}
+
 	public void updatePassword(String encodedPassword) {
 		this.password = encodedPassword;
 		super.updateLastPasswordUpdatedAt();

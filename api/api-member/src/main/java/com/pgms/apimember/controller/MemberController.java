@@ -1,6 +1,7 @@
 package com.pgms.apimember.controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -42,6 +43,17 @@ public class MemberController {
 	public ResponseEntity<Void> verifyPassword(Long memberId, @RequestBody MemberPasswordVerifyRequest requestDto) {
 		memberService.verifyPassword(memberId, requestDto.password());
 		return ResponseEntity.noContent().build();
+	}
+
+	@DeleteMapping("/me")
+	public ResponseEntity<ApiResponse<Void>> deleteMyAccount(Long memberId) {
+		memberService.deleteMember(memberId);
+		return ResponseEntity.noContent().build();
+	}
+
+	@PostMapping("/restore")
+	public ResponseEntity<ApiResponse<Long>> restoreMember(Long memberId) {
+		return ResponseEntity.ok(ApiResponse.ok(memberService.restoreMember(memberId)));
 	}
 
 }
