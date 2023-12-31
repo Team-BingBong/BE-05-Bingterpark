@@ -40,8 +40,8 @@ public record BookingCreateRequest(
 	@Valid
 	Optional<DeliveryAddress> deliveryAddress,
 
-	@NotNull(message = "[결제 수단] 선택은 필수입니다.")
-	PaymentMethod method
+	@NotBlank(message = "[결제 수단] 선택은 필수입니다.")
+	String method
 ) {
 
 	public Booking toEntity(EventTime time, List<EventSeat> seats, Member member) {
@@ -76,7 +76,7 @@ public record BookingCreateRequest(
 
 		booking.updatePayment(
 			Payment.builder()
-				.method(method())
+				.method(PaymentMethod.fromDescription(method))
 				.amount(booking.getAmount())
 				.status(PaymentStatus.WAITING_FOR_DEPOSIT)
 				.build()
