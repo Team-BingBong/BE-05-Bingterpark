@@ -55,10 +55,10 @@ public class PaymentController {
 	@PostMapping("/cancel")
 	public ResponseEntity<ApiResponse> cancelPayment(
 		@RequestParam String paymentKey,
-		@RequestParam String cancelReason
+		@RequestBody PaymentCancelRequest request
 	) {
 		ApiResponse<PaymentCancelResponse> response = ApiResponse.ok(
-			paymentService.cancelPayment(new PaymentCancelRequest(paymentKey, cancelReason)));
+			paymentService.cancelPayment(paymentKey, request));
 		return ResponseEntity.ok(response);
 	}
 }

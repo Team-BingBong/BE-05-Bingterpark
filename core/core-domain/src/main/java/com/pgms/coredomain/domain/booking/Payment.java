@@ -122,6 +122,12 @@ public class Payment extends BaseEntity {
 		this.requestedAt = requestedAt;
 	}
 
+	public void updateRefundInfo(String refundBankCode, String refundAccountNumber, String refundHolderName) {
+		this.refundBankCode = refundBankCode;
+		this.refundAccountNumber = refundAccountNumber;
+		this.refundHolderName = refundHolderName;
+	}
+
 	public void toAborted() {
 		this.status = PaymentStatus.ABORTED;
 	}

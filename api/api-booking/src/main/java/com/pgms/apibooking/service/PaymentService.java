@@ -17,6 +17,7 @@ import com.pgms.apibooking.config.TossPaymentConfig;
 import com.pgms.apibooking.dto.request.PaymentCancelRequest;
 import com.pgms.apibooking.dto.request.PaymentConfirmRequest;
 import com.pgms.apibooking.dto.request.PaymentCreateRequest;
+import com.pgms.apibooking.dto.request.RefundAccountRequest;
 import com.pgms.apibooking.dto.response.PaymentCancelResponse;
 import com.pgms.apibooking.dto.response.PaymentCardResponse;
 import com.pgms.apibooking.dto.response.PaymentCreateResponse;
@@ -113,18 +114,28 @@ public class PaymentService {
 		}
 	}
 
-	public PaymentCancelResponse cancelPayment(PaymentCancelRequest request) {
-		Payment payment = getPaymentByPaymentKey(request.paymentKey());
-		PaymentCancelResponse response = requestPaymentCancellation(request);
+	public PaymentCancelResponse cancelPayment(String paymentKey, PaymentCancelRequest request) {
+		Payment payment = getPaymentByPaymentKey(paymentKey);
+		PaymentCancelResponse response = requestPaymentCancellation(paymentKey, request);
+		if (request.refundReceiveAccount().isPresent()) {
+			RefundAccountRequest refundAccountRequest = request.refundReceiveAccount().get();
+			payment.updateRefundInfo(
+				refundAccountRequest.bank(),
+				refundAccountRequest.accountNumber(),
+				refundAccountRequest.holderName()
+			);
+		}
+		Booking booking = payment.getBooking();
 		payment.toCanceled();
-		// TODO: booking, ticket 상태 변경
+		booking.updateStatus(BookingStatus.CANCELLED);
+		// TODO: ticket(event seat) 상태 변경
 		return response;
 	}
 
-	public PaymentCancelResponse requestPaymentCancellation(PaymentCancelRequest request) {
+	public PaymentCancelResponse requestPaymentCancellation(String paymentKey, PaymentCancelRequest request) {
 		RestTemplate restTemplate = new RestTemplate();
 		HttpHeaders headers = buildTossApiHeaders();
-		URI uri = URI.create(TossPaymentConfig.TOSS_ORIGIN_URL + request.paymentKey() + "/cancel");
+		URI uri = URI.create(TossPaymentConfig.TOSS_ORIGIN_URL + paymentKey + "/cancel");
 		try {
 			return restTemplate.postForObject(
 				uri, new HttpEntity<>(request, headers), PaymentCancelResponse.class);
