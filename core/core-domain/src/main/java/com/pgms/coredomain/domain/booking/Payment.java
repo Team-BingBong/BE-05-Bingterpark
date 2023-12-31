@@ -57,8 +57,9 @@ public class Payment extends BaseEntity {
 	@Column(name = "account_number")
 	private String accountNumber;
 
+	@Enumerated(EnumType.STRING)
 	@Column(name = "bank_code")
-	private String bankCode;
+	private BankCode bankCode;
 
 	@Column(name = "depositor_name")
 	private String depositorName;
@@ -66,8 +67,9 @@ public class Payment extends BaseEntity {
 	@Column(name = "due_date")
 	private LocalDateTime dueDate;
 
+	@Enumerated(EnumType.STRING)
 	@Column(name = "refund_ bank_code")
-	private String refundBankCode;
+	private BankCode refundBankCode;
 
 	@Column(name = "refund_ account_number")
 	private String refundAccountNumber;
