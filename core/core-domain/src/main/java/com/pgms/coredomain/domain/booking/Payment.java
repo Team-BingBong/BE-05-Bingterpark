@@ -107,11 +107,29 @@ public class Payment extends BaseEntity {
 		this.isInterestFree = isInterestFree;
 	}
 
-	public void updateConfirmInfo(String paymentKey, LocalDateTime approvedAt, LocalDateTime requestedAt) {
-		this.paymentKey = paymentKey;
+	public void updateVirtualWaiting(String accountNumber, String bankCode, String depositorName,
+		LocalDateTime dueDate) {
+		this.accountNumber = accountNumber;
+		this.bankCode = BankCode.getByBankNumCode(bankCode);
+		this.depositorName = depositorName;
+		this.dueDate = dueDate;
+		this.status = PaymentStatus.WAITING_FOR_DEPOSIT;
+	}
+
+	public void updateCardSuccess(LocalDateTime approvedAt) {
 		this.approvedAt = approvedAt;
-		this.requestedAt = requestedAt;
 		this.status = PaymentStatus.DONE;
+	}
+
+	public void updateConfirmInfo(String paymentKey, LocalDateTime requestedAt) {
+		this.paymentKey = paymentKey;
+		this.requestedAt = requestedAt;
+	}
+
+	public void updateRefundInfo(String refundBankCode, String refundAccountNumber, String refundHolderName) {
+		this.refundBankCode = BankCode.getByBankNumCode(refundBankCode);
+		this.refundAccountNumber = refundAccountNumber;
+		this.refundHolderName = refundHolderName;
 	}
 
 	public void toAborted() {

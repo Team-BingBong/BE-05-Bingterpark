@@ -12,6 +12,7 @@ public record PaymentCancelResponse(
 	String requestedAt,
 	String approvedAt,
 	PaymentCardResponse card,
+	RefundAccountResponse refundReceiveAccount,
 	List<PaymentCancelDetailResponse> cancels
 ) {
 }
