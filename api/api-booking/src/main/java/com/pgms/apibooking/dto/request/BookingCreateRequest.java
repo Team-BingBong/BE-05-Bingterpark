@@ -44,45 +44,29 @@ public record BookingCreateRequest(
 	PaymentMethod method
 ) {
 
-	public Booking toEntity(EventTime time, List<EventSeat> seats, Member member) {
-		Booking booking = Booking.builder()
+	public static Booking toEntity(
+		BookingCreateRequest request,
+		EventTime time,
+		List<EventSeat> seats,
+		Member member
+	) {
+		return Booking.builder()
 			.id(String.valueOf(System.currentTimeMillis()))
 			.bookingName(time.getEvent().getTitle() + " " + time.getRound())
 			.status(BookingStatus.WAITING_FOR_PAYMENT)
-			.receiptType(receiptType())
-			.buyerName(buyerName())
-			.buyerPhoneNumber(buyerPhoneNumber())
-			.recipientName(deliveryAddress().isPresent()
-				? deliveryAddress().get().recipientName() : null)
-			.recipientPhoneNumber(deliveryAddress().isPresent()
-				? deliveryAddress().get().recipientPhoneNumber() : null)
-			.streetAddress(deliveryAddress().isPresent()
-				? deliveryAddress().get().streetAddress() : null)
-			.detailAddress(deliveryAddress().isPresent()
-				? deliveryAddress().get().detailAddress() : null)
-			.zipCode(deliveryAddress().isPresent()
-				? deliveryAddress().get().zipCode() : null)
+			.receiptType(request.receiptType)
+			.buyerName(request.buyerName)
+			.buyerPhoneNumber(request.buyerPhoneNumber)
+			.recipientName(request.deliveryAddress.get().recipientName())
+			.recipientPhoneNumber(request.deliveryAddress.get().recipientPhoneNumber())
+			.streetAddress(request.deliveryAddress.get().streetAddress())
+			.detailAddress(request.deliveryAddress.get().detailAddress())
+			.zipCode(request.deliveryAddress().get().zipCode())
 			.amount(seats.stream()
 				.map(seat -> seat.getEventSeatArea().getPrice())
 				.reduce(0, Integer::sum))
 			.member(member)
 			.time(time)
 			.build();
-
-		seats.forEach(seat -> booking.addTicket(
-			Ticket.builder()
-				.seat(seat)
-				.build())
-		);
-
-		booking.updatePayment(
-			Payment.builder()
-				.method(method())
-				.amount(booking.getAmount())
-				.status(PaymentStatus.WAITING_FOR_DEPOSIT)
-				.build()
-		);
-
-		return booking;
 	}
 }

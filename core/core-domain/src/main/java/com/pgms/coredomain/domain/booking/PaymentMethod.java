@@ -1,7 +1,9 @@
 package com.pgms.coredomain.domain.booking;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+@Getter
 @RequiredArgsConstructor
 public enum PaymentMethod {
 

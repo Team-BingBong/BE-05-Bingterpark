@@ -94,7 +94,6 @@ public class PaymentService {
 		Payment payment = getPaymentByPaymentKey(request.paymentKey());
 		PaymentCancelResponse response = requestPaymentCancellation(request);
 		payment.toCanceled();
-		// TODO: booking, ticket 상태 변경
 		return response;
 	}
 

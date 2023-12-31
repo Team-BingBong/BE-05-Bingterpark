@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import com.pgms.apibooking.dto.request.BookingCancelRequest;
 import com.pgms.apibooking.dto.request.BookingCreateRequest;
 import com.pgms.apibooking.dto.response.BookingCreateResponse;
 import com.pgms.apibooking.service.BookingService;
@@ -41,8 +42,8 @@ public class BookingController {
 	}
 
 	@PostMapping("/{id}/cancel")
-	public ResponseEntity<Void> cancelBooking(@PathVariable String id) {
-		bookingService.cancelBooking(id);
+	public ResponseEntity<Void> cancelBooking(@PathVariable String id, @RequestBody @Valid BookingCancelRequest request) {
+		bookingService.cancelBooking(id, request);
 		return ResponseEntity.ok().build();
 	}
 }

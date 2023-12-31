@@ -6,18 +6,22 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.pgms.apibooking.config.TossPaymentConfig;
+import com.pgms.apibooking.dto.request.BookingCancelRequest;
 import com.pgms.apibooking.dto.request.BookingCreateRequest;
 import com.pgms.apibooking.dto.request.DeliveryAddress;
 import com.pgms.apibooking.dto.response.BookingCreateResponse;
 import com.pgms.apibooking.exception.BookingErrorCode;
 import com.pgms.apibooking.exception.BookingException;
 import com.pgms.coredomain.domain.booking.Booking;
+import com.pgms.coredomain.domain.booking.Payment;
+import com.pgms.coredomain.domain.booking.PaymentStatus;
 import com.pgms.coredomain.domain.booking.ReceiptType;
 import com.pgms.coredomain.domain.booking.repository.BookingCancelRepository;
 import com.pgms.coredomain.domain.booking.repository.BookingRepository;
 import com.pgms.coredomain.domain.event.EventSeat;
 import com.pgms.coredomain.domain.event.EventSeatStatus;
 import com.pgms.coredomain.domain.event.EventTime;
+import com.pgms.coredomain.domain.event.Ticket;
 import com.pgms.coredomain.domain.event.repository.EventSeatRepository;
 import com.pgms.coredomain.domain.event.repository.EventTimeRepository;
 
@@ -26,21 +30,36 @@ import lombok.RequiredArgsConstructor;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class BookingService {
+public class BookingService { //TODO: 테스트 코드 작성
 
 	private final EventTimeRepository eventTimeRepository;
 	private final EventSeatRepository eventSeatRepository;
 	private final BookingRepository bookingRepository;
 	private final BookingCancelRepository bookingCancelRepository;
 	private final TossPaymentConfig tossPaymentConfig;
+	private final PaymentService paymentService;
 
-	//TODO: 테스트 코드 작성
 	public BookingCreateResponse createBooking(BookingCreateRequest request) {
 		EventTime time = getBookableTimeWithEvent(request.timeId());
 		List<EventSeat> seats = geBookableSeatsWithArea(request.timeId(), request.seatIds());
 		validateDeliveryAddress(request.receiptType(), request.deliveryAddress().orElse(null));
 
-		Booking booking = request.toEntity(time, seats, null); //TODO: 인증된 멤버 지정
+		Booking booking = BookingCreateRequest.toEntity(request, time, seats, null); //TODO: 인증된 멤버 지정
+
+		seats.forEach(seat -> booking.addTicket(
+			Ticket.builder()
+				.seat(seat)
+				.build())
+		);
+
+		booking.updatePayment(
+			Payment.builder()
+				.method(request.method())
+				.amount(booking.getAmount())
+				.status(PaymentStatus.WAITING_FOR_DEPOSIT)
+				.build()
+		);
+
 		bookingRepository.save(booking);
 
 		seats.forEach(seat -> seat.updateStatus(EventSeatStatus.BOOKED));
@@ -82,7 +101,7 @@ public class BookingService {
 	}
 
 	// TODO
-	public void cancelBooking(String id) {
+	public void cancelBooking(String id, BookingCancelRequest request) {
 		// 취소 가능한 상태인지 확인: 공연 시작일 전인지, 결제 완료 상태인지
 		// 결제 취소
 		// 상태 변경
