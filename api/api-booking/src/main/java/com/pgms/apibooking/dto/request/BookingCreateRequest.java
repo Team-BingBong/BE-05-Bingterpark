@@ -29,7 +29,7 @@ public record BookingCreateRequest(
 	List<Long> seatIds,
 
 	@NotNull(message = "[수령 방법] 선택은 필수입니다.")
-	ReceiptType receiptType,
+	ReceiptType receiptType, //TODO: string(description)으로 받아서 enum으로 변환하는 로직 추가
 
 	@NotBlank(message = "[구매자 명] 입력은 필수입니다.")
 	String buyerName,
