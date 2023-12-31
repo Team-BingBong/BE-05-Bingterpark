@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.pgms.apibooking.dto.request.BookingCancelRequest;
@@ -42,8 +43,11 @@ public class BookingController {
 	}
 
 	@PostMapping("/{id}/cancel")
-	public ResponseEntity<Void> cancelBooking(@PathVariable String id, @RequestBody @Valid BookingCancelRequest request) {
-		bookingService.cancelBooking(id, request);
+	public ResponseEntity<Void> cancelBooking(
+		@PathVariable String id,
+		@RequestParam String paymentKey,
+		@RequestBody @Valid BookingCancelRequest request) {
+		bookingService.cancelBooking(id, paymentKey, request);
 		return ResponseEntity.ok().build();
 	}
 }

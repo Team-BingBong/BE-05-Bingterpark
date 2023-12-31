@@ -9,6 +9,8 @@ public record PaymentSuccessResponse(
 	String status,
 	String requestedAt,
 	String approvedAt,
-	PaymentSuccessCardResponse card
+	PaymentCardResponse card,
+	PaymentVirtualResponse virtualAccount
 ) {
 }
+

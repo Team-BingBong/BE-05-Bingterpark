@@ -1,7 +1,6 @@
 package com.pgms.apibooking.dto.response;
 
 import com.pgms.coredomain.domain.booking.Booking;
-import com.pgms.coredomain.domain.booking.PaymentMethod;
 
 public record BookingCreateResponse(
 	String bookingId,

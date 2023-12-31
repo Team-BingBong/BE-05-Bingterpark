@@ -9,12 +9,12 @@ import com.pgms.apibooking.config.TossPaymentConfig;
 import com.pgms.apibooking.dto.request.BookingCancelRequest;
 import com.pgms.apibooking.dto.request.BookingCreateRequest;
 import com.pgms.apibooking.dto.request.DeliveryAddress;
-import com.pgms.apibooking.dto.request.PaymentCancelRequest;
 import com.pgms.apibooking.dto.response.BookingCreateResponse;
 import com.pgms.apibooking.exception.BookingErrorCode;
 import com.pgms.apibooking.exception.BookingException;
 import com.pgms.coredomain.domain.booking.Booking;
 import com.pgms.coredomain.domain.booking.Payment;
+import com.pgms.coredomain.domain.booking.PaymentMethod;
 import com.pgms.coredomain.domain.booking.PaymentStatus;
 import com.pgms.coredomain.domain.booking.ReceiptType;
 import com.pgms.coredomain.domain.booking.repository.BookingRepository;
@@ -55,7 +55,7 @@ public class BookingService { //TODO: 테스트 코드 작성
 
 		booking.updatePayment(
 			Payment.builder()
-				.method(request.method())
+				.method(PaymentMethod.fromDescription(request.method()))
 				.amount(booking.getAmount())
 				.status(PaymentStatus.WAITING_FOR_DEPOSIT)
 				.build()
@@ -101,7 +101,7 @@ public class BookingService { //TODO: 테스트 코드 작성
 		}
 	}
 
-	public void cancelBooking(String id, BookingCancelRequest request) {
+	public void cancelBooking(String id, String paymentKey, BookingCancelRequest request) {
 		Booking booking = bookingRepository.findBookingInfoById(id)
 			.orElseThrow(() -> new BookingException(BookingErrorCode.BOOKING_NOT_FOUND));
 
@@ -109,9 +109,7 @@ public class BookingService { //TODO: 테스트 코드 작성
 			throw new BookingException(BookingErrorCode.UNCANCELABLE_BOOKING);
 		}
 
-		paymentService.cancelPayment(
-			PaymentCancelRequest.of(booking.getPayment().getPaymentKey(), request.reason())
-		);
+		paymentService.cancelPayment(paymentKey, request);
 
 		booking.cancel(
 			BookingCancelRequest.toEntity(request, "사용자", booking) //TODO: 취소 요청자 지정
