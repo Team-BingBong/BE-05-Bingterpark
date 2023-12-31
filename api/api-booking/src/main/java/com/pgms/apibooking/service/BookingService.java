@@ -41,7 +41,9 @@ public class BookingService { //TODO: 테스트 코드 작성
 	public BookingCreateResponse createBooking(BookingCreateRequest request) {
 		EventTime time = getBookableTimeWithEvent(request.timeId());
 		List<EventSeat> seats = geBookableSeatsWithArea(request.timeId(), request.seatIds());
-		validateDeliveryAddress(request.receiptType(), request.deliveryAddress().orElse(null));
+
+		ReceiptType receiptType = ReceiptType.fromDescription(request.receiptType());
+		validateDeliveryAddress(receiptType, request.deliveryAddress().orElse(null));
 
 		Booking booking = BookingCreateRequest.toEntity(request, time, seats, null); //TODO: 인증된 멤버 지정
 

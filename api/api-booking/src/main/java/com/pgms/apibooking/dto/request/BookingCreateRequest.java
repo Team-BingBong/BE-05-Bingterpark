@@ -29,7 +29,7 @@ public record BookingCreateRequest(
 	List<Long> seatIds,
 
 	@NotNull(message = "[수령 방법] 선택은 필수입니다.")
-	ReceiptType receiptType, //TODO: string(description)으로 받아서 enum으로 변환하는 로직 추가
+	String receiptType,
 
 	@NotBlank(message = "[구매자 명] 입력은 필수입니다.")
 	String buyerName,
@@ -54,7 +54,7 @@ public record BookingCreateRequest(
 			.id(String.valueOf(System.currentTimeMillis()))
 			.bookingName(time.getEvent().getTitle() + " " + time.getRound())
 			.status(BookingStatus.WAITING_FOR_PAYMENT)
-			.receiptType(request.receiptType)
+			.receiptType(ReceiptType.fromDescription(request.receiptType))
 			.buyerName(request.buyerName)
 			.buyerPhoneNumber(request.buyerPhoneNumber)
 			.recipientName(request.deliveryAddress.get().recipientName())
