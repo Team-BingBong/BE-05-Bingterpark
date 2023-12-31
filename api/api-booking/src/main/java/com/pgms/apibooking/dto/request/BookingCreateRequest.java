@@ -5,13 +5,10 @@ import java.util.Optional;
 
 import com.pgms.coredomain.domain.booking.Booking;
 import com.pgms.coredomain.domain.booking.BookingStatus;
-import com.pgms.coredomain.domain.booking.Payment;
 import com.pgms.coredomain.domain.booking.PaymentMethod;
-import com.pgms.coredomain.domain.booking.PaymentStatus;
 import com.pgms.coredomain.domain.booking.ReceiptType;
 import com.pgms.coredomain.domain.event.EventSeat;
 import com.pgms.coredomain.domain.event.EventTime;
-import com.pgms.coredomain.domain.event.Ticket;
 import com.pgms.coredomain.domain.member.Member;
 
 import jakarta.validation.Valid;
@@ -29,7 +26,7 @@ public record BookingCreateRequest(
 	List<Long> seatIds,
 
 	@NotNull(message = "[수령 방법] 선택은 필수입니다.")
-	ReceiptType receiptType,
+	String receiptType,
 
 	@NotBlank(message = "[구매자 명] 입력은 필수입니다.")
 	String buyerName,
@@ -44,44 +41,29 @@ public record BookingCreateRequest(
 	PaymentMethod method
 ) {
 
-	public Booking toEntity(EventTime time, List<EventSeat> seats, Member member) {
-		Booking booking = Booking.builder()
+	public static Booking toEntity(
+		BookingCreateRequest request,
+		EventTime time,
+		List<EventSeat> seats,
+		Member member
+	) {
+		return Booking.builder()
 			.id(String.valueOf(System.currentTimeMillis()))
 			.bookingName(time.getEvent().getTitle() + " " + time.getRound())
-			.status(BookingStatus.WAITING_FOR_DEPOSIT)
-			.receiptType(receiptType())
-			.buyerName(buyerName())
-			.buyerPhoneNumber(buyerPhoneNumber())
-			.recipientName(deliveryAddress().isPresent()
-				? deliveryAddress().get().recipientName() : null)
-			.recipientPhoneNumber(deliveryAddress().isPresent()
-				? deliveryAddress().get().recipientPhoneNumber() : null)
-			.streetAddress(deliveryAddress().isPresent()
-				? deliveryAddress().get().streetAddress() : null)
-			.detailAddress(deliveryAddress().isPresent()
-				? deliveryAddress().get().detailAddress() : null)
-			.zipCode(deliveryAddress().isPresent()
-				? deliveryAddress().get().zipCode() : null)
+			.status(BookingStatus.WAITING_FOR_PAYMENT)
+			.receiptType(ReceiptType.fromDescription(request.receiptType))
+			.buyerName(request.buyerName)
+			.buyerPhoneNumber(request.buyerPhoneNumber)
+			.recipientName(request.deliveryAddress.get().recipientName())
+			.recipientPhoneNumber(request.deliveryAddress.get().recipientPhoneNumber())
+			.streetAddress(request.deliveryAddress.get().streetAddress())
+			.detailAddress(request.deliveryAddress.get().detailAddress())
+			.zipCode(request.deliveryAddress().get().zipCode())
 			.amount(seats.stream()
 				.map(seat -> seat.getEventSeatArea().getPrice())
 				.reduce(0, Integer::sum))
 			.member(member)
+			.time(time)
 			.build();
-
-		seats.forEach(seat -> booking.addTicket(
-			Ticket.builder()
-				.eventSeat(seat)
-				.build())
-		);
-
-		booking.updatePayment(
-			Payment.builder()
-				.method(method())
-				.amount(booking.getAmount())
-				.status(PaymentStatus.WAITING_FOR_DEPOSIT)
-				.build()
-		);
-
-		return booking;
 	}
 }

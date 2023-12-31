@@ -117,10 +117,18 @@ public class Payment extends BaseEntity {
 	}
 
 	public void toCanceled() {
-		this.status = PaymentStatus.CANCELLED;
+		this.status = PaymentStatus.CANCELED;
 	}
 
 	public void updateFailedMsg(String failedMsg) {
 		this.failedMsg = failedMsg;
+	}
+
+	public boolean isCancelable() {
+		return this.status == PaymentStatus.WAITING_FOR_DEPOSIT || this.status == PaymentStatus.DONE;
+	}
+
+	public boolean isCanceled() {
+		return this.status == PaymentStatus.CANCELED;
 	}
 }

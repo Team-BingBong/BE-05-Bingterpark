@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.pgms.coredomain.domain.common.BaseEntity;
+import com.pgms.coredomain.domain.event.EventSeatStatus;
+import com.pgms.coredomain.domain.event.EventTime;
 import com.pgms.coredomain.domain.event.Ticket;
 import com.pgms.coredomain.domain.member.Member;
 
@@ -75,11 +77,18 @@ public class Booking extends BaseEntity {
 	@JoinColumn(name = "member_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT)) //TODO: nullalbe = false 추가
 	private Member member;
 
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "time_id", nullable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+	EventTime time;
+
 	@OneToMany(mappedBy = "booking", cascade = CascadeType.ALL)
 	private List<Ticket> tickets = new ArrayList<>();
 
 	@OneToOne(mappedBy = "booking", cascade = CascadeType.ALL)
 	private Payment payment;
+
+	@OneToOne(mappedBy = "booking", cascade = CascadeType.ALL)
+	private BookingCancel cancel;
 
 	@Builder
 	public Booking(
@@ -95,7 +104,8 @@ public class Booking extends BaseEntity {
 		String detailAddress,
 		String zipCode,
 		Integer amount,
-		Member member
+		Member member,
+		EventTime time
 	) {
 		this.id = id;
 		this.bookingName = bookingName;
@@ -110,6 +120,7 @@ public class Booking extends BaseEntity {
 		this.zipCode = zipCode;
 		this.amount = amount;
 		this.member = member;
+		this.time = time;
 	}
 
 	public void addTicket(Ticket ticket) {
@@ -124,5 +135,21 @@ public class Booking extends BaseEntity {
 
 	public void updateStatus(BookingStatus status) {
 		this.status = status;
+	}
+
+	public boolean isCancelable() {
+		return !this.time.getEvent().isStarted()
+			&& this.payment.isCancelable()
+			&& this.status == BookingStatus.WAITING_FOR_PAYMENT || this.status == BookingStatus.PAYMENT_COMPLETED;
+	}
+
+	public void cancel(BookingCancel cancel) {
+		if (!this.payment.isCanceled()) {
+			throw new IllegalStateException("결제 취소 중 오류가 발생했습니다.");
+		}
+		this.tickets.forEach(ticket -> ticket.getSeat().updateStatus(EventSeatStatus.AVAILABLE));
+		this.status = BookingStatus.CANCELED;
+		this.cancel = cancel;
+		cancel.updateBooking(this);
 	}
 }

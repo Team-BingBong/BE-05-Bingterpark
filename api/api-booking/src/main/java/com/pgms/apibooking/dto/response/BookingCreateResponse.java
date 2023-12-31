@@ -7,7 +7,7 @@ public record BookingCreateResponse(
 	String bookingId,
 	int amount,
 	String status,
-	PaymentMethod paymentMethod,
+	String paymentMethod,
 	String paymentSuccessUrl,
 	String paymentFailUrl
 ) {
@@ -16,8 +16,8 @@ public record BookingCreateResponse(
 		return new BookingCreateResponse(
 			booking.getId(),
 			booking.getAmount(),
-			booking.getStatus().name(),
-			booking.getPayment().getMethod(),
+			booking.getStatus().getDescription(),
+			booking.getPayment().getMethod().getDescription(),
 			paymentSuccessUrl,
 			paymentFailUrl
 		);
