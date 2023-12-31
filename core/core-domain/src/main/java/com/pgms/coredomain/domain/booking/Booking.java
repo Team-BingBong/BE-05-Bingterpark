@@ -132,4 +132,11 @@ public class Booking extends BaseEntity {
 	public void updateStatus(BookingStatus status) {
 		this.status = status;
 	}
+
+	public boolean isCancelable() {
+		return !this.time.getEvent().isStarted()
+			&& this.payment.isCancelable()
+			&& this.status == BookingStatus.WAITING_FOR_PAYMENT || this.status == BookingStatus.PAYMENT_COMPLETED;
+
+	}
 }

@@ -48,7 +48,7 @@ public record BookingCreateRequest(
 		Booking booking = Booking.builder()
 			.id(String.valueOf(System.currentTimeMillis()))
 			.bookingName(time.getEvent().getTitle() + " " + time.getRound())
-			.status(BookingStatus.WAITING_FOR_DEPOSIT)
+			.status(BookingStatus.WAITING_FOR_PAYMENT)
 			.receiptType(receiptType())
 			.buyerName(buyerName())
 			.buyerPhoneNumber(buyerPhoneNumber())
