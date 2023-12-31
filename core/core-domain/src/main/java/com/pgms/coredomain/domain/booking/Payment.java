@@ -67,15 +67,15 @@ public class Payment extends BaseEntity {
 	@Column(name = "due_date")
 	private LocalDateTime dueDate;
 
+	@Enumerated(EnumType.STRING)
 	@Column(name = "refund_ bank_code")
-	private String refundBankCode;
+	private BankCode refundBankCode;
 
 	@Column(name = "refund_ account_number")
 	private String refundAccountNumber;
 
-	@Enumerated(EnumType.STRING)
 	@Column(name = "refund_ holder_name")
-	private BankCode refundHolderName;
+	private String refundHolderName;
 
 	@Column(name = "failed_msg")
 	private String failedMsg;
@@ -91,10 +91,13 @@ public class Payment extends BaseEntity {
 	private Booking booking;
 
 	@Builder
-	public Payment(PaymentMethod method, PaymentStatus status, int amount, Booking booking) {
+	public Payment(PaymentMethod method, PaymentStatus status, int amount) {
 		this.method = method;
 		this.status = status;
 		this.amount = amount;
+	}
+
+	public void updateBooking(Booking booking) {
 		this.booking = booking;
 	}
 
@@ -124,18 +127,17 @@ public class Payment extends BaseEntity {
 	}
 
 	public void updateRefundInfo(String refundBankCode, String refundAccountNumber, String refundHolderName) {
-		this.refundBankCode = refundBankCode;
+		this.refundBankCode = BankCode.getByBankNumCode(refundBankCode);
 		this.refundAccountNumber = refundAccountNumber;
-		this.refundHolderName = BankCode.getByBankNumCode(refundBankCode);
+		this.refundHolderName = refundHolderName;
 	}
 
 	public void toAborted() {
 		this.status = PaymentStatus.ABORTED;
 	}
 
-	public void toCanceled(LocalDateTime approvedAt) {
+	public void toCanceled() {
 		this.status = PaymentStatus.CANCELLED;
-		this.approvedAt = approvedAt;
 	}
 
 	public void updateFailedMsg(String failedMsg) {

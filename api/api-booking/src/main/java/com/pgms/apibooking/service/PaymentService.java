@@ -16,11 +16,9 @@ import org.springframework.web.client.RestTemplate;
 import com.pgms.apibooking.config.TossPaymentConfig;
 import com.pgms.apibooking.dto.request.PaymentCancelRequest;
 import com.pgms.apibooking.dto.request.PaymentConfirmRequest;
-import com.pgms.apibooking.dto.request.PaymentCreateRequest;
 import com.pgms.apibooking.dto.request.RefundAccountRequest;
 import com.pgms.apibooking.dto.response.PaymentCancelResponse;
 import com.pgms.apibooking.dto.response.PaymentCardResponse;
-import com.pgms.apibooking.dto.response.PaymentCreateResponse;
 import com.pgms.apibooking.dto.response.PaymentFailResponse;
 import com.pgms.apibooking.dto.response.PaymentSuccessResponse;
 import com.pgms.apibooking.dto.response.PaymentVirtualResponse;
@@ -45,14 +43,6 @@ public class PaymentService {
 	private final PaymentRepository paymentRepository;
 	private final BookingRepository bookingRepository;
 	private final TossPaymentConfig tossPaymentConfig;
-	private final BookingService bookingService;
-
-	public PaymentCreateResponse createPayment(PaymentCreateRequest request) {
-		Booking booking = bookingService.createBooking(request);
-		Payment payment = request.toEntity(booking);
-		paymentRepository.save(payment);
-		return PaymentCreateResponse.of(payment, tossPaymentConfig.getSuccessUrl(), tossPaymentConfig.getFailUrl());
-	}
 
 	public PaymentSuccessResponse successPayment(String paymentKey, String bookingId, int amount) {
 		Booking booking = bookingRepository.findWithPaymentById(bookingId)
@@ -64,7 +54,6 @@ public class PaymentService {
 		}
 
 		PaymentSuccessResponse response = requestPaymentConfirmation(paymentKey, bookingId, amount);
-
 		switch (payment.getMethod()) {
 			case CARD -> {
 				PaymentCardResponse card = response.card();
@@ -107,9 +96,10 @@ public class PaymentService {
 			return restTemplate.postForObject(
 				TossPaymentConfig.TOSS_CONFIRM_URL, new HttpEntity<>(request, headers), PaymentSuccessResponse.class);
 		} catch (HttpClientErrorException e) {
+			log.warn("HttpClientErrorException: {}", e.getMessage());
 			throw new BookingException(BookingErrorCode.TOSS_PAYMENTS_ERROR);
 		} catch (Exception e) {
-			log.warn(e.getMessage());
+			log.error("Exception: {}", e.getMessage(), e);
 			throw new BookingException(BookingErrorCode.INTERNAL_SERVER_ERROR);
 		}
 	}
@@ -126,7 +116,7 @@ public class PaymentService {
 			);
 		}
 		Booking booking = payment.getBooking();
-		payment.toCanceled(DateTimeUtil.parse(response.approvedAt()));
+		payment.toCanceled();
 		booking.updateStatus(BookingStatus.CANCELLED);
 		// TODO: ticket(event seat) 상태 변경
 		return response;
@@ -140,7 +130,7 @@ public class PaymentService {
 			return restTemplate.postForObject(
 				uri, new HttpEntity<>(request, headers), PaymentCancelResponse.class);
 		} catch (Exception e) {
-			log.warn(e.getMessage());
+			log.error("Exception: {}", e.getMessage(), e);
 			throw new BookingException(BookingErrorCode.INTERNAL_SERVER_ERROR);
 		}
 	}
