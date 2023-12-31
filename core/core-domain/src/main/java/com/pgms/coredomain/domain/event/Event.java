@@ -125,4 +125,9 @@ public class Event extends BaseEntity {
 		LocalDateTime now = LocalDateTime.now();
 		return now.isAfter(bookingStartedAt) && now.isBefore(bookingEndedAt);
 	}
+
+	public boolean isStarted() {
+		LocalDateTime now = LocalDateTime.now();
+		return now.isAfter(startedAt);
+	}
 }

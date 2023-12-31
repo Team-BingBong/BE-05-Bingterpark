@@ -13,3 +13,4 @@ public record PaymentSuccessResponse(
 	PaymentVirtualResponse virtualAccount
 ) {
 }
+

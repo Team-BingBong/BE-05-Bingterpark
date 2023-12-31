@@ -14,7 +14,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import com.pgms.apibooking.config.TossPaymentConfig;
-import com.pgms.apibooking.dto.request.PaymentCancelRequest;
+import com.pgms.apibooking.dto.request.BookingCancelRequest;
 import com.pgms.apibooking.dto.request.PaymentConfirmRequest;
 import com.pgms.apibooking.dto.request.RefundAccountRequest;
 import com.pgms.apibooking.dto.response.PaymentCancelResponse;
@@ -107,7 +107,7 @@ public class PaymentService {
 		}
 	}
 
-	public PaymentCancelResponse cancelPayment(String paymentKey, PaymentCancelRequest request) {
+	public PaymentCancelResponse cancelPayment(String paymentKey, BookingCancelRequest request) {
 		Payment payment = getPaymentByPaymentKey(paymentKey);
 		PaymentCancelResponse response = requestPaymentCancellation(paymentKey, request);
 		if (request.refundReceiveAccount().isPresent()) {
@@ -120,11 +120,11 @@ public class PaymentService {
 		}
 		Booking booking = payment.getBooking();
 		payment.updateStatus(PaymentStatus.valueOf(response.status()));
-		booking.updateStatus(BookingStatus.CANCELLED);
+		booking.updateStatus(BookingStatus.CANCELED);
 		return response;
 	}
 
-	public PaymentCancelResponse requestPaymentCancellation(String paymentKey, PaymentCancelRequest request) {
+	public PaymentCancelResponse requestPaymentCancellation(String paymentKey, BookingCancelRequest request) {
 		RestTemplate restTemplate = new RestTemplate();
 		HttpHeaders headers = buildTossApiHeaders();
 		URI uri = URI.create(TossPaymentConfig.TOSS_ORIGIN_URL + paymentKey + "/cancel");
