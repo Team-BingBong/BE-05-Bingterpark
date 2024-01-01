@@ -1,5 +1,6 @@
 package com.pgms.apievent.eventSeat.service;
 
+import com.pgms.apievent.EventTestConfig;
 import com.pgms.apievent.eventSeat.dto.request.EventSeatsCreateRequest;
 import com.pgms.apievent.eventSeat.dto.response.EventSeatResponse;
 import com.pgms.apievent.eventSeat.dto.response.LeftEventSeatResponse;
@@ -11,6 +12,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
@@ -22,6 +24,7 @@ import static org.hamcrest.Matchers.is;
 
 @Transactional
 @SpringBootTest
+@ContextConfiguration(classes = EventTestConfig.class)
 class EventSeatServiceTest {
 
     @Autowired
@@ -105,5 +108,4 @@ class EventSeatServiceTest {
         // then
         assertThat(responses.get(0).leftSeatNumber(), is(10L));
     }
-
 }

@@ -1,10 +1,10 @@
 package com.pgms.apievent.factory.event;
 
-import java.time.LocalDateTime;
-
 import com.pgms.coredomain.domain.event.Event;
 import com.pgms.coredomain.domain.event.EventHall;
 import com.pgms.coredomain.domain.event.GenreType;
+
+import java.time.LocalDateTime;
 
 public class EventFactory {
 
@@ -15,7 +15,7 @@ public class EventFactory {
 			.runningTime(60)
 			.startedAt(LocalDateTime.of(2023, 1, 1, 0, 0))
 			.endedAt(LocalDateTime.of(2023, 1, 1, 0, 0))
-			.rating("12세 이상")
+			.viewRating("12세 이상")
 			.genreType(GenreType.MUSICAL)
 			.thumbnail("thumbnail.jpg")
 			.bookingStartedAt(LocalDateTime.of(2023, 1, 1, 0, 0))
