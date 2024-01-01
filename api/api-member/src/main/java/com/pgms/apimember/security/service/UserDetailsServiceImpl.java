@@ -1,4 +1,4 @@
-package com.pgms.apimember.security;
+package com.pgms.apimember.security.service;
 
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

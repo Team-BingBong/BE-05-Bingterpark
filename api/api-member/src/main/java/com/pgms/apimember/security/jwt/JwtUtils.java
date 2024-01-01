@@ -1,4 +1,4 @@
-package com.pgms.apimember.security;
+package com.pgms.apimember.security.jwt;
 
 import java.security.Key;
 import java.util.Date;
@@ -8,6 +8,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
+
+import com.pgms.apimember.security.service.UserDetailsImpl;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;

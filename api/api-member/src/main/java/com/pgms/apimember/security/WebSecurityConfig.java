@@ -14,6 +14,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import com.pgms.apimember.security.jwt.JwtAuthenticationEntryPoint;
+import com.pgms.apimember.security.jwt.JwtAuthenticationFilter;
+import com.pgms.apimember.security.jwt.JwtUtils;
+import com.pgms.apimember.security.service.UserDetailsServiceImpl;
+
 import lombok.RequiredArgsConstructor;
 
 @Configuration
@@ -22,12 +27,12 @@ import lombok.RequiredArgsConstructor;
 public class WebSecurityConfig {
 
 	private final UserDetailsServiceImpl userDetailsService;
-	private final AuthEntryPointJwt unauthorizedHandler;
+	private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 	private final JwtUtils jwtUtils;
 
 	@Bean
-	public AuthTokenFilter authenticationJwtTokenFilter() {
-		return new AuthTokenFilter(jwtUtils, userDetailsService);
+	public JwtAuthenticationFilter authenticationJwtTokenFilter() {
+		return new JwtAuthenticationFilter(jwtUtils, userDetailsService);
 	}
 
 	@Bean
@@ -52,10 +57,12 @@ public class WebSecurityConfig {
 
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-		http.csrf(AbstractHttpConfigurer::disable)
-			.exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
+		http
+			.csrf(AbstractHttpConfigurer::disable)
+			.exceptionHandling(exception -> exception.authenticationEntryPoint(jwtAuthenticationEntryPoint))
 			.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 			.authorizeHttpRequests(auth ->
+				// TODO authorize 설정
 				// auth.requestMatchers("/api/auth/**").permitAll()
 				// 	.requestMatchers("/api/test/**").permitAll()
 				auth.anyRequest().permitAll()
