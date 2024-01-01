@@ -18,4 +18,10 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
 	@Query("select m from Member m join fetch m.role r where m.id = :id")
 	Optional<Member> findByIdWithRole(Long id);
+
+	@Query("select m from Member m join fetch m.role r where m.id = :id and m.status = 'DELETED'")
+	Optional<Member> findByIdAndIsDeletedTrue(Long id);
+
+	@Query("select m from Member m join fetch m.role r where m.id = :id and m.status != 'DELETED'")
+	Optional<Member> findByIdAndIsDeletedFalse(Long id);
 }

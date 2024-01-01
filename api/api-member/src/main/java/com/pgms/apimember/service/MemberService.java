@@ -62,13 +62,9 @@ public class MemberService {
 	}
 
 	public Long restoreMember(Long memberId) {
-		final Member member = memberRepository.findById(memberId)
+		Member member = memberRepository.findByIdAndIsDeletedTrue(memberId)
 			.orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
-
-		if (member.isDeleted()) {
-			member.updateToActive();
-		}
-
+		member.updateToActive();
 		return member.getId();
 	}
 
@@ -87,14 +83,8 @@ public class MemberService {
 	}
 
 	private Member getAvailableMember(Long memberId) {
-		final Member member = memberRepository.findById(memberId)
+		return memberRepository.findByIdAndIsDeletedFalse(memberId)
 			.orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
-
-		// 필터단에서 멤버 삭제여부 검증 시 필요하지 않을수도 있음
-		if (member.isDeleted()) {
-			throw new MemberException(MEMBER_ALREADY_DELETED);
-		}
-		return member;
 	}
 
 }
