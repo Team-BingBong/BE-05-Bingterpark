@@ -27,7 +27,7 @@ public record EventCreateRequest(
 	LocalDateTime endDate,
 
 	@NotBlank(message = "관람 등급은 필수 입력값 입니다.")
-	String rating,
+	String viewRating,
 
 	@NotNull(message = "공연 장르 타입은 필수 입력값 입니다.")
 	GenreType genreType,
@@ -42,7 +42,7 @@ public record EventCreateRequest(
 			.runningTime(runningTime)
 			.startedAt(startDate)
 			.endedAt(endDate)
-			.rating(rating)
+			.viewRating(viewRating)
 			.genreType(genreType)
 			.thumbnail("defaultThumbnail.jpg")
 			.eventHall(eventHall)

@@ -79,7 +79,7 @@ public class EventService {
 			.runningTime(request.runningTime())
 			.startDate(request.startDate())
 			.endDate(request.endDate())
-			.rating(request.rating())
+			.viewRating(request.viewRating())
 			.genreType(request.genreType())
 			.bookingStartedAt(request.bookingStartedAt())
 			.bookingEndedAt(request.bookingEndedAt())

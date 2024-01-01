@@ -17,7 +17,11 @@ services:
       - 9300:9300 #tcp
     networks:
       - es-bridge
-
+    command: >
+      bash -c "
+        /usr/share/elasticsearch/bin/elasticsearch-plugin install analysis-nori &&
+        exec /usr/local/bin/docker-entrypoint.sh
+      "
 
   kibana:
     image: docker.elastic.co/kibana/kibana:8.5.3

@@ -1,14 +1,12 @@
 package com.pgms.apievent.event.dto.request;
 
-import java.time.LocalDateTime;
-
-import org.springframework.format.annotation.DateTimeFormat;
-
 import com.pgms.coredomain.domain.event.GenreType;
-
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.time.LocalDateTime;
 
 public record EventUpdateRequest(
 
@@ -31,7 +29,7 @@ public record EventUpdateRequest(
 	LocalDateTime endDate,
 
 	@Nullable
-	String rating,
+	String viewRating,
 
 	@Nullable
 	GenreType genreType,
