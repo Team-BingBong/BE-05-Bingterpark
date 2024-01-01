@@ -59,7 +59,10 @@ public class WebSecurityConfig {
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		http
 			.csrf(AbstractHttpConfigurer::disable)
-			.exceptionHandling(exception -> exception.authenticationEntryPoint(jwtAuthenticationEntryPoint))
+			.exceptionHandling(exception -> {
+				exception.authenticationEntryPoint(jwtAuthenticationEntryPoint);
+				// exception.accessDeniedHandler(customAccessDeniedHandler()); // TODO AccessDeniedHandler 추가
+			})
 			.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 			.authorizeHttpRequests(auth ->
 				// TODO authorize 설정
