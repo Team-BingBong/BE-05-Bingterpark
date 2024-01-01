@@ -67,7 +67,37 @@ public class Member extends AccountBaseEntity {
 	@JoinColumn(name = "member_id", nullable = false)
 	private Role role;
 
+	public void updateMemberInfo(
+		String name,
+		String phoneNumber,
+		String birthDate,
+		Gender gender,
+		String streetAddress,
+		String detailAddress,
+		String zipCode) {
+		this.name = name;
+		this.phoneNumber = phoneNumber;
+		this.birthDate = birthDate;
+		this.gender = gender;
+		this.streetAddress = streetAddress;
+		this.detailAddress = detailAddress;
+		this.zipCode = zipCode;
+	}
+
 	public boolean isDeleted() {
 		return this.status == AccountStatus.DELETED;
+	}
+
+	public void updateToDeleted() {
+		this.status = AccountStatus.DELETED;
+	}
+
+	public void updateToActive() {
+		this.status = AccountStatus.ACTIVE;
+	}
+
+	public void updatePassword(String encodedPassword) {
+		this.password = encodedPassword;
+		super.updateLastPasswordUpdatedAt();
 	}
 }

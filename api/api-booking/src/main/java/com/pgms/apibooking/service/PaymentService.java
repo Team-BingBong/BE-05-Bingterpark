@@ -2,8 +2,6 @@ package com.pgms.apibooking.service;
 
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Base64;
 import java.util.Collections;
 
@@ -16,16 +14,21 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import com.pgms.apibooking.config.TossPaymentConfig;
-import com.pgms.apibooking.dto.request.PaymentCancelRequest;
+import com.pgms.apibooking.dto.request.BookingCancelRequest;
 import com.pgms.apibooking.dto.request.PaymentConfirmRequest;
+import com.pgms.apibooking.dto.request.RefundAccountRequest;
 import com.pgms.apibooking.dto.response.PaymentCancelResponse;
+import com.pgms.apibooking.dto.response.PaymentCardResponse;
 import com.pgms.apibooking.dto.response.PaymentFailResponse;
 import com.pgms.apibooking.dto.response.PaymentSuccessResponse;
+import com.pgms.apibooking.dto.response.PaymentVirtualResponse;
 import com.pgms.apibooking.exception.BookingErrorCode;
 import com.pgms.apibooking.exception.BookingException;
+import com.pgms.apibooking.util.DateTimeUtil;
 import com.pgms.coredomain.domain.booking.Booking;
 import com.pgms.coredomain.domain.booking.BookingStatus;
 import com.pgms.coredomain.domain.booking.Payment;
+import com.pgms.coredomain.domain.booking.PaymentStatus;
 import com.pgms.coredomain.domain.booking.repository.BookingRepository;
 import com.pgms.coredomain.domain.booking.repository.PaymentRepository;
 
@@ -52,16 +55,30 @@ public class PaymentService {
 		}
 
 		PaymentSuccessResponse response = requestPaymentConfirmation(paymentKey, bookingId, amount);
+
 		switch (payment.getMethod()) {
-			case CARD -> payment.updateCardInfo(response.card().number(), response.card().installmentPlanMonths(),
-				response.card().isInterestFree());
-			case VIRTUAL_ACCOUNT -> System.out.println("아직 안함");
+			case CARD -> {
+				PaymentCardResponse card = response.card();
+				payment.updateCardInfo(
+					card.number(),
+					card.installmentPlanMonths(),
+					card.isInterestFree()
+				);
+				payment.updateApprovedAt(DateTimeUtil.parse(response.approvedAt()));
+			}
+			case VIRTUAL_ACCOUNT -> {
+				PaymentVirtualResponse virtualAccount = response.virtualAccount();
+				payment.updateVirtualWaiting(
+					virtualAccount.accountNumber(),
+					virtualAccount.bankCode(),
+					virtualAccount.customerName(),
+					DateTimeUtil.parse(virtualAccount.dueDate())
+				);
+			}
 			default -> throw new BookingException(BookingErrorCode.INVALID_PAYMENT_METHOD);
 		}
-
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXXX");
-		payment.updateConfirmInfo(paymentKey, LocalDateTime.parse(response.approvedAt(), formatter),
-			LocalDateTime.parse(response.requestedAt(), formatter));
+		payment.updateConfirmInfo(paymentKey, DateTimeUtil.parse(response.requestedAt()));
+		payment.updateStatus(PaymentStatus.valueOf(response.status()));
 		booking.updateStatus(BookingStatus.PAYMENT_COMPLETED);
 
 		return response;
@@ -69,7 +86,7 @@ public class PaymentService {
 
 	public PaymentFailResponse failPayment(String errorCode, String errorMessage, String bookingId) {
 		Payment payment = getPaymentByBookingId(bookingId);
-		payment.toAborted();
+		payment.updateStatus(PaymentStatus.ABORTED);
 		payment.updateFailedMsg(errorMessage);
 		return new PaymentFailResponse(errorCode, errorMessage, bookingId);
 	}
@@ -90,22 +107,32 @@ public class PaymentService {
 		}
 	}
 
-	public PaymentCancelResponse cancelPayment(PaymentCancelRequest request) {
-		Payment payment = getPaymentByPaymentKey(request.paymentKey());
-		PaymentCancelResponse response = requestPaymentCancellation(request);
-		payment.toCanceled();
-		// TODO: booking, ticket 상태 변경
+	public PaymentCancelResponse cancelPayment(String paymentKey, BookingCancelRequest request) {
+		Payment payment = getPaymentByPaymentKey(paymentKey);
+		PaymentCancelResponse response = requestPaymentCancellation(paymentKey, request);
+		if (request.refundReceiveAccount().isPresent()) {
+			RefundAccountRequest refundAccountRequest = request.refundReceiveAccount().get();
+			payment.updateRefundInfo(
+				refundAccountRequest.bank(),
+				refundAccountRequest.accountNumber(),
+				refundAccountRequest.holderName()
+			);
+		}
+		Booking booking = payment.getBooking();
+		payment.updateStatus(PaymentStatus.valueOf(response.status()));
+		booking.updateStatus(BookingStatus.CANCELED);
 		return response;
 	}
 
-	public PaymentCancelResponse requestPaymentCancellation(PaymentCancelRequest request) {
+	public PaymentCancelResponse requestPaymentCancellation(String paymentKey, BookingCancelRequest request) {
 		RestTemplate restTemplate = new RestTemplate();
 		HttpHeaders headers = buildTossApiHeaders();
-		URI uri = URI.create(TossPaymentConfig.TOSS_ORIGIN_URL + request.paymentKey() + "/cancel");
+		URI uri = URI.create(TossPaymentConfig.TOSS_ORIGIN_URL + paymentKey + "/cancel");
 		try {
 			return restTemplate.postForObject(
 				uri, new HttpEntity<>(request, headers), PaymentCancelResponse.class);
 		} catch (Exception e) {
+			log.error("Exception: {}", e.getMessage(), e);
 			throw new BookingException(BookingErrorCode.INTERNAL_SERVER_ERROR);
 		}
 	}
