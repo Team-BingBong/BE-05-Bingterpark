@@ -44,6 +44,7 @@ public class PaymentService {
 	private final PaymentRepository paymentRepository;
 	private final BookingRepository bookingRepository;
 	private final TossPaymentConfig tossPaymentConfig;
+	private final RestTemplate restTemplate;
 
 	public PaymentSuccessResponse successPayment(String paymentKey, String bookingId, int amount) {
 		Booking booking = bookingRepository.findWithPaymentById(bookingId)
@@ -92,7 +93,6 @@ public class PaymentService {
 	}
 
 	public PaymentSuccessResponse requestPaymentConfirmation(String paymentKey, String bookingId, int amount) {
-		RestTemplate restTemplate = new RestTemplate();
 		HttpHeaders headers = buildTossApiHeaders();
 		PaymentConfirmRequest request = new PaymentConfirmRequest(paymentKey, bookingId, amount);
 		try { // tossPayments post 요청 (url , HTTP 객체 ,응답 Dto)
@@ -125,7 +125,6 @@ public class PaymentService {
 	}
 
 	public PaymentCancelResponse requestPaymentCancellation(String paymentKey, BookingCancelRequest request) {
-		RestTemplate restTemplate = new RestTemplate();
 		HttpHeaders headers = buildTossApiHeaders();
 		URI uri = URI.create(TossPaymentConfig.TOSS_ORIGIN_URL + paymentKey + "/cancel");
 		try {
