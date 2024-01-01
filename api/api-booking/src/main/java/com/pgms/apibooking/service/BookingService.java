@@ -57,7 +57,7 @@ public class BookingService { //TODO: 테스트 코드 작성
 			Payment.builder()
 				.method(PaymentMethod.fromDescription(request.method()))
 				.amount(booking.getAmount())
-				.status(PaymentStatus.WAITING_FOR_DEPOSIT)
+				.status(PaymentStatus.READY)
 				.build()
 		);
 
