@@ -64,7 +64,7 @@ public class Member extends AccountBaseEntity {
 	private Provider provider;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "member_id", nullable = false)
+	@JoinColumn(name = "role_id", nullable = false)
 	private Role role;
 
 	public boolean isDeleted() {
