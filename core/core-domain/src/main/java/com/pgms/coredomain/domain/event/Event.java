@@ -1,27 +1,13 @@
 package com.pgms.coredomain.domain.event;
 
-import java.time.LocalDateTime;
-
 import com.pgms.coredomain.domain.common.BaseEntity;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.ConstraintMode;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.ForeignKey;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.Lob;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
 
 @Getter
 @Entity
@@ -51,7 +37,7 @@ public class Event extends BaseEntity {
 	private LocalDateTime endedAt;
 
 	@Column(name = "rating")
-	private String rating;
+	private String viewRating;
 
 	@Column(name = "genre")
 	@Enumerated(value = EnumType.STRING)
@@ -64,10 +50,10 @@ public class Event extends BaseEntity {
 	@Column(name = "thumbnail")
 	private String thumbnail;
 
-	@Column(name = "booking_started_at", nullable = false)
+	@Column(name = "booking_started_at")
 	private LocalDateTime bookingStartedAt;
 
-	@Column(name = "booking_ended_at", nullable = false)
+	@Column(name = "booking_ended_at")
 	private LocalDateTime bookingEndedAt;
 
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -81,7 +67,7 @@ public class Event extends BaseEntity {
 		int runningTime,
 		LocalDateTime startedAt,
 		LocalDateTime endedAt,
-		String rating,
+		String viewRating,
 		GenreType genreType,
 		String thumbnail,
 		LocalDateTime bookingStartedAt,
@@ -92,7 +78,7 @@ public class Event extends BaseEntity {
 		this.runningTime = runningTime;
 		this.startedAt = startedAt;
 		this.endedAt = endedAt;
-		this.rating = rating;
+		this.viewRating = viewRating;
 		this.genreType = genreType;
 		this.thumbnail = thumbnail;
 		this.bookingStartedAt = bookingStartedAt;
@@ -106,7 +92,7 @@ public class Event extends BaseEntity {
 		this.runningTime = eventEdit.runningTime();
 		this.startedAt = eventEdit.startDate();
 		this.endedAt = eventEdit.endDate();
-		this.rating = eventEdit.rating();
+		this.viewRating = eventEdit.viewRating();
 		this.genreType = eventEdit.genreType();
 		this.bookingStartedAt = eventEdit.bookingStartedAt();
 		this.bookingEndedAt = eventEdit.bookingEndedAt();
