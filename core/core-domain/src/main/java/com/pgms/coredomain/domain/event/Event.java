@@ -44,11 +44,11 @@ public class Event extends BaseEntity {
 	@Column(name = "running_time")
 	private int runningTime;
 
-	@Column(name = "start_date")
-	private LocalDateTime startDate;
+	@Column(name = "started_at")
+	private LocalDateTime startedAt;
 
-	@Column(name = "endDate")
-	private LocalDateTime endDate;
+	@Column(name = "ended_at")
+	private LocalDateTime endedAt;
 
 	@Column(name = "rating")
 	private String rating;
@@ -56,7 +56,7 @@ public class Event extends BaseEntity {
 	@Column(name = "genre")
 	@Enumerated(value = EnumType.STRING)
 	private GenreType genreType;
-	
+
 	@Column(name = "average_score")
 	private Double averageScore = 0.0;
 
@@ -79,8 +79,8 @@ public class Event extends BaseEntity {
 		String title,
 		String description,
 		int runningTime,
-		LocalDateTime startDate,
-		LocalDateTime endDate,
+		LocalDateTime startedAt,
+		LocalDateTime endedAt,
 		String rating,
 		GenreType genreType,
 		String thumbnail,
@@ -90,8 +90,8 @@ public class Event extends BaseEntity {
 		this.title = title;
 		this.description = description;
 		this.runningTime = runningTime;
-		this.startDate = startDate;
-		this.endDate = endDate;
+		this.startedAt = startedAt;
+		this.endedAt = endedAt;
 		this.rating = rating;
 		this.genreType = genreType;
 		this.thumbnail = thumbnail;
@@ -104,11 +104,10 @@ public class Event extends BaseEntity {
 		this.title = eventEdit.title();
 		this.description = eventEdit.description();
 		this.runningTime = eventEdit.runningTime();
-		this.startDate = eventEdit.startDate();
-		this.endDate = eventEdit.endDate();
+		this.startedAt = eventEdit.startDate();
+		this.endedAt = eventEdit.endDate();
 		this.rating = eventEdit.rating();
 		this.genreType = eventEdit.genreType();
-		this.thumbnail = eventEdit.thumbnail();
 		this.bookingStartedAt = eventEdit.bookingStartedAt();
 		this.bookingEndedAt = eventEdit.bookingEndedAt();
 		this.eventHall = eventEdit.eventHall();
@@ -118,8 +117,17 @@ public class Event extends BaseEntity {
 		this.averageScore = averageScore;
 	}
 
+	public void updateThumbnail(String thumbnail) {
+		this.thumbnail = thumbnail;
+	}
+
 	public boolean isBookable() {
 		LocalDateTime now = LocalDateTime.now();
 		return now.isAfter(bookingStartedAt) && now.isBefore(bookingEndedAt);
+	}
+
+	public boolean isStarted() {
+		LocalDateTime now = LocalDateTime.now();
+		return now.isAfter(startedAt);
 	}
 }

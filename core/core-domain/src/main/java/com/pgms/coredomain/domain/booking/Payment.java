@@ -57,8 +57,9 @@ public class Payment extends BaseEntity {
 	@Column(name = "account_number")
 	private String accountNumber;
 
+	@Enumerated(EnumType.STRING)
 	@Column(name = "bank_code")
-	private String bankCode;
+	private BankCode bankCode;
 
 	@Column(name = "depositor_name")
 	private String depositorName;
@@ -66,8 +67,9 @@ public class Payment extends BaseEntity {
 	@Column(name = "due_date")
 	private LocalDateTime dueDate;
 
+	@Enumerated(EnumType.STRING)
 	@Column(name = "refund_ bank_code")
-	private String refundBankCode;
+	private BankCode refundBankCode;
 
 	@Column(name = "refund_ account_number")
 	private String refundAccountNumber;
@@ -89,10 +91,13 @@ public class Payment extends BaseEntity {
 	private Booking booking;
 
 	@Builder
-	public Payment(PaymentMethod method, PaymentStatus status, int amount, Booking booking) {
+	public Payment(PaymentMethod method, PaymentStatus status, int amount) {
 		this.method = method;
 		this.status = status;
 		this.amount = amount;
+	}
+
+	public void updateBooking(Booking booking) {
 		this.booking = booking;
 	}
 
@@ -102,22 +107,42 @@ public class Payment extends BaseEntity {
 		this.isInterestFree = isInterestFree;
 	}
 
-	public void updateConfirmInfo(String paymentKey, LocalDateTime approvedAt, LocalDateTime requestedAt) {
-		this.paymentKey = paymentKey;
+	public void updateVirtualWaiting(String accountNumber, String bankCode, String depositorName,
+		LocalDateTime dueDate) {
+		this.accountNumber = accountNumber;
+		this.bankCode = BankCode.getByBankNumCode(bankCode);
+		this.depositorName = depositorName;
+		this.dueDate = dueDate;
+	}
+
+	public void updateApprovedAt(LocalDateTime approvedAt) {
 		this.approvedAt = approvedAt;
+	}
+
+	public void updateConfirmInfo(String paymentKey, LocalDateTime requestedAt) {
+		this.paymentKey = paymentKey;
 		this.requestedAt = requestedAt;
-		this.status = PaymentStatus.DONE;
 	}
 
-	public void toAborted() {
-		this.status = PaymentStatus.ABORTED;
+	public void updateRefundInfo(String refundBankCode, String refundAccountNumber, String refundHolderName) {
+		this.refundBankCode = BankCode.getByBankNumCode(refundBankCode);
+		this.refundAccountNumber = refundAccountNumber;
+		this.refundHolderName = refundHolderName;
 	}
 
-	public void toCanceled() {
-		this.status = PaymentStatus.CANCELLED;
+	public void updateStatus(PaymentStatus status) {
+		this.status = status;
 	}
 
 	public void updateFailedMsg(String failedMsg) {
 		this.failedMsg = failedMsg;
+	}
+
+	public boolean isCancelable() {
+		return this.status == PaymentStatus.WAITING_FOR_DEPOSIT || this.status == PaymentStatus.DONE;
+	}
+
+	public boolean isCanceled() {
+		return this.status == PaymentStatus.CANCELED;
 	}
 }

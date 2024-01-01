@@ -9,19 +9,18 @@ import lombok.Getter;
 @Configuration
 public class TossPaymentConfig {
 
-	@Value("${payment.toss_test_client_api_key}")
+	public static final String TOSS_CONFIRM_URL = "https://api.tosspayments.com/v1/payments/confirm";
+	public static final String TOSS_ORIGIN_URL = "https://api.tosspayments.com/v1/payments/";
+
+	@Value("${payment.toss.test-client-api-key}")
 	private String testClientApiKey;
 
-	@Value("${payment.toss_test_secret_api_key}")
+	@Value("${payment.toss.test-secret-api-key}")
 	private String testSecretApiKey;
 
-	@Value("${payment.success_url}")
+	@Value("${payment.toss.success-url}")
 	private String successUrl;
 
-	@Value("${payment.fail_url}")
+	@Value("${payment.toss.fail-url}")
 	private String failUrl;
-
-	public static final String TOSS_CONFIRM_URL = "https://api.tosspayments.com/v1/payments/confirm";
-
-	public static final String TOSS_ORIGIN_URL = "https://api.tosspayments.com/v1/payments/";
 }

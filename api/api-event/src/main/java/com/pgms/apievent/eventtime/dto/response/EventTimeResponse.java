@@ -16,8 +16,8 @@ public record EventTimeResponse(
 			eventTime.getId(),
 			eventTime.getEvent().getId(),
 			eventTime.getRound(),
-			eventTime.getStartTime(),
-			eventTime.getEndTime()
+			eventTime.getStartedAt(),
+			eventTime.getEndedAt()
 		);
 	}
 }

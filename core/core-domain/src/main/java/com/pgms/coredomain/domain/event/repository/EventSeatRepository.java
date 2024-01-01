@@ -14,7 +14,6 @@ public interface EventSeatRepository extends JpaRepository<EventSeat, Long> {
 	List<EventSeat> findAllWithAreaByTimeId(@Param("timeId") Long timeId);
 
 	@Query("SELECT es FROM EventSeat es JOIN FETCH es.eventSeatArea esa WHERE es.eventTime.id = :timeId AND es.id IN :seatIds")
-	List<EventSeat> findAllWithAreaByTimeIdAndSeatIds(Long timeId, List<Long> seatIds);
+	List<EventSeat> findAllWithAreaByTimeIdAndSeatIds(@Param("timeId") Long timeId, @Param("seatIds") List<Long> seatIds);
 
-	// TODO 특정 이벤트 회차의 등급별 남은 자리 갯수 쿼리
 }

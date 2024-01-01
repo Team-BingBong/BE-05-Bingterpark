@@ -59,7 +59,7 @@ class EventTimeServiceTest {
 	@Test
 	void 공연_회차_생성_테스트() {
 		// Given
-		EventTimeCreateRequest request = new EventTimeCreateRequest(1, event.getStartDate(), event.getEndDate());
+		EventTimeCreateRequest request = new EventTimeCreateRequest(1, event.getStartedAt(), event.getEndedAt());
 
 		// When
 		EventTimeResponse response = eventTimeService.createEventTime(event.getId(), request);
@@ -72,7 +72,7 @@ class EventTimeServiceTest {
 	@Test
 	void 공연_회차_중복_생성_실패_테스트() {
 		// Given
-		EventTimeCreateRequest request = new EventTimeCreateRequest(1, event.getStartDate(), event.getEndDate());
+		EventTimeCreateRequest request = new EventTimeCreateRequest(1, event.getStartedAt(), event.getEndedAt());
 		EventTime eventTime = request.toEntity(event);
 		eventTimeRepository.save(eventTime);
 
@@ -85,7 +85,7 @@ class EventTimeServiceTest {
 	void 공연_회차_단건_조회_테스트() {
 		// Given
 		EventTime eventTime = eventTimeRepository.save(
-			new EventTime(1, event.getStartDate(), event.getEndDate(), event));
+			new EventTime(1, event.getStartedAt(), event.getEndedAt(), event));
 
 		// When
 		EventTimeResponse response = eventTimeService.getEventTimeById(eventTime.getId());
@@ -102,8 +102,8 @@ class EventTimeServiceTest {
 		IntStream.range(0, REQUEST_NUMBER)
 			.forEach(i -> eventTimeRepository.save(new EventTime(
 				i + 1,
-				event.getStartDate(),
-				event.getEndDate(),
+				event.getStartedAt(),
+				event.getEndedAt(),
 				event)));
 
 		// When
@@ -117,7 +117,7 @@ class EventTimeServiceTest {
 	void 공연_회차_수정_테스트() {
 		// Given
 		EventTime eventTime = eventTimeRepository.save(
-			new EventTime(1, event.getStartDate(), event.getEndDate(), event));
+			new EventTime(1, event.getStartedAt(), event.getEndedAt(), event));
 		EventTimeUpdateRequest request = new EventTimeUpdateRequest(
 			LocalDateTime.of(2023, 12, 31, 15, 0),
 			LocalDateTime.of(2024, 1, 25, 18, 0));
@@ -134,7 +134,7 @@ class EventTimeServiceTest {
 	void 공연_회차_삭제_테스트() {
 		// Given
 		EventTime eventTime = eventTimeRepository.save(
-			new EventTime(1, event.getStartDate(), event.getEndDate(), event));
+			new EventTime(1, event.getStartedAt(), event.getEndedAt(), event));
 
 		// When
 		eventTimeService.deleteEventTimeById(eventTime.getId());

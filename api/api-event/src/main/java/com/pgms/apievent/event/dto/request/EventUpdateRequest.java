@@ -37,9 +37,6 @@ public record EventUpdateRequest(
 	GenreType genreType,
 
 	@Nullable
-	String thumbnail,
-
-	@Nullable
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	LocalDateTime bookingStartedAt,
 

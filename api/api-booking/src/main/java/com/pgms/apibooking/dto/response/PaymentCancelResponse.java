@@ -11,7 +11,8 @@ public record PaymentCancelResponse(
 	String status,
 	String requestedAt,
 	String approvedAt,
-	PaymentSuccessCardResponse card,
+	PaymentCardResponse card,
+	RefundAccountResponse refundReceiveAccount,
 	List<PaymentCancelDetailResponse> cancels
 ) {
 }
