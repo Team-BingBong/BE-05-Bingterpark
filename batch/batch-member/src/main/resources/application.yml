@@ -20,3 +20,6 @@ logging:
         sql: debug
         orm:
           jdbc.bind: trace
+jwt:
+  secret-key: secret-key # TODO : 시크릿 키 따로 관리
+  expiry-seconds: 3600

@@ -76,4 +76,7 @@ public class Admin extends AccountBaseEntity {
 	public void updateToDeleted() {
 		this.status = AccountStatus.DELETED;
 	}
+	public void updateToLocked() {
+		this.status = AccountStatus.LOCKED;
+	}
 }
