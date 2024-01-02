@@ -2,15 +2,11 @@
 INSERT INTO event_hall (event_name, address)
 VALUES ('고척스카이돔', '서울 구로구 경인로 430');
 
--- EventHallSeat
-INSERT INTO event_hall_seat (name, eventhall_id)
-VALUES ('A1', 1);
-
 -- Event
 INSERT INTO event (title, description, running_time, started_at, ended_at, rating, genre, average_score, thumbnail,
                    booking_started_at, booking_ended_at, event_hall_id)
 VALUES ('BLACKPINK WORLD TOUR ［BORN PINK］ FINALE IN SEOUL', 'BLACKPINK WORLD TOUR ［BORN PINK］ FINALE IN SEOUL', 120,
-        '2024-01-01T10:00:00', '2025-01-01T12:00:00', '???', 'CONCERT', 0.0,
+        '2024-01-01T10:00:00', '2025-01-01T12:00:00', '15세 이상 관람가', 'CONCERT', 0.0,
         'https://ticketimage.interpark.com/Play/image/large/23/23011804_p.gif', '2023-12-21T09:00:00',
         '2024-12-31T11:00:00', 1);
 
