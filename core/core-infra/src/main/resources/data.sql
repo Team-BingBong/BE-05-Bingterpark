@@ -37,3 +37,30 @@ INSERT INTO event_seat (name, status, event_seat_area_id, event_time_id)
 VALUES ('E2', 'BEING_BOOKED', 2, 1);
 INSERT INTO event_seat (name, status, event_seat_area_id, event_time_id)
 VALUES ('E3', 'BEING_BOOKED', 2, 1);
+
+-- Role
+INSERT INTO role (name)
+VALUES ('ROLE_SUPERADMIN'),
+       ('ROLE_ADMIN'),
+       ('ROLE_USER');
+
+
+-- Member
+INSERT INTO member (name, password, phone_number, email, birth_date, gender, street_address, detail_address, zip_code,
+                    status, provider, role_id, last_login_at, last_password_updated_at)
+VALUES ('김빙봉', '$2a$10$tfdM.PjviEH0zMEXVYjH.ODJPSviQRrYpb17rdMjvJtbWbSnC8nTa', '01012345678', 'john.doe@example.com',
+        '1990-01-01', 'MALE', '123 Main St', 'Apt 101',
+        '12345', 'ACTIVE', 'KAKAO', 3, '2024-01-01T10:00:00', '2024-01-01T10:00:00'),
+       ('이행복', '$2a$10$tfdM.PjviEH0zMEXVYjH.ODJPSviQRrYpb17rdMjvJtbWbSnC8nTa', '01087654321', 'jane.smith@example.com',
+        '1992-02-02', 'FEMALE', '456 Elm St',
+        'Suite 202', '54321', 'ACTIVE', 'KAKAO', 3, '2024-01-01T10:00:00', '2024-01-01T10:00:00');
+
+-- Admin
+INSERT INTO admin (name, email, password, phone_number, status, role_id, last_login_at, last_password_updated_at)
+VALUES ('슈퍼관리자', 'superadmin@example.com', '$2a$10$tfdM.PjviEH0zMEXVYjH.ODJPSviQRrYpb17rdMjvJtbWbSnC8nTa',
+        '01012345678',
+        'ACTIVE', 1, NOW(), NOW()),
+       ('관리자', 'admin@example.com', '$2a$10$tfdM.PjviEH0zMEXVYjH.ODJPSviQRrYpb17rdMjvJtbWbSnC8nTa', '01012345678',
+        'ACTIVE', 2, NOW(), NOW());
+
+
