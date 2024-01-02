@@ -24,12 +24,13 @@ public class BookingQueueController {
 	private final BookingQueueService bookingQueueService;
 
 	@PostMapping("/enter-queue")
-	public void enterQueue(@RequestBody @Valid BookingQueueEnterRequest request) {
+	public ResponseEntity<Void> enterQueue(@RequestBody @Valid BookingQueueEnterRequest request) {
 		bookingQueueService.enterQueue(request, null);
+		return ResponseEntity.ok().build();
 	}
 
-	@GetMapping("/remaining-queue-size")
-	public ResponseEntity<ApiResponse<OrderInQueueGetResponse>> getRemainingQueueSize(@RequestParam Long eventTimeId) {
+	@GetMapping("/order-in-queue")
+	public ResponseEntity<ApiResponse<OrderInQueueGetResponse>> getOrderInQueue(@RequestParam Long eventTimeId) {
 		ApiResponse<OrderInQueueGetResponse> response =
 			ApiResponse.ok(bookingQueueService.getOrderInQueue(eventTimeId, null));
 		return ResponseEntity.ok(response);
