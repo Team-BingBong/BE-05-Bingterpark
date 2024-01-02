@@ -11,7 +11,7 @@ public class EventSearchRequest extends PageRequestDto {
 	private String title;
 	private GenreType genreType;
 
-	public EventSearchRequest(int page, int size, String title, GenreType genreType) {
+	public EventSearchRequest(Integer page, Integer size, String title, GenreType genreType) {
 		super(page, size);
 		this.title = title;
 		this.genreType = genreType;
