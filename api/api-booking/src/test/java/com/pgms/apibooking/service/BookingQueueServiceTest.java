@@ -16,7 +16,9 @@ import com.pgms.apibooking.repository.BookingQueueRepository;
 class BookingQueueServiceTest {
 
 	private static final long TIME_ID = 0L;
-	private final RedisTemplate<String, String> redisTemplate = new RedisTemplate<>();
+
+	@Autowired
+	private RedisTemplate<String, String> redisTemplate;
 
 	@Autowired
 	private BookingQueueService bookingQueueService;
@@ -36,7 +38,6 @@ class BookingQueueServiceTest {
 	void tearDown() {
 		redisTemplate.delete(String.valueOf(TIME_ID));
 		redisTemplate.delete("waitingNumber:" + TIME_ID);
-
 	}
 
 	@Test
