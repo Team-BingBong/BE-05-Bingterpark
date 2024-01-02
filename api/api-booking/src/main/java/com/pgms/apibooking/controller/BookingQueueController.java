@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.pgms.apibooking.dto.request.BookingQueueEnterRequest;
-import com.pgms.apibooking.dto.response.RemainingQueueSizeGetResponse;
+import com.pgms.apibooking.dto.response.OrderInQueueGetResponse;
 import com.pgms.apibooking.service.BookingQueueService;
 import com.pgms.coredomain.response.ApiResponse;
 
@@ -25,12 +25,13 @@ public class BookingQueueController {
 
 	@PostMapping("/enter-queue")
 	public void enterQueue(@RequestBody @Valid BookingQueueEnterRequest request) {
-		bookingQueueService.enterBookingQueue(request);
+		bookingQueueService.enterQueue(request, null);
 	}
 
 	@GetMapping("/remaining-queue-size")
-	public ResponseEntity<ApiResponse<RemainingQueueSizeGetResponse>> getRemainingQueueSize(@RequestParam Long eventTimeId) {
-		ApiResponse<RemainingQueueSizeGetResponse> response = ApiResponse.ok(bookingQueueService.getRemainingQueueSize(eventTimeId));
+	public ResponseEntity<ApiResponse<OrderInQueueGetResponse>> getRemainingQueueSize(@RequestParam Long eventTimeId) {
+		ApiResponse<OrderInQueueGetResponse> response =
+			ApiResponse.ok(bookingQueueService.getOrderInQueue(eventTimeId, null));
 		return ResponseEntity.ok(response);
 	}
 }

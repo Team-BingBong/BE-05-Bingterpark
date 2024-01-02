@@ -3,7 +3,7 @@ package com.pgms.apibooking.service;
 import org.springframework.stereotype.Service;
 
 import com.pgms.apibooking.dto.request.BookingQueueEnterRequest;
-import com.pgms.apibooking.dto.response.RemainingQueueSizeGetResponse;
+import com.pgms.apibooking.dto.response.OrderInQueueGetResponse;
 import com.pgms.apibooking.repository.BookingQueueRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -14,13 +14,17 @@ public class BookingQueueService {
 
 	private final BookingQueueRepository bookingQueueRepository;
 
-	public void enterBookingQueue(BookingQueueEnterRequest request) {
-		bookingQueueRepository.add(request.eventTimeId(), 1L); //TODO: 인증된 memberId
+	public void enterQueue(BookingQueueEnterRequest request
+		, Long memberId) { //TODO: memberId arg 제거, 인증된 memberId 서비스 내에서 접근
+		//TODO: 회차 검증
+		bookingQueueRepository.add(request.eventTimeId(), memberId);
 	}
 
-	public RemainingQueueSizeGetResponse getRemainingQueueSize(Long timeId) {
-		Long remainingQueueSize = bookingQueueRepository.countRemainingQueue(timeId);
-		Boolean isMyTurn = bookingQueueRepository.checkMyTurn(timeId, 1L); //TODO: 인증된 memberId
-		return RemainingQueueSizeGetResponse.of(remainingQueueSize, isMyTurn);
+	public OrderInQueueGetResponse getOrderInQueue(Long timeId
+		, Long memberId) { //TODO: memberId arg 제거, 인증된 memberId 서비스 내에서 접근
+		Long myOrder = bookingQueueRepository.getQueueSize(timeId, memberId);
+		Long entryLimit = bookingQueueRepository.getEntryLimit(timeId);
+		Boolean isMyTurn = myOrder <= entryLimit;
+		return OrderInQueueGetResponse.of(myOrder, isMyTurn);
 	}
 }
