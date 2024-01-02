@@ -15,16 +15,12 @@ public class BookingQueueRepository {
 		Long waitingNumber = redisTemplate.opsForValue().increment(generateWaitingNumberKey(timeId), 1);
 		redisTemplate.opsForZSet().add(String.valueOf(timeId), String.valueOf(memberId), waitingNumber);
 	}
-
-	public Long getQueueSize(Long timeId, Long memberId) {
-		return redisTemplate.opsForZSet().rank(String.valueOf(timeId), String.valueOf(memberId));
-	}
 	
 	public Long getRank(Long timeId, Long memberId) {
 		return redisTemplate.opsForZSet().rank(String.valueOf(timeId), String.valueOf(memberId));
 	}
 	
-	public Long getEntryLimit(Long timeId) {
+	public Long getEntryLimit() {
 		return 100L;
 	}
 

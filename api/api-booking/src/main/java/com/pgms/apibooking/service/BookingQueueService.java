@@ -22,8 +22,8 @@ public class BookingQueueService {
 
 	public OrderInQueueGetResponse getOrderInQueue(Long timeId
 		, Long memberId) { //TODO: memberId arg 제거, 인증된 memberId 서비스 내에서 접근
-		Long myOrder = bookingQueueRepository.getQueueSize(timeId, memberId);
-		Long entryLimit = bookingQueueRepository.getEntryLimit(timeId);
+		Long myOrder = bookingQueueRepository.getRank(timeId, memberId);
+		Long entryLimit = bookingQueueRepository.getEntryLimit();
 		Boolean isMyTurn = myOrder <= entryLimit;
 		return OrderInQueueGetResponse.of(myOrder, isMyTurn);
 	}
