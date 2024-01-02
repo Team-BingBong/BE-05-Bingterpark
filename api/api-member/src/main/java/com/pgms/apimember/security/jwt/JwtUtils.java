@@ -1,6 +1,7 @@
 package com.pgms.apimember.security.jwt;
 
 import java.security.Key;
+import java.time.Instant;
 import java.util.Date;
 
 import org.slf4j.Logger;
@@ -33,10 +34,13 @@ public class JwtUtils {
 
 		UserDetailsImpl userPrincipal = (UserDetailsImpl)authentication.getPrincipal();
 
+		Instant now = Instant.now();
+		Instant expirationTime = now.plusSeconds(expirySeconds);
+
 		return Jwts.builder()
 			.setSubject((userPrincipal.getUsername()))
-			.setIssuedAt(new Date())
-			.setExpiration(new Date((new Date()).getTime() + expirySeconds))
+			.setIssuedAt(Date.from(now))
+			.setExpiration(Date.from(expirationTime))
 			.signWith(key(), SignatureAlgorithm.HS256)
 			.compact();
 	}
