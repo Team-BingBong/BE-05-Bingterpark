@@ -14,7 +14,7 @@ import static org.springframework.data.elasticsearch.annotations.DateFormat.epoc
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
-@Document(indexName = "event_test")
+@Document(indexName = "event")
 @Mapping(mappingPath = "es/event-mapping.json")
 @Setting(settingPath = "es/event-setting.json")
 public class EventDocument {
