@@ -1,5 +1,6 @@
 package com.pgms.apievent.event.service;
 
+import com.pgms.apievent.common.dto.response.PageResponse;
 import com.pgms.apievent.event.dto.request.EventCreateRequest;
 import com.pgms.apievent.event.dto.request.EventSeatAreaCreateRequest;
 import com.pgms.apievent.event.dto.request.EventSeatAreaUpdateRequest;
@@ -16,8 +17,12 @@ import com.pgms.coredomain.domain.event.repository.EventHallRepository;
 import com.pgms.coredomain.domain.event.repository.EventRepository;
 import com.pgms.coredomain.domain.event.repository.EventSeatAreaRepository;
 import com.pgms.coreinfraes.document.EventDocument;
+import com.pgms.coreinfraes.repository.EventSearchQueryRepository;
 import com.pgms.coreinfraes.repository.EventSearchRepository;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,6 +39,7 @@ public class EventService {
 	private final EventHallRepository eventHallRepository;
 	private final EventSeatAreaRepository eventSeatAreaRepository;
 	private final EventSearchRepository eventSearchRepository;
+	private final EventSearchQueryRepository eventSearchQueryRepository;
 
 	public EventResponse createEvent(EventCreateRequest request) {
 		EventHall eventHall = getEventHall(request.eventHallId());
@@ -50,6 +56,11 @@ public class EventService {
 	public EventResponse getEventById(Long id) {
 		Event event = getEvent(id);
 		return EventResponse.of(event);
+	}
+
+	@Transactional(readOnly = true)
+	public Page<EventDocument> searchByTitle(String title, Pageable pageable) {
+		return eventSearchQueryRepository.searchByEventTitle(title, pageable);
 	}
 
 	public EventResponse updateEvent(Long id, EventUpdateRequest request) {
