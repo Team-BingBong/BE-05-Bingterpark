@@ -1,10 +1,19 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8" />
     <script src="https://js.tosspayments.com/v1/payment-widget"></script>
 </head>
 <body>
+<!-- Thymeleaf 변수를 data-* 속성으로 전달 -->
+<div id="thymeleaf-data"
+     th:data-order-id="${orderId}"
+     th:data-order-name="${orderName}"
+     th:data-buyer-phone-number="${buyerPhoneNumber}"
+     th:data-buyer-name="${buyerName}"
+     th:data-amount="${amount}">
+</div>
+
 <!-- 결제 UI, 이용약관 UI 영역 -->
 <div id="payment-method"></div>
 <div id="agreement"></div>
@@ -12,6 +21,14 @@
 <button id="payment-button">결제하기</button>
 
 <script>
+
+    // Thymeleaf 변수를 JavaScript 변수로 읽어오기
+    const orderId = document.getElementById("thymeleaf-data").getAttribute("data-order-id");
+    const orderName = document.getElementById("thymeleaf-data").getAttribute("data-order-name");
+    const buyerPhoneNumber = document.getElementById("thymeleaf-data").getAttribute("data-buyer-phone-number");
+    const buyerName = document.getElementById("thymeleaf-data").getAttribute("data-buyer-name");
+    const amount = document.getElementById("thymeleaf-data").getAttribute("data-amount");
+
     const button = document.getElementById("payment-button");
 
     // 구매자의 고유 아이디를 불러와서 customerKey로 설정하세요.
@@ -23,10 +40,10 @@
 
     const paymentMethodWidget = paymentWidget.renderPaymentMethods(
         "#payment-method",
-        { value: 180000 },
+        { value: amount },
         { variantKey: "DEFAULT" }
     );
-    paymentMethodWidget.updateAmount(180000)
+    paymentMethodWidget.updateAmount(amount)
 
     button.addEventListener("click", function () {
         const selectedPaymentMethod = paymentMethodWidget.getSelectedPaymentMethod();
@@ -37,12 +54,12 @@
 
         paymentWidget.requestPayment({
             // orderId: Date.now(),  // 이미 결제된 예매 시도하면 오류
-            orderId: "test123",
-            orderName: "토스 티셔츠 외 2건",
+            orderId: orderId,
+            orderName: orderName,
             successUrl: window.location.origin + "/api/v1/payments/success",
             failUrl: window.location.origin + "/api/v1/payments/fail",
-            buyerPhoneNumber: "010-4328-0706",
-            buyerName: "김토스",
+            buyerPhoneNumber: buyerPhoneNumber,
+            buyerName: buyerName,
             method: selectedPaymentMethod.method,
         });
     });
