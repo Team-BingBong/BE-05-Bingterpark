@@ -40,7 +40,7 @@ public class BookingService { //TODO: 테스트 코드 작성
 
 	public BookingCreateResponse createBooking(BookingCreateRequest request) {
 		EventTime time = getBookableTimeWithEvent(request.timeId());
-		List<EventSeat> seats = geBookableSeatsWithArea(request.timeId(), request.seatIds());
+		List<EventSeat> seats = getBookableSeatsWithArea(request.timeId(), request.seatIds());
 
 		ReceiptType receiptType = ReceiptType.fromDescription(request.receiptType());
 		validateDeliveryAddress(receiptType, request.deliveryAddress().orElse(null));
@@ -68,6 +68,21 @@ public class BookingService { //TODO: 테스트 코드 작성
 		return BookingCreateResponse.of(booking, tossPaymentConfig.getSuccessUrl(), tossPaymentConfig.getFailUrl());
 	}
 
+	public void cancelBooking(String id, String paymentKey, BookingCancelRequest request) {
+		Booking booking = bookingRepository.findBookingInfoById(id)
+			.orElseThrow(() -> new BookingException(BookingErrorCode.BOOKING_NOT_FOUND));
+
+		if (!booking.isCancelable()) {
+			throw new BookingException(BookingErrorCode.UNCANCELABLE_BOOKING);
+		}
+
+		paymentService.cancelPayment(paymentKey, request);
+
+		booking.cancel(
+			BookingCancelRequest.toEntity(request, "사용자", booking) //TODO: 취소 요청자 지정
+		);
+	}
+
 	private EventTime getBookableTimeWithEvent(Long timeId) {
 		EventTime time = eventTimeRepository.findWithEventById(timeId)
 			.orElseThrow(() -> new BookingException(BookingErrorCode.TIME_NOT_FOUND));
@@ -79,7 +94,7 @@ public class BookingService { //TODO: 테스트 코드 작성
 		return time;
 	}
 
-	private List<EventSeat> geBookableSeatsWithArea(Long timeId, List<Long> seatIds) {
+	private List<EventSeat> getBookableSeatsWithArea(Long timeId, List<Long> seatIds) {
 		List<EventSeat> seats = eventSeatRepository.findAllWithAreaByTimeIdAndSeatIds(timeId, seatIds);
 
 		if (seats.size() != seatIds.size()) {
@@ -99,20 +114,5 @@ public class BookingService { //TODO: 테스트 코드 작성
 				throw new BookingException(BookingErrorCode.DELIVERY_ADDRESS_REQUIRED);
 			}
 		}
-	}
-
-	public void cancelBooking(String id, String paymentKey, BookingCancelRequest request) {
-		Booking booking = bookingRepository.findBookingInfoById(id)
-			.orElseThrow(() -> new BookingException(BookingErrorCode.BOOKING_NOT_FOUND));
-
-		if (!booking.isCancelable()) {
-			throw new BookingException(BookingErrorCode.UNCANCELABLE_BOOKING);
-		}
-
-		paymentService.cancelPayment(paymentKey, request);
-
-		booking.cancel(
-			BookingCancelRequest.toEntity(request, "사용자", booking) //TODO: 취소 요청자 지정
-		);
 	}
 }
