@@ -17,6 +17,7 @@ import com.pgms.apibooking.util.DateTimeUtil;
 import com.pgms.coredomain.domain.booking.Booking;
 import com.pgms.coredomain.domain.booking.BookingStatus;
 import com.pgms.coredomain.domain.booking.Payment;
+import com.pgms.coredomain.domain.booking.PaymentMethod;
 import com.pgms.coredomain.domain.booking.PaymentStatus;
 import com.pgms.coredomain.domain.booking.repository.BookingRepository;
 import com.pgms.coredomain.domain.booking.repository.PaymentRepository;
@@ -44,6 +45,7 @@ public class PaymentService {
 		}
 		PaymentConfirmRequest request = new PaymentConfirmRequest(paymentKey, bookingId, amount);
 		PaymentSuccessResponse response = tossPaymentService.requestTossPaymentConfirmation(request);
+		payment.updateMethod(PaymentMethod.fromDescription(response.method()));
 
 		switch (payment.getMethod()) {
 			case CARD -> {
