@@ -1,19 +1,8 @@
 package com.pgms.apibooking.service;
 
-import java.net.URI;
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
-import java.util.Collections;
-
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.RestTemplate;
 
-import com.pgms.apibooking.config.TossPaymentConfig;
 import com.pgms.apibooking.dto.request.BookingCancelRequest;
 import com.pgms.apibooking.dto.request.PaymentConfirmRequest;
 import com.pgms.apibooking.dto.request.RefundAccountRequest;
@@ -43,8 +32,7 @@ public class PaymentService {
 
 	private final PaymentRepository paymentRepository;
 	private final BookingRepository bookingRepository;
-	private final TossPaymentConfig tossPaymentConfig;
-	private final RestTemplate restTemplate;
+	private final TossPaymentService tossPaymentService;
 
 	public PaymentSuccessResponse successPayment(String paymentKey, String bookingId, int amount) {
 		Booking booking = bookingRepository.findWithPaymentById(bookingId)
@@ -54,8 +42,8 @@ public class PaymentService {
 		if (payment.getAmount() != amount) {
 			throw new BookingException(BookingErrorCode.PAYMENT_AMOUNT_MISMATCH);
 		}
-
-		PaymentSuccessResponse response = requestPaymentConfirmation(paymentKey, bookingId, amount);
+		PaymentConfirmRequest request = new PaymentConfirmRequest(paymentKey, bookingId, amount);
+		PaymentSuccessResponse response = tossPaymentService.requestTossPaymentConfirmation(request);
 
 		switch (payment.getMethod()) {
 			case CARD -> {
@@ -92,24 +80,9 @@ public class PaymentService {
 		return new PaymentFailResponse(errorCode, errorMessage, bookingId);
 	}
 
-	public PaymentSuccessResponse requestPaymentConfirmation(String paymentKey, String bookingId, int amount) {
-		HttpHeaders headers = buildTossApiHeaders();
-		PaymentConfirmRequest request = new PaymentConfirmRequest(paymentKey, bookingId, amount);
-		try { // tossPayments post 요청 (url , HTTP 객체 ,응답 Dto)
-			return restTemplate.postForObject(
-				TossPaymentConfig.TOSS_CONFIRM_URL, new HttpEntity<>(request, headers), PaymentSuccessResponse.class);
-		} catch (HttpClientErrorException e) {
-			log.warn("HttpClientErrorException: {}", e.getMessage());
-			throw new BookingException(BookingErrorCode.TOSS_PAYMENTS_ERROR);
-		} catch (Exception e) {
-			log.error("Exception: {}", e.getMessage(), e);
-			throw new BookingException(BookingErrorCode.INTERNAL_SERVER_ERROR);
-		}
-	}
-
 	public PaymentCancelResponse cancelPayment(String paymentKey, BookingCancelRequest request) {
 		Payment payment = getPaymentByPaymentKey(paymentKey);
-		PaymentCancelResponse response = requestPaymentCancellation(paymentKey, request);
+		PaymentCancelResponse response = tossPaymentService.requestTossPaymentCancellation(paymentKey, request);
 		if (request.refundReceiveAccount().isPresent()) {
 			RefundAccountRequest refundAccountRequest = request.refundReceiveAccount().get();
 			payment.updateRefundInfo(
@@ -124,32 +97,9 @@ public class PaymentService {
 		return response;
 	}
 
-	public PaymentCancelResponse requestPaymentCancellation(String paymentKey, BookingCancelRequest request) {
-		HttpHeaders headers = buildTossApiHeaders();
-		URI uri = URI.create(TossPaymentConfig.TOSS_ORIGIN_URL + paymentKey + "/cancel");
-		try {
-			return restTemplate.postForObject(
-				uri, new HttpEntity<>(request, headers), PaymentCancelResponse.class);
-		} catch (Exception e) {
-			log.error("Exception: {}", e.getMessage(), e);
-			throw new BookingException(BookingErrorCode.INTERNAL_SERVER_ERROR);
-		}
-	}
-
 	private Payment getPaymentByPaymentKey(String paymentKey) {
 		return paymentRepository.findByPaymentKey(paymentKey)
 			.orElseThrow(() -> new BookingException(BookingErrorCode.PAYMENT_NOT_FOUND));
-	}
-
-	private HttpHeaders buildTossApiHeaders() {
-		HttpHeaders headers = new HttpHeaders();
-		String encodedAuthKey = new String(
-			Base64.getEncoder()
-				.encode((tossPaymentConfig.getTestSecretApiKey() + ":").getBytes(StandardCharsets.UTF_8)));
-		headers.setBasicAuth(encodedAuthKey);
-		headers.setContentType(MediaType.APPLICATION_JSON);
-		headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-		return headers;
 	}
 
 	private Payment getPaymentByBookingId(String bookingId) {
