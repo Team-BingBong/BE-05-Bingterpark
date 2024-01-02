@@ -1,0 +1,17 @@
+### 공연 생성
+POST http://localhost:8080/api/v1/events
+Content-Type: application/json
+
+{
+  "title": "test3",
+  "description" : "test",
+  "runningTime" : 100,
+  "startDate" : "2024-01-01T12:00:00",
+  "endDate" : "2024-01-01T12:00:00",
+  "viewRating" : "12",
+  "genreType" : "MUSICAL",
+  "eventHallId" : 1
+}
+
+### 공연 검색
+GET http://localhost:8080/api/v1/events/search?title="test3"&genreType=MUSICAL
