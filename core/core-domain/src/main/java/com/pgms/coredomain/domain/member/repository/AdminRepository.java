@@ -20,4 +20,6 @@ public interface AdminRepository extends JpaRepository<Admin, Long> {
 
 	@Query("select a from Admin a join fetch a.role r where a.id = :id")
 	Optional<Admin> findByIdWithRole(Long id);
+
+	Optional<Admin> findByEmail(String email);
 }
