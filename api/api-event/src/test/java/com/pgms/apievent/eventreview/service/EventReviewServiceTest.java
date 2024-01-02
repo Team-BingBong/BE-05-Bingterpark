@@ -1,16 +1,6 @@
 package com.pgms.apievent.eventreview.service;
 
-import static org.assertj.core.api.Assertions.*;
-
-import java.util.List;
-import java.util.stream.IntStream;
-
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-
+import com.pgms.apievent.EventTestConfig;
 import com.pgms.apievent.eventreview.dto.request.EventReviewCreateRequest;
 import com.pgms.apievent.eventreview.dto.request.EventReviewUpdateRequest;
 import com.pgms.apievent.eventreview.dto.response.EventReviewResponse;
@@ -23,8 +13,20 @@ import com.pgms.coredomain.domain.event.EventReview;
 import com.pgms.coredomain.domain.event.repository.EventHallRepository;
 import com.pgms.coredomain.domain.event.repository.EventRepository;
 import com.pgms.coredomain.domain.event.repository.EventReviewRepository;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ContextConfiguration;
+
+import java.util.List;
+import java.util.stream.IntStream;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
+@ContextConfiguration(classes = EventTestConfig.class)
 class EventReviewServiceTest {
 
 	private static final int REQUEST_NUMBER = 8;
