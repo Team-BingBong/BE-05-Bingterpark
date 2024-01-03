@@ -85,7 +85,7 @@ public class PaymentService {
 		return response;
 	}
 
-	public PaymentFailResponse failPayment(String errorCode, String errorMessage, String bookingId) {
+	public PaymentFailResponse failPayment(String errorCode, String errorMessage, String bookingId) {//TODO : booking 상태값 변경
 		Payment payment = getPaymentByBookingId(bookingId);
 		payment.updateStatus(PaymentStatus.ABORTED);
 		payment.updateFailedMsg(errorMessage);

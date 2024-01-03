@@ -12,6 +12,7 @@ import com.pgms.apibooking.dto.request.BookingQueueEnterRequest;
 import com.pgms.apibooking.dto.request.BookingQueueExitRequest;
 import com.pgms.apibooking.dto.request.TokenIssueRequest;
 import com.pgms.apibooking.dto.response.OrderInQueueGetResponse;
+import com.pgms.apibooking.dto.response.SessionIdIssueResponse;
 import com.pgms.apibooking.dto.response.TokenIssueResponse;
 import com.pgms.apibooking.service.BookingQueueService;
 import com.pgms.coredomain.response.ApiResponse;
@@ -25,6 +26,12 @@ import lombok.RequiredArgsConstructor;
 public class BookingQueueController {
 
 	private final BookingQueueService bookingQueueService;
+
+	@PostMapping("/issue-session-id")
+	public ResponseEntity<ApiResponse<SessionIdIssueResponse>> issueSessionId() {
+		ApiResponse<SessionIdIssueResponse> response = ApiResponse.ok(bookingQueueService.issueSessionId());
+		return ResponseEntity.ok(response);
+	}
 
 	@PostMapping("/enter-queue")
 	public ResponseEntity<Void> enterQueue(@RequestBody @Valid BookingQueueEnterRequest request) {

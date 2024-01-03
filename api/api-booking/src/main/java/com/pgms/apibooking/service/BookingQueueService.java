@@ -1,11 +1,14 @@
 package com.pgms.apibooking.service;
 
+import java.util.UUID;
+
 import org.springframework.stereotype.Service;
 
 import com.pgms.apibooking.dto.request.BookingQueueEnterRequest;
 import com.pgms.apibooking.dto.request.BookingQueueExitRequest;
 import com.pgms.apibooking.dto.request.TokenIssueRequest;
 import com.pgms.apibooking.dto.response.OrderInQueueGetResponse;
+import com.pgms.apibooking.dto.response.SessionIdIssueResponse;
 import com.pgms.apibooking.dto.response.TokenIssueResponse;
 import com.pgms.apibooking.exception.BookingErrorCode;
 import com.pgms.apibooking.exception.BookingException;
@@ -58,5 +61,10 @@ public class BookingQueueService {
 	public void exitQueue(BookingQueueExitRequest request,
 		Long memberId) { //TODO: memberId arg 제거, 인증된 memberId 서비스 내에서 접근
 		bookingQueueRepository.remove(request.eventId(), memberId);
+	}
+
+	public SessionIdIssueResponse issueSessionId() {
+		UUID sessionId = UUID.randomUUID();
+		return SessionIdIssueResponse.from(sessionId.toString());
 	}
 }
