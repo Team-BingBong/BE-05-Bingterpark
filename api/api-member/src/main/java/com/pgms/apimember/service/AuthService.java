@@ -9,8 +9,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.pgms.apimember.dto.request.LoginRequest;
 import com.pgms.apimember.dto.response.LoginResponse;
-import com.pgms.apimember.security.jwt.JwtUtils;
-import com.pgms.apimember.security.service.UserDetailsImpl;
+import com.pgms.coresecurity.security.jwt.JwtUtils;
+import com.pgms.coresecurity.security.service.UserDetailsImpl;
 
 import lombok.RequiredArgsConstructor;
 
