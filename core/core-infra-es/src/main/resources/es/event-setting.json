@@ -3,6 +3,14 @@
     "analyzer": {
       "korean": {
         "type": "nori"
+      },
+      "chosung": {
+        "type": "custom",
+        "tokenizer": "standard",
+        "filter": [
+          "lowercase",
+          "hanhinsam_chosung"
+        ]
       }
     }
   }
