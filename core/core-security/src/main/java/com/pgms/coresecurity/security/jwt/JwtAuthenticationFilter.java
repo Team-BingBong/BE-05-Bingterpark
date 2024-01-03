@@ -1,4 +1,4 @@
-package com.pgms.apimember.security.jwt;
+package com.pgms.coresecurity.security.jwt;
 
 import java.io.IOException;
 

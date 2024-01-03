@@ -29,5 +29,5 @@ logging:
           jdbc.bind: trace
 
 jwt:
-  secret-key: secret-key # TODO : 시크릿 키 따로 관리
-  expiry-seconds: 3600
+  secret-key: EENY5W0eegTf1naQB2eDeyCLl5kRS2b8xa5c4qLdS0hmVjtbvo8tOyhPMcAmtPuQ # TODO : 시크릿 키 따로 관리
+  expiry-seconds: 360000000
