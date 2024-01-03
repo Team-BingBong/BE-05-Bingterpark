@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.RedisTemplate;
 
-import com.pgms.apibooking.dto.request.BookingQueueEnterRequest;
+import com.pgms.apibooking.dto.request.TokenIssueRequest;
 import com.pgms.apibooking.dto.response.OrderInQueueGetResponse;
 import com.pgms.apibooking.dto.response.TokenIssueResponse;
 import com.pgms.apibooking.repository.BookingQueueRepository;
@@ -17,7 +17,7 @@ import com.pgms.apibooking.repository.BookingQueueRepository;
 @SpringBootTest
 class BookingQueueServiceTest {
 
-	private static final long TIME_ID = 0L;
+	private static final long EVENT_ID = 0L;
 
 	@Autowired
 	private RedisTemplate<String, String> redisTemplate;
@@ -32,21 +32,21 @@ class BookingQueueServiceTest {
 	void setUp() {
 		for (int i = 0; i < 200; i++) {
 			long memberId = i;
-			bookingQueueRepository.add(TIME_ID, memberId);
+			bookingQueueRepository.add(EVENT_ID, memberId);
 		}
 	}
 
 	@AfterEach
 	void tearDown() {
-		redisTemplate.delete(String.valueOf(TIME_ID));
-		redisTemplate.delete("waitingNumber:" + TIME_ID);
+		redisTemplate.delete(String.valueOf(EVENT_ID));
+		redisTemplate.delete("waitingNumber:" + EVENT_ID);
 	}
 
 	@Test
 	void isMyTurn_false() {
 		long memberId = 110L;
 
-		OrderInQueueGetResponse response = bookingQueueService.getOrderInQueue(TIME_ID, memberId);
+		OrderInQueueGetResponse response = bookingQueueService.getOrderInQueue(EVENT_ID, memberId);
 
 		assertThat(response.myOrder()).isEqualTo(memberId);
 		assertThat(response.isMyTurn()).isFalse();
@@ -58,10 +58,10 @@ class BookingQueueServiceTest {
 
 		int completedCount = 50;
 		for (int i = 0; i < completedCount; i++) {
-			bookingQueueRepository.remove(TIME_ID, (long)i);
+			bookingQueueRepository.remove(EVENT_ID, (long)i);
 		}
 
-		OrderInQueueGetResponse response = bookingQueueService.getOrderInQueue(TIME_ID, memberId);
+		OrderInQueueGetResponse response = bookingQueueService.getOrderInQueue(EVENT_ID, memberId);
 
 		assertThat(response.myOrder()).isEqualTo(memberId - completedCount);
 		assertThat(response.isMyTurn()).isTrue();
@@ -71,7 +71,7 @@ class BookingQueueServiceTest {
 	void 토큰_발급_테스트() {
 		long memberId = 50L;
 
-		BookingQueueEnterRequest request = new BookingQueueEnterRequest(TIME_ID);
+		TokenIssueRequest request = new TokenIssueRequest(EVENT_ID);
 		TokenIssueResponse response = bookingQueueService.issueToken(request, memberId);
 		System.out.println(response.token());
 	}
