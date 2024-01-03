@@ -31,7 +31,8 @@ public class SecurityConfig {
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		List<RequestMatcher> permitAllMatchers = List.of(
 			new AntPathRequestMatcher("/api/*/bookings/enter-queue", HttpMethod.POST.toString()),
-			new AntPathRequestMatcher("/api/*/bookings/order-in-queue", HttpMethod.GET.toString())
+			new AntPathRequestMatcher("/api/*/bookings/order-in-queue", HttpMethod.GET.toString()),
+			new AntPathRequestMatcher("/api/*/bookings/issue-token", HttpMethod.GET.toString())
 		);
 
 		return http

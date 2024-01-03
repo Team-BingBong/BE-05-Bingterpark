@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.pgms.apibooking.dto.request.BookingQueueEnterRequest;
 import com.pgms.apibooking.dto.response.OrderInQueueGetResponse;
+import com.pgms.apibooking.dto.response.TokenIssueResponse;
 import com.pgms.apibooking.service.BookingQueueService;
 import com.pgms.coredomain.response.ApiResponse;
 
@@ -33,6 +34,12 @@ public class BookingQueueController {
 	public ResponseEntity<ApiResponse<OrderInQueueGetResponse>> getOrderInQueue(@RequestParam Long eventTimeId) {
 		ApiResponse<OrderInQueueGetResponse> response =
 			ApiResponse.ok(bookingQueueService.getOrderInQueue(eventTimeId, null));
+		return ResponseEntity.ok(response);
+	}
+
+	@PostMapping("/issue-token")
+	public ResponseEntity<ApiResponse<TokenIssueResponse>> issueToken(@RequestBody @Valid BookingQueueEnterRequest request) {
+		ApiResponse<TokenIssueResponse> response = ApiResponse.ok(bookingQueueService.issueToken(request, null));
 		return ResponseEntity.ok(response);
 	}
 }
