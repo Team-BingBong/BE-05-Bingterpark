@@ -1,4 +1,4 @@
-package com.pgms.memberbatch;
+package com.pgms.memberbatch.admin;
 
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobExecutionException;

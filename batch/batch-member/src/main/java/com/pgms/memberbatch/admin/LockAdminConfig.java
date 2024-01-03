@@ -1,4 +1,4 @@
-package com.pgms.memberbatch;
+package com.pgms.memberbatch.admin;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -29,6 +29,8 @@ import lombok.extern.slf4j.Slf4j;
 @Configuration
 @RequiredArgsConstructor
 public class LockAdminConfig {
+	private static final int ADMIN_LOCKOUT_THRESHOLD_DAYS = 100;
+
 	private final JobRepository jobRepository;
 	private final PlatformTransactionManager transactionManager;
 	private final EntityManagerFactory entityManagerFactory;
@@ -53,15 +55,9 @@ public class LockAdminConfig {
 
 	@Bean
 	public ItemReader<Admin> lockAdminReader() {
-		LocalDateTime aYearAgo = LocalDateTime.now().minusYears(1);
-		List<Admin> allTargetAdmins = adminRepository.findAll();
-		allTargetAdmins.stream()
-			.filter(admin -> admin.getLastLoginAt().isBefore(aYearAgo))
-			.forEach(admin -> {
-				log.info("잠금처리 대상 어드민 ===> {}", admin.getName());
-				admin.updateToLocked();
-			});
-		return new ListItemReader<>(allTargetAdmins);
+		LocalDateTime thresholdDateTime = LocalDateTime.now().minusDays(ADMIN_LOCKOUT_THRESHOLD_DAYS);
+		List<Admin> targetAdmins = adminRepository.findByLastLoginBeforeAndIsActive(thresholdDateTime);
+		return new ListItemReader<>(targetAdmins);
 	}
 
 	@Bean
