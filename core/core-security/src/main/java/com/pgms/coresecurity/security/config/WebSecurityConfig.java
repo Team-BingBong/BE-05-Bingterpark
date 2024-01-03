@@ -1,4 +1,4 @@
-package com.pgms.apimember.security;
+package com.pgms.coresecurity.security.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,8 +14,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import com.pgms.apimember.security.jwt.JwtAuthenticationEntryPoint;
-import com.pgms.apimember.security.jwt.JwtAuthenticationFilter;
+import com.pgms.coresecurity.security.jwt.JwtAuthenticationEntryPoint;
+import com.pgms.coresecurity.security.jwt.JwtAuthenticationFilter;
 
 import lombok.RequiredArgsConstructor;
 

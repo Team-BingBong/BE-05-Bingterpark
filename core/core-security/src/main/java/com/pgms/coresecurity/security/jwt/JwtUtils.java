@@ -1,4 +1,4 @@
-package com.pgms.apimember.security.jwt;
+package com.pgms.coresecurity.security.jwt;
 
 import java.security.Key;
 import java.time.Instant;
@@ -17,7 +17,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
-import com.pgms.apimember.security.service.UserDetailsImpl;
+import com.pgms.coresecurity.security.service.UserDetailsImpl;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
