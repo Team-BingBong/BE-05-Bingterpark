@@ -21,7 +21,7 @@ public class BookingQueueRepository {
 	}
 	
 	public Long getEntryLimit() {
-		return 100L;
+		return 100L; //TODO: 캐시에서 가져오기
 	}
 
 	public void remove(Long timeId, Long memberId) {
