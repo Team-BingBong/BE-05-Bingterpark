@@ -19,8 +19,6 @@ public class EventSearchRequest extends PageRequestDto {
 
 	public EventSearchDto toDto() {
 		return EventSearchDto.builder()
-			.page(page)
-			.size(size)
 			.title(title)
 			.genreType(genreType)
 			.pageable(getPageable())
