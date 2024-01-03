@@ -11,21 +11,21 @@ public class BookingQueueRepository {
 
 	private final RedisTemplate<String, String> redisTemplate;
 
-	public void add(Long eventId, Long memberId) {
+	public void add(Long eventId, String sessionId) {
 		Long waitingNumber = redisTemplate.opsForValue().increment(generateWaitingNumberKey(eventId), 1);
-		redisTemplate.opsForZSet().add(String.valueOf(eventId), String.valueOf(memberId), waitingNumber);
+		redisTemplate.opsForZSet().add(String.valueOf(eventId), sessionId, waitingNumber);
 	}
 	
-	public Long getRank(Long eventId, Long memberId) {
-		return redisTemplate.opsForZSet().rank(String.valueOf(eventId), String.valueOf(memberId));
+	public Long getRank(Long eventId, String sessionId) {
+		return redisTemplate.opsForZSet().rank(String.valueOf(eventId), sessionId);
 	}
 	
 	public Long getEntryLimit() {
-		return 100L; //TODO: 캐시에서 가져오기
+		return 100L;
 	}
 
-	public void remove(Long eventId, Long memberId) {
-		redisTemplate.opsForZSet().remove(String.valueOf(eventId), String.valueOf(memberId));
+	public void remove(Long eventId, String sessionId) {
+		redisTemplate.opsForZSet().remove(String.valueOf(eventId), sessionId);
 	}
 
 	private String generateWaitingNumberKey(Long eventId) {

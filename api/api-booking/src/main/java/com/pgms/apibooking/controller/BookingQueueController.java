@@ -17,6 +17,7 @@ import com.pgms.apibooking.dto.response.TokenIssueResponse;
 import com.pgms.apibooking.service.BookingQueueService;
 import com.pgms.coredomain.response.ApiResponse;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -34,8 +35,9 @@ public class BookingQueueController {
 	}
 
 	@PostMapping("/enter-queue")
-	public ResponseEntity<Void> enterQueue(@RequestBody @Valid BookingQueueEnterRequest request) {
-		bookingQueueService.enterQueue(request, null);
+	public ResponseEntity<Void> enterQueue(@RequestBody @Valid BookingQueueEnterRequest request, HttpServletRequest httpServletRequest) {
+		String bookingSessionId = getBookingSessionId(httpServletRequest);
+		bookingQueueService.enterQueue(request, bookingSessionId);
 		return ResponseEntity.ok().build();
 	}
 
@@ -56,5 +58,9 @@ public class BookingQueueController {
 	public ResponseEntity<Void> exitQueue(@RequestBody @Valid BookingQueueExitRequest request) {
 		bookingQueueService.exitQueue(request, null);
 		return ResponseEntity.ok().build();
+	}
+
+	private String getBookingSessionId(HttpServletRequest httpServletRequest) {
+		return (String) httpServletRequest.getAttribute("bookingSessionId");
 	}
 }

@@ -8,6 +8,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
@@ -38,8 +40,8 @@ public class SecurityConfig {
 		);
 
 		return http
-			.csrf(csrf -> csrf.disable())
-			.headers(headers -> headers.frameOptions(frameOptions -> frameOptions.sameOrigin()))
+			.csrf(AbstractHttpConfigurer::disable)
+			.headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
 			.authorizeHttpRequests(authorize -> authorize
 				.requestMatchers(PathRequest.toH2Console()).permitAll()
 				.requestMatchers(permitAllMatchers.toArray(new RequestMatcher[0])).permitAll()

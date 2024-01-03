@@ -11,11 +11,11 @@ import lombok.Getter;
 @AllArgsConstructor
 public class BookingJwtPayload implements Payload {
 
-	private final Long memberId;
+	private final String sessionId;
 
-	public Map<String, Long> toMap() {
+	public Map<String, String> toMap() {
 		return new HashMap<>() {{
-			put("memberId", memberId);
+			put("sessionId", sessionId);
 		}};
 	}
 }

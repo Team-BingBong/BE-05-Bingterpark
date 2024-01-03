@@ -25,42 +25,37 @@ public class BookingQueueService {
 	private final BookingQueueRepository bookingQueueRepository;
 	private final BookingJwtProvider bookingJwtProvider;
 
-	public void enterQueue(BookingQueueEnterRequest request
-		, Long memberId) { //TODO: memberId arg 제거, 인증된 memberId 서비스 내에서 접근
-		//TODO: 회차 검증
-		bookingQueueRepository.add(request.eventId(), memberId);
+	public void enterQueue(BookingQueueEnterRequest request, String sessionId) {
+		bookingQueueRepository.add(request.eventId(), sessionId);
 	}
 
-	public OrderInQueueGetResponse getOrderInQueue(Long eventId
-		, Long memberId) { //TODO: memberId arg 제거, 인증된 memberId 서비스 내에서 접근
-		Long myOrder = bookingQueueRepository.getRank(eventId, memberId);
-		Boolean isMyTurn = isMyTurn(eventId, memberId);
+	public OrderInQueueGetResponse getOrderInQueue(Long eventId, String sessionId) {
+		Long myOrder = bookingQueueRepository.getRank(eventId, sessionId);
+		Boolean isMyTurn = isMyTurn(eventId, sessionId);
 		return OrderInQueueGetResponse.of(myOrder, isMyTurn);
 	}
 
-	public TokenIssueResponse issueToken(TokenIssueRequest request
-		, Long memberId) { //TODO: memberId arg 제거, 인증된 memberId 서비스 내에서 접근
-		if(!isMyTurn(request.eventId(), memberId)) {
+	public TokenIssueResponse issueToken(TokenIssueRequest request, String sessionId) {
+		if(!isMyTurn(request.eventId(), sessionId)) {
 			throw new BookingException(BookingErrorCode.OUT_OF_ORDER);
 		}
 
-		BookingJwtPayload payload = new BookingJwtPayload(memberId);
+		BookingJwtPayload payload = new BookingJwtPayload(sessionId);
 		String token = bookingJwtProvider.generateToken(payload);
 
-		bookingQueueRepository.remove(request.eventId(), memberId);
+		bookingQueueRepository.remove(request.eventId(), sessionId);
 
 		return TokenIssueResponse.from(token);
 	}
 
-	private Boolean isMyTurn(Long eventId, Long memberId) {
-		Long myOrder = bookingQueueRepository.getRank(eventId, memberId);
+	private Boolean isMyTurn(Long eventId, String sessionId) {
+		Long myOrder = bookingQueueRepository.getRank(eventId, sessionId);
 		Long entryLimit = bookingQueueRepository.getEntryLimit();
 		return myOrder <= entryLimit;
 	}
 
-	public void exitQueue(BookingQueueExitRequest request,
-		Long memberId) { //TODO: memberId arg 제거, 인증된 memberId 서비스 내에서 접근
-		bookingQueueRepository.remove(request.eventId(), memberId);
+	public void exitQueue(BookingQueueExitRequest request, String sessionId) {
+		bookingQueueRepository.remove(request.eventId(), sessionId);
 	}
 
 	public SessionIdIssueResponse issueSessionId() {

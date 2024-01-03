@@ -34,6 +34,6 @@ public class BookingJwtProvider {
 			.build()
 			.parseSignedClaims(token)
 			.getPayload();
-		return new BookingJwtPayload(claims.get("memberId", Long.class));
+		return new BookingJwtPayload(claims.get("sessionId", String.class));
 	}
 }

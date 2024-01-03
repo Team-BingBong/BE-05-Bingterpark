@@ -4,11 +4,11 @@ import org.springframework.security.authentication.AbstractAuthenticationToken;
 
 public class BookingAuthToken extends AbstractAuthenticationToken {
 
-	private final Long memberId;
+	private final String sessionId;
 
-	public BookingAuthToken(Long memberId) {
+	public BookingAuthToken(String sessionId) {
 		super(null);
-		this.memberId = memberId;
+		this.sessionId = sessionId;
 		super.setAuthenticated(true);
 	}
 
@@ -19,6 +19,6 @@ public class BookingAuthToken extends AbstractAuthenticationToken {
 
 	@Override
 	public Object getPrincipal() {
-		return this.memberId;
+		return this.sessionId;
 	}
 }

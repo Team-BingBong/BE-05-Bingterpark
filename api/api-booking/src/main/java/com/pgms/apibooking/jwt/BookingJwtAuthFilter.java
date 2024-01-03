@@ -32,7 +32,7 @@ public class BookingJwtAuthFilter extends OncePerRequestFilter {
 		if (token != null) {
 			try {
 				BookingJwtPayload authentication = bookingJwtProvider.validateAndParsePayload(token);
-				BookingAuthToken bookingAuthToken = new BookingAuthToken(authentication.getMemberId());
+				BookingAuthToken bookingAuthToken = new BookingAuthToken(authentication.getSessionId());
 				SecurityContextHolder.getContext().setAuthentication(bookingAuthToken);
 			} catch (JwtException | BookingException e) {
 				log.warn(e.getMessage(), e);
