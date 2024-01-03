@@ -15,7 +15,8 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import com.pgms.apibooking.exception.BookingExceptionHandlerFilter;
-import com.pgms.apibooking.jwt.JwtAuthFilter;
+import com.pgms.apibooking.exception.BookingAuthEntryPoint;
+import com.pgms.apibooking.jwt.BookingJwtAuthFilter;
 
 import lombok.RequiredArgsConstructor;
 
@@ -24,8 +25,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-	private final JwtAuthFilter jwtAuthFilter;
-	private final BookingExceptionHandlerFilter exceptionHandlerFilter;
+	private final BookingJwtAuthFilter bookingJwtAuthFilter;
+	private final BookingExceptionHandlerFilter bookingExceptionHandlerFilter;
+	private final BookingAuthEntryPoint bookingAuthEntryPoint;
 
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -43,9 +45,13 @@ public class SecurityConfig {
 				.requestMatchers(permitAllMatchers.toArray(new RequestMatcher[0])).permitAll()
 				.anyRequest().authenticated()
 			)
-			.sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-			.addFilterBefore(exceptionHandlerFilter, JwtAuthFilter.class)
-			.addFilterBefore(jwtAuthFilter, BasicAuthenticationFilter.class)
+			.exceptionHandling(exceptionHandling -> exceptionHandling
+				.authenticationEntryPoint(bookingAuthEntryPoint)
+			)
+			.sessionManagement(
+				sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+			.addFilterBefore(bookingJwtAuthFilter, BasicAuthenticationFilter.class)
+			.addFilterBefore(bookingExceptionHandlerFilter, BookingJwtAuthFilter.class)
 			.build();
 	}
 }

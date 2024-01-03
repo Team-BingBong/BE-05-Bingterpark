@@ -1,7 +1,5 @@
 package com.pgms.apibooking.service;
 
-import java.awt.print.Book;
-
 import org.springframework.stereotype.Service;
 
 import com.pgms.apibooking.dto.request.BookingQueueEnterRequest;
@@ -9,8 +7,8 @@ import com.pgms.apibooking.dto.response.OrderInQueueGetResponse;
 import com.pgms.apibooking.dto.response.TokenIssueResponse;
 import com.pgms.apibooking.exception.BookingErrorCode;
 import com.pgms.apibooking.exception.BookingException;
-import com.pgms.apibooking.jwt.JwtPayload;
-import com.pgms.apibooking.jwt.JwtProvider;
+import com.pgms.apibooking.jwt.BookingJwtPayload;
+import com.pgms.apibooking.jwt.BookingJwtProvider;
 import com.pgms.apibooking.repository.BookingQueueRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -20,7 +18,7 @@ import lombok.RequiredArgsConstructor;
 public class BookingQueueService {
 
 	private final BookingQueueRepository bookingQueueRepository;
-	private final JwtProvider jwtProvider;
+	private final BookingJwtProvider bookingJwtProvider;
 
 	public void enterQueue(BookingQueueEnterRequest request
 		, Long memberId) { //TODO: memberId arg 제거, 인증된 memberId 서비스 내에서 접근
@@ -41,8 +39,8 @@ public class BookingQueueService {
 			throw new BookingException(BookingErrorCode.OUT_OF_ORDER);
 		}
 
-		JwtPayload payload = new JwtPayload(memberId);
-		String token = jwtProvider.generateToken(payload);
+		BookingJwtPayload payload = new BookingJwtPayload(memberId);
+		String token = bookingJwtProvider.generateToken(payload);
 
 		bookingQueueRepository.remove(request.eventTimeId(), memberId);
 

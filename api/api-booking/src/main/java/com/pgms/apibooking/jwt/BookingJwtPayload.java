@@ -9,7 +9,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class JwtPayload implements Payload {
+public class BookingJwtPayload implements Payload {
 
 	private final Long memberId;
 

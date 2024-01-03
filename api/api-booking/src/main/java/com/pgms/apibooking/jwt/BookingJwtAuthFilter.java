@@ -15,27 +15,32 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Component
+@Slf4j
 @RequiredArgsConstructor
-public class JwtAuthFilter extends OncePerRequestFilter {
+public class BookingJwtAuthFilter extends OncePerRequestFilter {
 
-	private final JwtProvider jwtProvider;
+	private final BookingJwtProvider bookingJwtProvider;
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
 		FilterChain filterChain) throws ServletException, IOException {
 		String token = parseToken(request);
 
-		try {
-			JwtPayload authentication = jwtProvider.validateAndParsePayload(token);
-			BookingAuthToken bookingAuthToken = new BookingAuthToken(authentication.getMemberId());
-			SecurityContextHolder.getContext().setAuthentication(bookingAuthToken);
-		} catch (JwtException e) {
-			throw new BookingException(BookingErrorCode.INVALID_BOOKING_TOKEN);
-		} finally {
-			filterChain.doFilter(request, response);
+		if (token != null) {
+			try {
+				BookingJwtPayload authentication = bookingJwtProvider.validateAndParsePayload(token);
+				BookingAuthToken bookingAuthToken = new BookingAuthToken(authentication.getMemberId());
+				SecurityContextHolder.getContext().setAuthentication(bookingAuthToken);
+			} catch (JwtException | BookingException e) {
+				log.warn(e.getMessage(), e);
+				throw new BookingException(BookingErrorCode.INVALID_BOOKING_TOKEN);
+			}
 		}
+
+		filterChain.doFilter(request, response);
 	}
 
 	private String parseToken(HttpServletRequest request) {
@@ -43,6 +48,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 		if (headerAuth != null && headerAuth.startsWith("Bearer ")) {
 			return headerAuth.substring(7);
 		}
-		throw new BookingException(BookingErrorCode.BOOKING_TOKEN_NOT_EXIST);
+		return null;
 	}
 }

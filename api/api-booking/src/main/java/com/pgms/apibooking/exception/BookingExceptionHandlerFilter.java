@@ -13,27 +13,28 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 
 @Component
+@Slf4j
 public class BookingExceptionHandlerFilter extends OncePerRequestFilter {
 	private final ObjectMapper objectMapper;
 
-	private BookingExceptionHandlerFilter() {
+	public BookingExceptionHandlerFilter() {
 		this.objectMapper = new ObjectMapper();
 		objectMapper.findAndRegisterModules();
 	}
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
-		FilterChain filterChain) throws
-		ServletException,
-		IOException {
+		FilterChain filterChain) throws ServletException, IOException {
 		try {
 			filterChain.doFilter(request, response);
 		} catch (BookingException e) {
 			BookingErrorCode bookingErrorCode = e.getErrorCode();
 			sendFailResponse(response, bookingErrorCode);
 		} catch (Exception e) {
+			log.error(e.getMessage(), e);
 			BookingErrorCode bookingErrorCode = BookingErrorCode.INTERNAL_SERVER_ERROR;
 			sendFailResponse(response, bookingErrorCode);
 		}

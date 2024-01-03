@@ -1,10 +1,15 @@
+server:
+  port: 8082
+  servlet:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+
 spring:
   profiles:
     include: infra
     active: dev
-
-server:
-  port: 8082
 
 payment:
   toss:
@@ -14,5 +19,6 @@ payment:
     fail-url: https://localhost:8080/api/v1/fail
 
 jwt:
-  secret-key: XFUX/snhow5pDRscNjH8f2dpCFZFGIH+bcIOch0ey9s=
+  issuer: booking
+  secret-key: EENY5W0eegTf1naQB2eDeyCLl5kRS2b8xa5c4qLdS0hmVjtbvo8tOyhPMcAmtPu
   expiry-seconds: 420

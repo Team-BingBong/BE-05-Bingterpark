@@ -1,5 +1,6 @@
 package com.pgms.apibooking.jwt;
 
+import java.util.Calendar;
 import java.util.Date;
 
 import javax.crypto.SecretKey;
@@ -9,29 +10,30 @@ import io.jsonwebtoken.Jwts;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
-public class JwtProvider {
+public class BookingJwtProvider {
 	private final String issuer;
 	private final SecretKey secretKey;
 	private final Long expirySeconds;
 
-	public String generateToken(JwtPayload payload) {
-		Date now = new Date();
-		Date expirationMilliSeconds = new Date(now.getTime() + expirySeconds * 1000);
+	public String generateToken(BookingJwtPayload payload) {
+		Long now = System.currentTimeMillis();
+		Date expirationMilliSeconds = new Date(now + expirySeconds * 1000);
+
 		return Jwts.builder()
 			.issuer(issuer)
-			.issuedAt(now)
+			.issuedAt(new Date(now))
 			.expiration(expirationMilliSeconds)
 			.claims(payload.toMap())
 			.signWith(secretKey)
 			.compact();
 	}
 
-	public JwtPayload validateAndParsePayload(String token) {
+	public BookingJwtPayload validateAndParsePayload(String token) {
 		Claims claims = Jwts.parser()
 			.verifyWith(secretKey)
 			.build()
 			.parseSignedClaims(token)
 			.getPayload();
-		return new JwtPayload(claims.get("memberId", Long.class));
+		return new BookingJwtPayload(claims.get("memberId", Long.class));
 	}
 }

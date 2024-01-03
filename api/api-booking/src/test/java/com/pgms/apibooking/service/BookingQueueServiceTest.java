@@ -9,7 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.RedisTemplate;
 
+import com.pgms.apibooking.dto.request.BookingQueueEnterRequest;
 import com.pgms.apibooking.dto.response.OrderInQueueGetResponse;
+import com.pgms.apibooking.dto.response.TokenIssueResponse;
 import com.pgms.apibooking.repository.BookingQueueRepository;
 
 @SpringBootTest
@@ -63,5 +65,14 @@ class BookingQueueServiceTest {
 
 		assertThat(response.myOrder()).isEqualTo(memberId - completedCount);
 		assertThat(response.isMyTurn()).isTrue();
+	}
+
+	@Test
+	void 토큰_발급_테스트() {
+		long memberId = 50L;
+
+		BookingQueueEnterRequest request = new BookingQueueEnterRequest(TIME_ID);
+		TokenIssueResponse response = bookingQueueService.issueToken(request, memberId);
+		System.out.println(response.token());
 	}
 }
