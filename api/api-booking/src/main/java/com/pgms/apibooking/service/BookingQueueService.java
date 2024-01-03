@@ -3,6 +3,7 @@ package com.pgms.apibooking.service;
 import org.springframework.stereotype.Service;
 
 import com.pgms.apibooking.dto.request.BookingQueueEnterRequest;
+import com.pgms.apibooking.dto.request.BookingQueueExitRequest;
 import com.pgms.apibooking.dto.request.TokenIssueRequest;
 import com.pgms.apibooking.dto.response.OrderInQueueGetResponse;
 import com.pgms.apibooking.dto.response.TokenIssueResponse;
@@ -52,5 +53,10 @@ public class BookingQueueService {
 		Long myOrder = bookingQueueRepository.getRank(eventId, memberId);
 		Long entryLimit = bookingQueueRepository.getEntryLimit();
 		return myOrder <= entryLimit;
+	}
+
+	public void exitQueue(BookingQueueExitRequest request,
+		Long memberId) { //TODO: memberId arg 제거, 인증된 memberId 서비스 내에서 접근
+		bookingQueueRepository.remove(request.eventId(), memberId);
 	}
 }

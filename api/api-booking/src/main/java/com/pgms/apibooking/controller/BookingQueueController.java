@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.pgms.apibooking.dto.request.BookingQueueEnterRequest;
+import com.pgms.apibooking.dto.request.BookingQueueExitRequest;
 import com.pgms.apibooking.dto.request.TokenIssueRequest;
 import com.pgms.apibooking.dto.response.OrderInQueueGetResponse;
 import com.pgms.apibooking.dto.response.TokenIssueResponse;
@@ -42,5 +43,11 @@ public class BookingQueueController {
 	public ResponseEntity<ApiResponse<TokenIssueResponse>> issueToken(@RequestBody @Valid TokenIssueRequest request) {
 		ApiResponse<TokenIssueResponse> response = ApiResponse.ok(bookingQueueService.issueToken(request, null));
 		return ResponseEntity.ok(response);
+	}
+
+	@PostMapping("/exit-queue")
+	public ResponseEntity<Void> exitQueue(@RequestBody @Valid BookingQueueExitRequest request) {
+		bookingQueueService.exitQueue(request, null);
+		return ResponseEntity.ok().build();
 	}
 }
