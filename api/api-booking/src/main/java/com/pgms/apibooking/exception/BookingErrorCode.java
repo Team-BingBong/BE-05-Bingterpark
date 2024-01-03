@@ -28,7 +28,10 @@ public enum BookingErrorCode {
 	INVALID_PAYMENT_METHOD(HttpStatus.BAD_REQUEST, "INVALID_PAYMENT_METHOD", "결제 수단이 올바르지 않습니다."),
 	TOSS_PAYMENTS_ERROR(HttpStatus.BAD_REQUEST, "TOSS_PAYMENTS_CLIENT_ERROR", "Toss Payments API 오류가 발생했습니다."),
 
-	BOOKING_NOT_FOUND(HttpStatus.NOT_FOUND, "BOOKING_NOT_FOUND", "존재하지 않는 예매입니다.");
+	BOOKING_NOT_FOUND(HttpStatus.NOT_FOUND, "BOOKING_NOT_FOUND", "존재하지 않는 예매입니다."),
+
+	BOOKING_TOKEN_NOT_EXIST(HttpStatus.UNAUTHORIZED, "BOOKING_TOKEN_NOT_EXIST", "예매 토큰이 존재하지 않습니다."),
+	INVALID_BOOKING_TOKEN(HttpStatus.UNAUTHORIZED, "INVALID_BOOKING_TOKEN", "올바르지 않은 예매 토큰입니다.");
 
 	private final HttpStatus status;
 	private final String code;

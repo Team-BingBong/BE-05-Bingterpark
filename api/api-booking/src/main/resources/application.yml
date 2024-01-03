@@ -12,3 +12,7 @@ payment:
     test-secret-api-key: test_sk_tempSecretKey # 노출되면 안됨!! 임시값 넣어놓음
     success-url: https://localhost:8080/api/v1/success
     fail-url: https://localhost:8080/api/v1/fail
+
+jwt:
+  secret-key: XFUX/snhow5pDRscNjH8f2dpCFZFGIH+bcIOch0ey9s=
+  expiry-seconds: 420
