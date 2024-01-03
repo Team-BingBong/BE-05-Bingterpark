@@ -1,14 +1,23 @@
 package com.pgms.coreinfraes.document;
 
-import com.pgms.coredomain.domain.event.Event;
-import com.pgms.coredomain.domain.event.GenreType;
-import lombok.*;
-import org.springframework.data.elasticsearch.annotations.*;
+import static org.springframework.data.elasticsearch.annotations.DateFormat.*;
 
 import java.time.LocalDateTime;
 
-import static org.springframework.data.elasticsearch.annotations.DateFormat.date_hour_minute_second;
-import static org.springframework.data.elasticsearch.annotations.DateFormat.epoch_second;
+import org.springframework.data.elasticsearch.annotations.Document;
+import org.springframework.data.elasticsearch.annotations.Field;
+import org.springframework.data.elasticsearch.annotations.FieldType;
+import org.springframework.data.elasticsearch.annotations.Mapping;
+import org.springframework.data.elasticsearch.annotations.Setting;
+
+import com.pgms.coredomain.domain.event.Event;
+import com.pgms.coredomain.domain.event.GenreType;
+
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @AllArgsConstructor
@@ -19,37 +28,37 @@ import static org.springframework.data.elasticsearch.annotations.DateFormat.epoc
 @Setting(settingPath = "es/event-setting.json")
 public class EventDocument {
 
-    private Long id;
+	private Long id;
 
-    private String title;
+	private String title;
 
-    private String description;
+	private String description;
 
-    @Field(type = FieldType.Date, format = {date_hour_minute_second, epoch_second})
-    private LocalDateTime startedAt;
+	@Field(type = FieldType.Date, format = {date_hour_minute_second, epoch_second})
+	private LocalDateTime startedAt;
 
-    @Field(type = FieldType.Date, format = {date_hour_minute_second, epoch_second})
-    private LocalDateTime endedAt;
+	@Field(type = FieldType.Date, format = {date_hour_minute_second, epoch_second})
+	private LocalDateTime endedAt;
 
-    private String viewRating;
+	private String viewRating;
 
-    private GenreType genreType;
+	private GenreType genreType;
 
-    private Double averageScore = 0.0;
+	private Double averageScore = 0.0;
 
-    private Long eventHallId;
+	private Long eventHallId;
 
-    public static EventDocument from(Event event) {
-        return EventDocument.builder()
-                .id(event.getId())
-                .title(event.getTitle())
-                .description(event.getDescription())
-                .startedAt(event.getStartedAt())
-                .endedAt(event.getEndedAt())
-                .viewRating(event.getViewRating())
-                .genreType(event.getGenreType())
-                .averageScore(event.getAverageScore())
-                .eventHallId(event.getEventHall().getId())
-                .build();
-    }
+	public static EventDocument from(Event event) {
+		return EventDocument.builder()
+			.id(event.getId())
+			.title(event.getTitle())
+			.description(event.getDescription())
+			.startedAt(event.getStartedAt())
+			.endedAt(event.getEndedAt())
+			.viewRating(event.getViewRating())
+			.genreType(event.getGenreType())
+			.averageScore(event.getAverageScore())
+			.eventHallId(event.getEventHall().getId())
+			.build();
+	}
 }
