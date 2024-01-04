@@ -64,7 +64,6 @@ public class EventSearchQueryRepository {
 	}
 
 	public<T> void bulkUpdate(List<T> documents) {
-
 		List<UpdateQuery> updateQueries = new ArrayList<>();
 		for (T document : documents) {
 			Document esDocument = elasticsearchOperations.getElasticsearchConverter().mapObject(document);
