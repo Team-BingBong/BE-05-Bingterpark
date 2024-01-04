@@ -65,6 +65,7 @@ public class EventService {
 	public void deleteEventById(Long id) {
 		Event event = getEvent(id);
 		eventRepository.delete(event);
+		eventSearchRepository.deleteById(id);
 	}
 
 	private void validateDuplicateEvent(String title) {
