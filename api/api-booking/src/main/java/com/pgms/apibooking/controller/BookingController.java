@@ -50,4 +50,10 @@ public class BookingController {
 		bookingService.cancelBooking(id, paymentKey, request);
 		return ResponseEntity.ok().build();
 	}
+
+	@PostMapping("/{id}/exit")
+	public ResponseEntity<Void> exitBooking(@PathVariable String id) {
+		bookingService.exitBooking(id);
+		return ResponseEntity.ok().build();
+	}
 }

@@ -17,6 +17,7 @@ import com.pgms.coredomain.domain.booking.Payment;
 import com.pgms.coredomain.domain.booking.PaymentStatus;
 import com.pgms.coredomain.domain.booking.ReceiptType;
 import com.pgms.coredomain.domain.booking.repository.BookingRepository;
+import com.pgms.coredomain.domain.booking.repository.TicketRepository;
 import com.pgms.coredomain.domain.event.EventSeat;
 import com.pgms.coredomain.domain.event.EventSeatStatus;
 import com.pgms.coredomain.domain.event.EventTime;
@@ -34,6 +35,7 @@ public class BookingService { //TODO: 테스트 코드 작성
 	private final EventTimeRepository eventTimeRepository;
 	private final EventSeatRepository eventSeatRepository;
 	private final BookingRepository bookingRepository;
+	private final TicketRepository ticketRepository;
 	private final TossPaymentConfig tossPaymentConfig;
 	private final PaymentService paymentService;
 
@@ -79,6 +81,11 @@ public class BookingService { //TODO: 테스트 코드 작성
 		booking.cancel(
 			BookingCancelRequest.toEntity(request, "사용자", booking) //TODO: 취소 요청자 지정
 		);
+	}
+
+	public void exitBooking(String id) {
+		List<Ticket> ticketsWithSeat = ticketRepository.findAllByBookingId(id);
+		ticketsWithSeat.forEach(ticket -> ticket.getSeat().updateStatus(EventSeatStatus.AVAILABLE));
 	}
 
 	private EventTime getBookableTimeWithEvent(Long timeId) {
