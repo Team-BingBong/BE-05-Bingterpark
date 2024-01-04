@@ -37,8 +37,7 @@ public class PaymentService {
 	private final TossPaymentService tossPaymentService;
 
 	public PaymentSuccessResponse successPayment(String paymentKey, String bookingId, int amount) {
-		Booking booking = bookingRepository.findWithPaymentById(bookingId)
-			.orElseThrow(() -> new BookingException(BookingErrorCode.BOOKING_NOT_FOUND));
+		Booking booking = getBookingById(bookingId);
 		Payment payment = booking.getPayment();
 
 		if (payment.getAmount() != amount) {
@@ -101,8 +100,7 @@ public class PaymentService {
 	}
 
 	public void confirmVirtualAccountIncome(ConfirmVirtualIncomeRequest request) {
-		Booking booking = bookingRepository.findWithPaymentById(request.orderId())
-			.orElseThrow(() -> new BookingException(BookingErrorCode.BOOKING_NOT_FOUND));
+		Booking booking = getBookingById(request.orderId());
 		Payment payment = booking.getPayment();
 
 		switch (PaymentStatus.valueOf(request.status())) {
@@ -114,6 +112,12 @@ public class PaymentService {
 			case WAITING_FOR_DEPOSIT -> throw new BookingException(BookingErrorCode.ACCOUNT_TRANSFER_ERROR);
 			default -> throw new BookingException(BookingErrorCode.INTERNAL_SERVER_ERROR);
 		}
+	}
+
+	private Booking getBookingById(String bookingId) {
+		Booking booking = bookingRepository.findWithPaymentById(bookingId)
+			.orElseThrow(() -> new BookingException(BookingErrorCode.BOOKING_NOT_FOUND));
+		return booking;
 	}
 
 	private Payment getPaymentByPaymentKey(String paymentKey) {
