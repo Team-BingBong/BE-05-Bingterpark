@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.pgms.apibooking.dto.request.BookingCancelRequest;
+import com.pgms.apibooking.dto.request.ConfirmVirtualIncomeRequest;
 import com.pgms.apibooking.dto.request.PaymentConfirmRequest;
 import com.pgms.apibooking.dto.request.RefundAccountRequest;
 import com.pgms.apibooking.dto.response.PaymentCancelResponse;
@@ -55,6 +56,7 @@ public class PaymentService {
 					card.installmentPlanMonths(),
 					card.isInterestFree()
 				);
+				booking.updateStatus(BookingStatus.PAYMENT_COMPLETED);
 				payment.updateApprovedAt(DateTimeUtil.parse(response.approvedAt()));
 			}
 			case VIRTUAL_ACCOUNT -> {
@@ -70,7 +72,6 @@ public class PaymentService {
 		}
 		payment.updateConfirmInfo(paymentKey, DateTimeUtil.parse(response.requestedAt()));
 		payment.updateStatus(PaymentStatus.valueOf(response.status()));
-		booking.updateStatus(BookingStatus.PAYMENT_COMPLETED);
 
 		return response;
 	}
@@ -97,6 +98,22 @@ public class PaymentService {
 		payment.updateStatus(PaymentStatus.valueOf(response.status()));
 		booking.updateStatus(BookingStatus.CANCELED);
 		return response;
+	}
+
+	public void confirmVirtualAccountIncome(ConfirmVirtualIncomeRequest request) {
+		Booking booking = bookingRepository.findWithPaymentById(request.orderId())
+			.orElseThrow(() -> new BookingException(BookingErrorCode.BOOKING_NOT_FOUND));
+		Payment payment = booking.getPayment();
+
+		switch (PaymentStatus.valueOf(request.status())) {
+			case DONE -> {
+				payment.updateApprovedAt(DateTimeUtil.parseNano(request.createdAt()));
+				payment.updateStatus(PaymentStatus.DONE);
+				booking.updateStatus(BookingStatus.PAYMENT_COMPLETED);
+			}
+			case WAITING_FOR_DEPOSIT -> throw new BookingException(BookingErrorCode.ACCOUNT_TRANSFER_ERROR);
+			default -> throw new BookingException(BookingErrorCode.INTERNAL_SERVER_ERROR);
+		}
 	}
 
 	private Payment getPaymentByPaymentKey(String paymentKey) {
