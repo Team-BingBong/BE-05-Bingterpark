@@ -9,7 +9,7 @@ dependencies {
     implementation project(':core:core-domain');
     implementation project(':core:core-infra');
     implementation project(':core:core-security');
-    implementation project(':api:api-member')
+    implementation project(':api:api-member');
 
     implementation 'org.springframework.boot:spring-boot-starter-batch'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
