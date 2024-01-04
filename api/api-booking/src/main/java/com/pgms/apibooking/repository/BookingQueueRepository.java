@@ -21,7 +21,7 @@ public class BookingQueueRepository {
 	}
 	
 	public Long getEntryLimit() {
-		return 100L;
+		return 500L;
 	}
 
 	public void remove(Long eventId, String sessionId) {
