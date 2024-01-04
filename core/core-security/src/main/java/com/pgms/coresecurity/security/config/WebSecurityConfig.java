@@ -1,5 +1,10 @@
 package com.pgms.coresecurity.security.config;
 
+import static org.springframework.http.HttpMethod.*;
+import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.*;
+
+import java.util.List;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -13,6 +18,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import com.pgms.coresecurity.security.jwt.JwtAuthenticationEntryPoint;
 import com.pgms.coresecurity.security.jwt.JwtAuthenticationFilter;
@@ -48,12 +54,13 @@ public class WebSecurityConfig {
 			.sessionManagement(session -> session
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 			)
-			.authorizeHttpRequests(auth ->
-				// TODO authorize 설정
-				// auth.requestMatchers("/api/auth/**").permitAll()
-				// 	.requestMatchers("/api/test/**").permitAll()
-				auth.anyRequest().permitAll()
-			)
+			.authorizeHttpRequests(auth -> auth
+				// TODO 엔드포인트별 authorize 통합
+				.requestMatchers(requestPermitAll()).permitAll()
+				.requestMatchers(requestHasRoleSuperAdmin()).hasRole("SUPERADMIN")
+				.requestMatchers(requestHasRoleAdmin()).hasRole("ADMIN")
+				.requestMatchers(requestHasRoleUser()).hasRole("USER")
+				.anyRequest().permitAll()) // 완성 후 denyAll 로 변경할 예정
 			.exceptionHandling(exception -> {
 				exception.authenticationEntryPoint(jwtAuthenticationEntryPoint);
 				// exception.accessDeniedHandler(customAccessDeniedHandler()); // TODO AccessDeniedHandler 추가
@@ -62,5 +69,29 @@ public class WebSecurityConfig {
 				UsernamePasswordAuthenticationFilter.class);
 
 		return http.build();
+	}
+
+	private RequestMatcher[] requestPermitAll() {
+		List<RequestMatcher> requestMatchers = List.of(
+			antMatcher("/api/v1/auth/**"));
+		return requestMatchers.toArray(RequestMatcher[]::new);
+	}
+
+	private RequestMatcher[] requestHasRoleSuperAdmin() {
+		List<RequestMatcher> requestMatchers = List.of(
+			antMatcher("/api/v1/admin/management/**"));
+		return requestMatchers.toArray(RequestMatcher[]::new);
+	}
+
+	private RequestMatcher[] requestHasRoleAdmin() {
+		List<RequestMatcher> requestMatchers = List.of(
+			antMatcher(POST, "/api/v1/admin/**"));
+		return requestMatchers.toArray(RequestMatcher[]::new);
+	}
+
+	private RequestMatcher[] requestHasRoleUser() {
+		List<RequestMatcher> requestMatchers = List.of(
+			antMatcher("/api/v1/members/**"));
+		return requestMatchers.toArray(RequestMatcher[]::new);
 	}
 }
