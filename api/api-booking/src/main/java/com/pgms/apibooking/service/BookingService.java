@@ -14,7 +14,6 @@ import com.pgms.apibooking.exception.BookingErrorCode;
 import com.pgms.apibooking.exception.BookingException;
 import com.pgms.coredomain.domain.booking.Booking;
 import com.pgms.coredomain.domain.booking.Payment;
-import com.pgms.coredomain.domain.booking.PaymentMethod;
 import com.pgms.coredomain.domain.booking.PaymentStatus;
 import com.pgms.coredomain.domain.booking.ReceiptType;
 import com.pgms.coredomain.domain.booking.repository.BookingRepository;
@@ -55,7 +54,6 @@ public class BookingService { //TODO: 테스트 코드 작성
 
 		booking.updatePayment(
 			Payment.builder()
-				.method(PaymentMethod.fromDescription(request.method()))
 				.amount(booking.getAmount())
 				.status(PaymentStatus.READY)
 				.build()
