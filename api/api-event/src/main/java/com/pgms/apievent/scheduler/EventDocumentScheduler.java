@@ -23,11 +23,20 @@ public class EventDocumentScheduler {
         log.info(">>>>> execute scheduleUpdateEventDocument");
         try {
             List<Object> documents = DocumentBuffer.getAll();
+            isDocumentsEmpty(documents);
             eventSearchQueryRepository.bulkUpdate(documents);
+        } catch (RuntimeException e){
+            log.warn(">>>>> scheduleUpdateEventDocument Document Empty");
+            return;
         } catch (Exception e){
             log.warn(">>>>> scheduleUpdateEventDocument failed!!! {}", e);
             return;
         }
         DocumentBuffer.deleteAll();
+    }
+
+    private static void isDocumentsEmpty(List<Object> documents) {
+        if(documents.isEmpty())
+            throw new RuntimeException("scheduleUpdateEventDocument Document Emtpy");
     }
 }

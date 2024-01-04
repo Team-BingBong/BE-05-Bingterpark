@@ -1,20 +1,5 @@
 package com.pgms.apievent.event.controller;
 
-import java.net.URI;
-import java.util.List;
-
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-
 import com.pgms.apievent.event.dto.request.EventCreateRequest;
 import com.pgms.apievent.event.dto.request.EventSeatAreaCreateRequest;
 import com.pgms.apievent.event.dto.request.EventSeatAreaUpdateRequest;
@@ -23,9 +8,14 @@ import com.pgms.apievent.event.dto.response.EventResponse;
 import com.pgms.apievent.event.dto.response.EventSeatAreaResponse;
 import com.pgms.apievent.event.service.EventService;
 import com.pgms.coredomain.response.ApiResponse;
-
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
+import java.net.URI;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -53,7 +43,7 @@ public class EventController {
 	@PutMapping("/{id}")
 	public ResponseEntity<ApiResponse> updateEvent(
 		@PathVariable Long id,
-		@ModelAttribute EventUpdateRequest request) {
+		@RequestBody EventUpdateRequest request) {
 		EventResponse response = eventService.updateEvent(id, request);
 		return ResponseEntity.ok(ApiResponse.ok(response));
 	}
