@@ -38,7 +38,8 @@ VALUES ('E3', 'BEING_BOOKED', 2, 1);
 INSERT INTO role (name)
 VALUES ('ROLE_SUPERADMIN'),
        ('ROLE_ADMIN'),
-       ('ROLE_USER');
+       ('ROLE_USER'),
+       ('ROLE_GUEST');
 
 
 -- Member
@@ -58,6 +59,6 @@ VALUES ('슈퍼관리자', 'superadmin@example.com', '$2a$10$tfdM.PjviEH0zMEXVYj
        ('관리자', 'admin@example.com', '$2a$10$tfdM.PjviEH0zMEXVYjH.ODJPSviQRrYpb17rdMjvJtbWbSnC8nTa', '01012345678',
         'ACTIVE', 2, NOW(), NOW()),
        ('오래된 슈퍼관리자', 'oldSuperadmin@example.com', '$2a$10$tfdM.PjviEH0zMEXVYjH.ODJPSviQRrYpb17rdMjvJtbWbSnC8nTa',
-        '01012345678','ACTIVE', 1, '2020-01-01', NOW());
+        '01012345678', 'ACTIVE', 1, '2020-01-01', NOW());
 
 

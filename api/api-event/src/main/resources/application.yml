@@ -1,6 +1,6 @@
 spring:
   profiles:
-    include: infra
+    include: infra, security
     active: dev
 
 server:
@@ -19,6 +19,11 @@ cloud:
     stack:
       auto: false
 
-jwt:
-  secret-key: EENY5W0eegTf1naQB2eDeyCLl5kRS2b8xa5c4qLdS0hmVjtbvo8tOyhPMcAmtPuQ # TODO : 시크릿 키 따로 관리
-  expiry-seconds: 360000000
+logging:
+  level:
+    org:
+      springframework:
+        data:
+          elasticsearch:
+            client:
+              WIRE: TRACE
