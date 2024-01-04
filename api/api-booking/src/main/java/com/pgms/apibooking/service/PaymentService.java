@@ -33,7 +33,7 @@ public class PaymentService {
 
 	private final PaymentRepository paymentRepository;
 	private final BookingRepository bookingRepository;
-	private final TossPaymentService tossPaymentService;
+	private final TossPaymentService tossPaymentServiceImpl;
 
 	public PaymentSuccessResponse successPayment(String paymentKey, String bookingId, int amount) {
 		Booking booking = bookingRepository.findWithPaymentById(bookingId)
@@ -44,7 +44,7 @@ public class PaymentService {
 			throw new BookingException(BookingErrorCode.PAYMENT_AMOUNT_MISMATCH);
 		}
 		PaymentConfirmRequest request = new PaymentConfirmRequest(paymentKey, bookingId, amount);
-		PaymentSuccessResponse response = tossPaymentService.requestTossPaymentConfirmation(request);
+		PaymentSuccessResponse response = tossPaymentServiceImpl.requestTossPaymentConfirmation(request);
 		payment.updateMethod(PaymentMethod.fromDescription(response.method()));
 
 		switch (payment.getMethod()) {
@@ -84,7 +84,7 @@ public class PaymentService {
 
 	public PaymentCancelResponse cancelPayment(String paymentKey, BookingCancelRequest request) {
 		Payment payment = getPaymentByPaymentKey(paymentKey);
-		PaymentCancelResponse response = tossPaymentService.requestTossPaymentCancellation(paymentKey, request);
+		PaymentCancelResponse response = tossPaymentServiceImpl.requestTossPaymentCancellation(paymentKey, request);
 		if (request.refundReceiveAccount().isPresent()) {
 			RefundAccountRequest refundAccountRequest = request.refundReceiveAccount().get();
 			payment.updateRefundInfo(

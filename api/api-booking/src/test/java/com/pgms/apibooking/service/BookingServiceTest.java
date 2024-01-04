@@ -9,9 +9,10 @@ import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.pgms.apibooking.dto.request.BookingCancelRequest;
+import com.pgms.apibooking.config.TestConfig;
 import com.pgms.apibooking.dto.request.BookingCreateRequest;
 import com.pgms.apibooking.dto.response.BookingCreateResponse;
 import com.pgms.apibooking.exception.BookingErrorCode;
@@ -40,8 +41,11 @@ import com.pgms.coredomain.domain.event.repository.EventSeatRepository;
 import com.pgms.coredomain.domain.event.repository.EventTimeRepository;
 
 @SpringBootTest
+@Import(TestConfig.class)
 @Transactional
 class BookingServiceTest {
+
+	private static final LocalDateTime NOW = LocalDateTime.now();
 
 	@Autowired
 	private EventHallRepository eventHallRepository;
@@ -63,8 +67,6 @@ class BookingServiceTest {
 
 	@Autowired
 	private BookingService bookingService;
-
-	private static final LocalDateTime NOW = LocalDateTime.now();
 
 	@Test
 	void 예매를_생성한다() {
