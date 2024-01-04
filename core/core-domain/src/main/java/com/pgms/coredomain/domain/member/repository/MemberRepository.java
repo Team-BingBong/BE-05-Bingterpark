@@ -11,10 +11,14 @@ import org.springframework.data.jpa.repository.Query;
 import com.pgms.coredomain.domain.member.Member;
 
 public interface MemberRepository extends JpaRepository<Member, Long> {
+
 	boolean existsByRoleId(Long roleId);
 
 	@EntityGraph(attributePaths = {"role"})
 	Slice<Member> findSliceBy(Pageable pageable);
+
+	@Query("select m from Member m join fetch m.role r where m.email = :email")
+	Optional<Member> findByEmailWithRole(String email);
 
 	@Query("select m from Member m join fetch m.role r where m.id = :id")
 	Optional<Member> findByIdWithRole(Long id);
