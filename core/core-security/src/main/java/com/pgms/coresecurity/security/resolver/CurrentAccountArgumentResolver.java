@@ -18,7 +18,7 @@ public class CurrentAccountArgumentResolver implements HandlerMethodArgumentReso
 	public boolean supportsParameter(MethodParameter parameter) {
 		boolean hasParameterAnnotation = parameter.hasParameterAnnotation(CurrentAccount.class);
 		boolean hasLongParameterType = parameter.getParameterType().isAssignableFrom(Long.class);
-		return hasParameterAnnotation & hasLongParameterType;
+		return hasParameterAnnotation && hasLongParameterType;
 	}
 
 	@Override
