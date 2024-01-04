@@ -30,7 +30,6 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class TossPaymentServiceImpl implements TossPaymentService {
 
-
 	private final TossPaymentConfig tossPaymentConfig;
 	private final RestTemplate restTemplate;
 

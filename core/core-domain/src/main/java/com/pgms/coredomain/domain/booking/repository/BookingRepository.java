@@ -19,7 +19,7 @@ public interface BookingRepository extends JpaRepository<Booking, String> {
 		+ "JOIN FETCH b.payment "
 		+ "JOIN FETCH b.tickets tk "
 		+ "JOIN FETCH tk.seat "
-		+ "JOIN FETCH b.cancel "
+		+ "LEFT JOIN FETCH b.cancel "
 		+ "WHERE b.id = :id")
 	Optional<Booking> findBookingInfoById(@Param("id") String id);
 }

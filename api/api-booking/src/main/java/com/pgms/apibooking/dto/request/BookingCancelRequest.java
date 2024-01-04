@@ -17,10 +17,10 @@ public record BookingCancelRequest(
 	Optional<RefundAccountRequest> refundReceiveAccount
 	) {
 
-	public static BookingCancel toEntity(BookingCancelRequest request, String createdBy, Booking booking) {
+	public static BookingCancel toEntity(BookingCancelRequest request, Integer amount, String createdBy, Booking booking) {
 		return BookingCancel.builder()
 			.reason(request.cancelReason)
-			.amount(booking.getAmount())
+			.amount(amount)
 			.createdBy(createdBy)
 			.booking(booking)
 			.build();

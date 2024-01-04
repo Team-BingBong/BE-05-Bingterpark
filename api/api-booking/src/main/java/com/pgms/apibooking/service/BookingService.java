@@ -82,17 +82,19 @@ public class BookingService { //TODO: 테스트 코드 작성
 
 		validateRefundReceiveAccount(booking.getPayment().getMethod(), request.refundReceiveAccount());
 
+		int cancelAmount = booking.isPaid() ? booking.getAmount() : 0;
+
 		paymentService.cancelPayment(
 			booking.getPayment().getPaymentKey(),
 			PaymentCancelRequest.of(
 				request.cancelReason(),
-				booking.isPaid() ? booking.getAmount() : 0,
+				cancelAmount,
 				request.refundReceiveAccount()
 			)
 		);
 
 		booking.cancel(
-			BookingCancelRequest.toEntity(request, "사용자", booking) //TODO: 취소 요청자 지정
+			BookingCancelRequest.toEntity(request, cancelAmount, "사용자", booking) //TODO: 취소 요청자 지정
 		);
 	}
 
@@ -134,7 +136,8 @@ public class BookingService { //TODO: 테스트 코드 작성
 		}
 	}
 
-	private void validateRefundReceiveAccount(PaymentMethod paymentMethod, Optional<RefundAccountRequest> refundReceiveAccount) {
+	private void validateRefundReceiveAccount(PaymentMethod paymentMethod,
+		Optional<RefundAccountRequest> refundReceiveAccount) {
 		if (paymentMethod == PaymentMethod.VIRTUAL_ACCOUNT && refundReceiveAccount.isEmpty()) {
 			throw new BookingException(BookingErrorCode.REFUND_ACCOUNT_REQUIRED);
 		}
