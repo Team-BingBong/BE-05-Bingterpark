@@ -3,7 +3,7 @@ package com.pgms.apibooking.fake;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import com.pgms.apibooking.dto.request.BookingCancelRequest;
+import com.pgms.apibooking.dto.request.PaymentCancelRequest;
 import com.pgms.apibooking.dto.request.PaymentConfirmRequest;
 import com.pgms.apibooking.dto.response.PaymentCancelDetailResponse;
 import com.pgms.apibooking.dto.response.PaymentCancelResponse;
@@ -80,7 +80,7 @@ public class TossPaymentServiceFake implements TossPaymentService {
 	}
 
 	@Override
-	public PaymentCancelResponse requestTossPaymentCancellation(String paymentKey, BookingCancelRequest request) {
+	public PaymentCancelResponse requestTossPaymentCancellation(String paymentKey, PaymentCancelRequest request) {
 		Payment payment = paymentRepository.findByPaymentKey(paymentKey)
 			.orElseThrow(() -> new BookingException(BookingErrorCode.PAYMENT_NOT_FOUND));
 

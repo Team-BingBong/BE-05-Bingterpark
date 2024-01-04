@@ -14,7 +14,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import com.pgms.apibooking.config.TossPaymentConfig;
-import com.pgms.apibooking.dto.request.BookingCancelRequest;
+import com.pgms.apibooking.dto.request.PaymentCancelRequest;
 import com.pgms.apibooking.dto.request.PaymentConfirmRequest;
 import com.pgms.apibooking.dto.response.PaymentCancelResponse;
 import com.pgms.apibooking.dto.response.PaymentSuccessResponse;
@@ -50,7 +50,7 @@ public class TossPaymentServiceImpl implements TossPaymentService {
 	}
 
 	@Override
-	public PaymentCancelResponse requestTossPaymentCancellation(String paymentKey, BookingCancelRequest request) {
+	public PaymentCancelResponse requestTossPaymentCancellation(String paymentKey, PaymentCancelRequest request) {
 		HttpHeaders headers = buildTossApiHeaders();
 		URI uri = URI.create(TossPaymentConfig.TOSS_ORIGIN_URL + paymentKey + "/cancel");
 		try {

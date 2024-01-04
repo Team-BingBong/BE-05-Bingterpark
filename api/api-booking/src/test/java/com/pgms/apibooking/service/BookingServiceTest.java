@@ -17,6 +17,7 @@ import com.pgms.apibooking.dto.request.BookingCreateRequest;
 import com.pgms.apibooking.dto.response.BookingCreateResponse;
 import com.pgms.apibooking.exception.BookingErrorCode;
 import com.pgms.apibooking.exception.BookingException;
+import com.pgms.apibooking.factory.BookingFactory;
 import com.pgms.apibooking.factory.EventFactory;
 import com.pgms.apibooking.factory.EventHallFactory;
 import com.pgms.apibooking.factory.EventSeatAreaFactory;
@@ -107,7 +108,7 @@ class BookingServiceTest {
 		Long timeId = time.getId();
 		List<Long> seatIds = List.of(seat1.getId(), seat2.getId());
 		String receiptType = ReceiptType.PICK_UP.getDescription();
-		String buyerName = "구매자명";
+		String buyerName = "구매자 명";
 		String buyerPhoneNumber = "010-1234-5678";
 
 		BookingCreateRequest request = new BookingCreateRequest(
@@ -172,7 +173,7 @@ class BookingServiceTest {
 		Long timeId = time.getId();
 		List<Long> seatIds = List.of(seat.getId());
 		String receiptType = ReceiptType.PICK_UP.getDescription();
-		String buyerName = "구매자명";
+		String buyerName = "구매자 명";
 		String buyerPhoneNumber = "010-1234-5678";
 
 		BookingCreateRequest request = new BookingCreateRequest(
@@ -224,7 +225,7 @@ class BookingServiceTest {
 		Long timeId = time2.getId();
 		List<Long> seatIds = List.of(seat.getId());
 		String receiptType = ReceiptType.PICK_UP.getDescription();
-		String buyerName = "구매자명";
+		String buyerName = "구매자 명";
 		String buyerPhoneNumber = "010-1234-5678";
 
 		BookingCreateRequest request = new BookingCreateRequest(
@@ -274,7 +275,7 @@ class BookingServiceTest {
 		Long timeId = time.getId();
 		List<Long> seatIds = List.of(seat.getId());
 		String receiptType = ReceiptType.PICK_UP.getDescription();
-		String buyerName = "구매자명";
+		String buyerName = "구매자 명";
 		String buyerPhoneNumber = "010-1234-5678";
 
 		BookingCreateRequest request = new BookingCreateRequest(
@@ -324,7 +325,7 @@ class BookingServiceTest {
 		Long timeId = time.getId();
 		List<Long> seatIds = List.of(seat.getId());
 		String receiptType = ReceiptType.DELIVERY.getDescription();
-		String buyerName = "구매자명";
+		String buyerName = "구매자 명";
 		String buyerPhoneNumber = "010-1234-5678";
 
 		BookingCreateRequest request = new BookingCreateRequest(
@@ -340,5 +341,40 @@ class BookingServiceTest {
 		assertThatThrownBy(() -> bookingService.createBooking(request))
 			.isInstanceOf(BookingException.class)
 			.hasMessage(BookingErrorCode.DELIVERY_ADDRESS_REQUIRED.getMessage());
+	}
+
+	@Test
+	void 예매를_취소한다() {
+		// given
+		LocalDateTime eventStartedAt = NOW.plusDays(2);
+		LocalDateTime eventEndedAt = NOW.plusDays(2).plusMinutes(120);
+		LocalDateTime bookingStartedAt = NOW;
+		LocalDateTime bookingEndedAt = NOW.plusDays(1);
+
+		EventHall hall = EventHallFactory.generate();
+		eventHallRepository.save(hall);
+
+		Event event = EventFactory.generate(
+			hall,
+			eventStartedAt,
+			eventEndedAt,
+			bookingStartedAt,
+			bookingEndedAt
+		);
+		eventRepository.save(event);
+
+		EventTime time = EventTimeFactory.generate(event, eventStartedAt, eventEndedAt);
+		eventTimeRepository.save(time);
+
+		EventSeatArea area = EventSeatAreaFactory.generate(event, SeatAreaType.S);
+		eventSeatAreaRepository.save(area);
+
+		EventSeat seat = EventSeatFactory.generate(time, area, "A1", EventSeatStatus.AVAILABLE);
+		eventSeatRepository.save(seat);
+
+		Booking booking = BookingFactory.generate(null, time, BookingStatus.PAYMENT_COMPLETED);
+		// when
+
+		// then
 	}
 }

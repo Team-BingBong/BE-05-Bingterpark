@@ -9,6 +9,7 @@ import com.pgms.apibooking.config.TossPaymentConfig;
 import com.pgms.apibooking.dto.request.BookingCancelRequest;
 import com.pgms.apibooking.dto.request.BookingCreateRequest;
 import com.pgms.apibooking.dto.request.DeliveryAddress;
+import com.pgms.apibooking.dto.request.PaymentCancelRequest;
 import com.pgms.apibooking.dto.response.BookingCreateResponse;
 import com.pgms.apibooking.exception.BookingErrorCode;
 import com.pgms.apibooking.exception.BookingException;
@@ -76,7 +77,14 @@ public class BookingService { //TODO: 테스트 코드 작성
 			throw new BookingException(BookingErrorCode.UNCANCELABLE_BOOKING);
 		}
 
-		paymentService.cancelPayment(paymentKey, request);
+		paymentService.cancelPayment(
+			paymentKey,
+			PaymentCancelRequest.of(
+				request.cancelReason(),
+				booking.isPaid() ? booking.getAmount() : 0,
+				request.refundReceiveAccount()
+			)
+		);
 
 		booking.cancel(
 			BookingCancelRequest.toEntity(request, "사용자", booking) //TODO: 취소 요청자 지정

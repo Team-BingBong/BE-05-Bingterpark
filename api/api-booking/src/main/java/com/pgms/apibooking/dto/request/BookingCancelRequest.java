@@ -13,9 +13,6 @@ public record BookingCancelRequest(
 	@NotBlank(message = "[취소 사유]는 필수 입력값입니다.")
 	String cancelReason,
 
-	@Nullable
-	int cancelAmount,
-
 	@Valid
 	Optional<RefundAccountRequest> refundReceiveAccount
 	) {

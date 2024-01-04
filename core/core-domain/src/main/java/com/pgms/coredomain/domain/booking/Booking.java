@@ -142,6 +142,10 @@ public class Booking extends BaseEntity {
 			&& this.status == BookingStatus.WAITING_FOR_PAYMENT || this.status == BookingStatus.PAYMENT_COMPLETED;
 	}
 
+	public boolean isPaid() {
+		return this.payment.isPaid() && this.status == BookingStatus.PAYMENT_COMPLETED;
+	}
+
 	public void cancel(BookingCancel cancel) {
 		if (!this.payment.isCanceled()) {
 			throw new IllegalStateException("결제 취소 중 오류가 발생했습니다.");

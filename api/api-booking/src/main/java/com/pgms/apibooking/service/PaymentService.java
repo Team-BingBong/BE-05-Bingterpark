@@ -3,7 +3,7 @@ package com.pgms.apibooking.service;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.pgms.apibooking.dto.request.BookingCancelRequest;
+import com.pgms.apibooking.dto.request.PaymentCancelRequest;
 import com.pgms.apibooking.dto.request.PaymentConfirmRequest;
 import com.pgms.apibooking.dto.request.RefundAccountRequest;
 import com.pgms.apibooking.dto.response.PaymentCancelResponse;
@@ -82,7 +82,7 @@ public class PaymentService {
 		return new PaymentFailResponse(errorCode, errorMessage, bookingId);
 	}
 
-	public PaymentCancelResponse cancelPayment(String paymentKey, BookingCancelRequest request) {
+	public PaymentCancelResponse cancelPayment(String paymentKey, PaymentCancelRequest request) {
 		Payment payment = getPaymentByPaymentKey(paymentKey);
 		PaymentCancelResponse response = tossPaymentServiceImpl.requestTossPaymentCancellation(paymentKey, request);
 		if (request.refundReceiveAccount().isPresent()) {
