@@ -16,12 +16,14 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import com.pgms.coresecurity.security.jwt.JwtAccessDeniedHandler;
 import com.pgms.coresecurity.security.jwt.JwtAuthenticationEntryPoint;
 import com.pgms.coresecurity.security.jwt.JwtAuthenticationFilter;
+import com.pgms.coresecurity.security.service.OAuth2UserService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -33,6 +35,8 @@ public class WebSecurityConfig {
 	private final JwtAuthenticationFilter jwtAuthenticationFilter;
 	private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 	private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
+	private final OAuth2UserService oAuth2UserService;
+	private final AuthenticationSuccessHandler oauthSuccessHandler;
 
 	@Bean
 	public PasswordEncoder passwordEncoder() {
@@ -50,6 +54,11 @@ public class WebSecurityConfig {
 			.csrf(AbstractHttpConfigurer::disable)
 			.cors(AbstractHttpConfigurer::disable)
 			.formLogin(AbstractHttpConfigurer::disable)
+			.oauth2Login(oauth2Configurer -> oauth2Configurer
+				.loginPage("/login")
+				.successHandler(oauthSuccessHandler)
+				.userInfoEndpoint()
+				.userService(oAuth2UserService))
 			.httpBasic(AbstractHttpConfigurer::disable)
 			.headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
 			.sessionManagement(session -> session
@@ -66,9 +75,7 @@ public class WebSecurityConfig {
 				exception.authenticationEntryPoint(jwtAuthenticationEntryPoint);
 				exception.accessDeniedHandler(jwtAccessDeniedHandler);
 			})
-			.addFilterBefore(jwtAuthenticationFilter,
-				UsernamePasswordAuthenticationFilter.class);
-
+			.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 		return http.build();
 	}
 

@@ -1,7 +1,7 @@
-package com.pgms.coredomain.domain.event;
+package com.pgms.coredomain.domain.booking;
 
 import com.pgms.coredomain.domain.common.BaseEntity;
-import com.pgms.coredomain.domain.booking.Booking;
+import com.pgms.coredomain.domain.event.EventSeat;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
