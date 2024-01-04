@@ -1,6 +1,7 @@
 package com.pgms.apibooking.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -10,11 +11,13 @@ import com.pgms.apibooking.dto.request.BookingCancelRequest;
 import com.pgms.apibooking.dto.request.BookingCreateRequest;
 import com.pgms.apibooking.dto.request.DeliveryAddress;
 import com.pgms.apibooking.dto.request.PaymentCancelRequest;
+import com.pgms.apibooking.dto.request.RefundAccountRequest;
 import com.pgms.apibooking.dto.response.BookingCreateResponse;
 import com.pgms.apibooking.exception.BookingErrorCode;
 import com.pgms.apibooking.exception.BookingException;
 import com.pgms.coredomain.domain.booking.Booking;
 import com.pgms.coredomain.domain.booking.Payment;
+import com.pgms.coredomain.domain.booking.PaymentMethod;
 import com.pgms.coredomain.domain.booking.PaymentStatus;
 import com.pgms.coredomain.domain.booking.ReceiptType;
 import com.pgms.coredomain.domain.booking.repository.BookingRepository;
@@ -45,7 +48,7 @@ public class BookingService { //TODO: 테스트 코드 작성
 		List<EventSeat> seats = getBookableSeatsWithArea(request.timeId(), request.seatIds());
 
 		ReceiptType receiptType = ReceiptType.fromDescription(request.receiptType());
-		validateDeliveryAddress(receiptType, request.deliveryAddress().orElse(null));
+		validateDeliveryAddress(receiptType, request.deliveryAddress());
 
 		Booking booking = BookingCreateRequest.toEntity(request, time, seats, null); //TODO: 인증된 멤버 지정
 
@@ -76,6 +79,8 @@ public class BookingService { //TODO: 테스트 코드 작성
 		if (!booking.isCancelable()) {
 			throw new BookingException(BookingErrorCode.UNCANCELABLE_BOOKING);
 		}
+
+		validateRefundReceiveAccount(booking.getPayment().getMethod(), request.refundReceiveAccount());
 
 		paymentService.cancelPayment(
 			booking.getPayment().getPaymentKey(),
@@ -121,11 +126,17 @@ public class BookingService { //TODO: 테스트 코드 작성
 		return seats;
 	}
 
-	private void validateDeliveryAddress(ReceiptType receiptType, DeliveryAddress deliveryAddress) {
+	private void validateDeliveryAddress(ReceiptType receiptType, Optional<DeliveryAddress> deliveryAddress) {
 		if (receiptType == ReceiptType.DELIVERY) {
-			if (deliveryAddress == null) {
+			if (deliveryAddress.isEmpty()) {
 				throw new BookingException(BookingErrorCode.DELIVERY_ADDRESS_REQUIRED);
 			}
+		}
+	}
+
+	private void validateRefundReceiveAccount(PaymentMethod paymentMethod, Optional<RefundAccountRequest> refundReceiveAccount) {
+		if (paymentMethod == PaymentMethod.VIRTUAL_ACCOUNT && refundReceiveAccount.isEmpty()) {
+			throw new BookingException(BookingErrorCode.REFUND_ACCOUNT_REQUIRED);
 		}
 	}
 }
