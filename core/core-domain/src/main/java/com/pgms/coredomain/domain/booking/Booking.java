@@ -6,7 +6,6 @@ import java.util.List;
 import com.pgms.coredomain.domain.common.BaseEntity;
 import com.pgms.coredomain.domain.event.EventSeatStatus;
 import com.pgms.coredomain.domain.event.EventTime;
-import com.pgms.coredomain.domain.event.Ticket;
 import com.pgms.coredomain.domain.member.Member;
 
 import jakarta.persistence.CascadeType;
