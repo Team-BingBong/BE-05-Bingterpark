@@ -49,7 +49,7 @@ public class JwtUtils {
 			.collect(Collectors.joining(","));
 
 		return Jwts.builder()
-			.setId(userPrincipal.getId().toString())
+			.claim("id", userPrincipal.getId())
 			.setSubject((userPrincipal.getUsername()))
 			.setIssuedAt(Date.from(now))
 			.setExpiration(Date.from(expirationTime))
@@ -74,7 +74,7 @@ public class JwtUtils {
 				.map(SimpleGrantedAuthority::new)
 				.toList();
 
-		UserDetails principal = new UserDetailsImpl(Long.parseLong(claims.getId()), claims.getSubject(), null,
+		UserDetails principal = new UserDetailsImpl(claims.get("id", Long.class), claims.getSubject(), null,
 			authorities);
 		return new UsernamePasswordAuthenticationToken(principal, null, authorities);
 	}
