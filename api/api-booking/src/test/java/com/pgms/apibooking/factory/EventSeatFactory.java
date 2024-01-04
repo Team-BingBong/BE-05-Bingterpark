@@ -7,10 +7,15 @@ import com.pgms.coredomain.domain.event.EventTime;
 
 public class EventSeatFactory {
 
-	public static EventSeat generate(EventTime time, EventSeatArea area, String name) {
+	public static EventSeat generate(
+		EventTime time,
+		EventSeatArea area,
+		String name,
+		EventSeatStatus status
+	) {
 		return EventSeat.builder()
 			.name(name)
-			.status(EventSeatStatus.AVAILABLE)
+			.status(status)
 			.eventTime(time)
 			.eventSeatArea(area)
 			.build();
