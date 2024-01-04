@@ -21,10 +21,13 @@ public class EventDocumentScheduler {
     @Scheduled(fixedDelay = SCHEDULE_UPDATE_CYCLE)
     public void scheduleUpdateEventDocument() {
         log.info(">>>>> execute scheduleUpdateEventDocument");
-
-        List<Object> documents = DocumentBuffer.getAll();
+        try {
+            List<Object> documents = DocumentBuffer.getAll();
+            eventSearchQueryRepository.bulkUpdate(documents);
+        } catch (Exception e){
+            log.warn(">>>>> scheduleUpdateEventDocument failed!!! {}", e);
+            return;
+        }
         DocumentBuffer.deleteAll();
-        
-        eventSearchQueryRepository.bulkUpdate(documents);
     }
 }

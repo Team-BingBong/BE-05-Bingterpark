@@ -64,16 +64,20 @@ public class EventSearchQueryRepository {
 	}
 
 	public<T> void bulkUpdate(List<T> documents) {
-		List<UpdateQuery> updateQueries = new ArrayList<>();
-		for (T document : documents) {
-			Document esDocument = elasticsearchOperations.getElasticsearchConverter().mapObject(document);
-			UpdateQuery updateQuery = UpdateQuery.builder(esDocument.getId())
-					.withDocument(esDocument)
-					.withDocAsUpsert(true)
-					.build();
-			updateQueries.add(updateQuery);
+		try{
+			List<UpdateQuery> updateQueries = new ArrayList<>();
+			for (T document : documents) {
+				Document esDocument = elasticsearchOperations.getElasticsearchConverter().mapObject(document);
+				UpdateQuery updateQuery = UpdateQuery.builder(esDocument.getId())
+						.withDocument(esDocument)
+						.withDocAsUpsert(true)
+						.build();
+				updateQueries.add(updateQuery);
+			}
+			elasticsearchOperations.bulkUpdate(updateQueries, IndexCoordinates.of("event"));
+		} catch (Exception e){
+			throw e;
 		}
-		elasticsearchOperations.bulkUpdate(updateQueries, IndexCoordinates.of("event"));
 	}
 
 	private CriteriaQuery createConditionCriteriaQuery(EventSearchDto eventSearchDto, Pageable pageable) {
