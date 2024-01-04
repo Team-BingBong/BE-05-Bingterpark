@@ -1,12 +1,5 @@
 package com.pgms.apievent.event.service;
 
-import static com.pgms.apievent.exception.EventErrorCode.*;
-
-import java.util.List;
-
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.pgms.apievent.event.dto.request.EventCreateRequest;
 import com.pgms.apievent.event.dto.request.EventSeatAreaCreateRequest;
 import com.pgms.apievent.event.dto.request.EventSeatAreaUpdateRequest;
@@ -22,10 +15,16 @@ import com.pgms.coredomain.domain.event.EventSeatArea;
 import com.pgms.coredomain.domain.event.repository.EventHallRepository;
 import com.pgms.coredomain.domain.event.repository.EventRepository;
 import com.pgms.coredomain.domain.event.repository.EventSeatAreaRepository;
+import com.pgms.coreinfraes.buffer.DocumentBuffer;
 import com.pgms.coreinfraes.document.EventDocument;
 import com.pgms.coreinfraes.repository.EventSearchRepository;
-
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+import static com.pgms.apievent.exception.EventErrorCode.*;
 
 @Service
 @Transactional
@@ -58,6 +57,8 @@ public class EventService {
 		Event event = getEvent(id);
 		EventEdit eventEdit = getEventEdit(request);
 		event.updateEvent(eventEdit);
+
+		DocumentBuffer.add(EventDocument.from(event));
 		return EventResponse.of(event);
 	}
 
