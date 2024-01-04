@@ -45,9 +45,8 @@ public class BookingController {
 	@PostMapping("/{id}/cancel")
 	public ResponseEntity<Void> cancelBooking(
 		@PathVariable String id,
-		@RequestParam String paymentKey,
 		@RequestBody @Valid BookingCancelRequest request) {
-		bookingService.cancelBooking(id, paymentKey, request);
+		bookingService.cancelBooking(id, request);
 		return ResponseEntity.ok().build();
 	}
 

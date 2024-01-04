@@ -69,7 +69,7 @@ public class BookingService { //TODO: 테스트 코드 작성
 		return BookingCreateResponse.of(booking, tossPaymentConfig.getSuccessUrl(), tossPaymentConfig.getFailUrl());
 	}
 
-	public void cancelBooking(String id, String paymentKey, BookingCancelRequest request) {
+	public void cancelBooking(String id, BookingCancelRequest request) {
 		Booking booking = bookingRepository.findBookingInfoById(id)
 			.orElseThrow(() -> new BookingException(BookingErrorCode.BOOKING_NOT_FOUND));
 
@@ -78,7 +78,7 @@ public class BookingService { //TODO: 테스트 코드 작성
 		}
 
 		paymentService.cancelPayment(
-			paymentKey,
+			booking.getPayment().getPaymentKey(),
 			PaymentCancelRequest.of(
 				request.cancelReason(),
 				booking.isPaid() ? booking.getAmount() : 0,
