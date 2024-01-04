@@ -20,6 +20,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -50,6 +51,7 @@ public class EventTime extends BaseEntity {
 	@OneToMany(mappedBy = "time")
 	private List<Booking> bookings = new ArrayList<>();
 
+	@Builder
 	public EventTime(int round, LocalDateTime startedAt, LocalDateTime endedAt, Event event) {
 		this.round = round;
 		this.startedAt = startedAt;

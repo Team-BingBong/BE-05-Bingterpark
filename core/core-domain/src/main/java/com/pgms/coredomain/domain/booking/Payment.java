@@ -150,4 +150,8 @@ public class Payment extends BaseEntity {
 	public boolean isCanceled() {
 		return this.status == PaymentStatus.CANCELED;
 	}
+
+	public boolean isPaid() {
+		return this.status == PaymentStatus.DONE;
+	}
 }

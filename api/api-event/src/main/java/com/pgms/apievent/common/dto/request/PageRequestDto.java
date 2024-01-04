@@ -1,11 +1,10 @@
 package com.pgms.apievent.common.dto.request;
 
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.Getter;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 @Getter
 public abstract class PageRequestDto {

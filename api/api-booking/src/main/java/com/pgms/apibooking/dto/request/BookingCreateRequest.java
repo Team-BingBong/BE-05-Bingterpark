@@ -44,6 +44,7 @@ public record BookingCreateRequest(
 		List<EventSeat> seats,
 		Member member
 	) {
+		DeliveryAddress deliveryAddress = request.deliveryAddress.orElse(null);
 		return Booking.builder()
 			.id(String.valueOf(System.currentTimeMillis()))
 			.bookingName(time.getEvent().getTitle() + " " + time.getRound())
@@ -51,11 +52,11 @@ public record BookingCreateRequest(
 			.receiptType(ReceiptType.fromDescription(request.receiptType))
 			.buyerName(request.buyerName)
 			.buyerPhoneNumber(request.buyerPhoneNumber)
-			.recipientName(request.deliveryAddress.get().recipientName())
-			.recipientPhoneNumber(request.deliveryAddress.get().recipientPhoneNumber())
-			.streetAddress(request.deliveryAddress.get().streetAddress())
-			.detailAddress(request.deliveryAddress.get().detailAddress())
-			.zipCode(request.deliveryAddress().get().zipCode())
+			.recipientName(deliveryAddress != null ? deliveryAddress.recipientName() : null)
+			.recipientPhoneNumber(deliveryAddress != null ? deliveryAddress.recipientPhoneNumber() : null)
+			.streetAddress(deliveryAddress != null ? deliveryAddress.streetAddress() : null)
+			.detailAddress(deliveryAddress != null ? deliveryAddress.detailAddress() : null)
+			.zipCode(deliveryAddress != null ? deliveryAddress.zipCode() : null)
 			.amount(seats.stream()
 				.map(seat -> seat.getEventSeatArea().getPrice())
 				.reduce(0, Integer::sum))
