@@ -86,31 +86,6 @@ public class Member extends AccountBaseEntity {
 		this.status = ACTIVE;
 	}
 
-	public Member(
-		String email,
-		String password,
-		String name,
-		String phoneNumber,
-		String brithDate,
-		Gender gender,
-		String streetAddress,
-		String detailAddress,
-		String zipCode,
-		Provider provider
-	) {
-		this.email = email;
-		this.password = password;
-		this.name = name;
-		this.phoneNumber = phoneNumber;
-		this.birthDate = brithDate;
-		this.gender = gender;
-		this.streetAddress = streetAddress;
-		this.detailAddress = detailAddress;
-		this.zipCode = zipCode;
-		this.provider = provider;
-		this.status = ACTIVE;
-	}
-
 	public void updateMemberInfo(
 		String name,
 		String phoneNumber,

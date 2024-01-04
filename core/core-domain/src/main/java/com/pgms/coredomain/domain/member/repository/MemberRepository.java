@@ -18,7 +18,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 	Slice<Member> findSliceBy(Pageable pageable);
 
 	@Query("select m from Member m join fetch m.role r where m.email = :email")
-	Optional<Object> findByEmailWithRole(String email);
+	Optional<Member> findByEmailWithRole(String email);
 
 	@Query("select m from Member m join fetch m.role r where m.id = :id")
 	Optional<Member> findByIdWithRole(Long id);
