@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,6 +33,7 @@ public class AdminService {
 	private final AdminRepository adminRepository;
 	private final MemberRepository memberRepository;
 	private final RoleRepository roleRepository;
+	private final PasswordEncoder passwordEncoder;
 
 	// 슈퍼 관리자 기능
 	public Long createAdmin(AdminCreateRequest requestDto) {
@@ -40,8 +42,11 @@ public class AdminService {
 		if (isAdminExistsByEmail(requestDto.email()))
 			throw new AdminException(DUPLICATED_ADMIN_EMAIL);
 
-		// TODO: 비밀번호 암호화 추가 필요
-		final Admin admin = AdminCreateRequest.toEntity(requestDto, "암호화된 비밀번호", getRole(requestDto.roleName()));
+		final Admin admin = AdminCreateRequest.toEntity(
+			requestDto,
+			passwordEncoder.encode(requestDto.password()),
+			getRole(requestDto.roleName())
+		);
 		return adminRepository.save(admin).getId();
 	}
 
@@ -58,8 +63,12 @@ public class AdminService {
 			.orElseThrow(() -> new AdminException(ADMIN_NOT_FOUND));
 
 		final Role role = getRole(requestDto.roleName());
-		// TODO: 비밀번호 암호화 추가 필요
-		admin.update(requestDto.name(), "암호화된 비밀번호", requestDto.phoneNumber(), requestDto.status(), role);
+		admin.update(
+			requestDto.name(),
+			passwordEncoder.encode(requestDto.password()),
+			requestDto.phoneNumber(),
+			requestDto.status(), role
+		);
 	}
 
 	// 일반 관리자 기능
