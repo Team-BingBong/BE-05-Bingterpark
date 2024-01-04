@@ -2,6 +2,8 @@ package com.pgms.apibooking.service;
 
 import java.util.List;
 
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,6 +14,8 @@ import com.pgms.apibooking.dto.request.DeliveryAddress;
 import com.pgms.apibooking.dto.response.BookingCreateResponse;
 import com.pgms.apibooking.exception.BookingErrorCode;
 import com.pgms.apibooking.exception.BookingException;
+import com.pgms.apibooking.jwt.BookingAuthToken;
+import com.pgms.apibooking.repository.BookingQueueRepository;
 import com.pgms.coredomain.domain.booking.Booking;
 import com.pgms.coredomain.domain.booking.Payment;
 import com.pgms.coredomain.domain.booking.PaymentMethod;
@@ -35,6 +39,7 @@ public class BookingService { //TODO: 테스트 코드 작성
 	private final EventTimeRepository eventTimeRepository;
 	private final EventSeatRepository eventSeatRepository;
 	private final BookingRepository bookingRepository;
+	private final BookingQueueRepository bookingQueueRepository;
 	private final TossPaymentConfig tossPaymentConfig;
 	private final PaymentService paymentService;
 
@@ -64,6 +69,8 @@ public class BookingService { //TODO: 테스트 코드 작성
 		bookingRepository.save(booking);
 
 		seats.forEach(seat -> seat.updateStatus(EventSeatStatus.BOOKED));
+
+		bookingQueueRepository.remove(booking.getTime().getEvent().getId(), getCurrentSessionId());
 
 		return BookingCreateResponse.of(booking, tossPaymentConfig.getSuccessUrl(), tossPaymentConfig.getFailUrl());
 	}
@@ -114,5 +121,13 @@ public class BookingService { //TODO: 테스트 코드 작성
 		booking.cancel(
 			BookingCancelRequest.toEntity(request, "사용자", booking) //TODO: 취소 요청자 지정
 		);
+	}
+
+	private String getCurrentSessionId() {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		if (authentication instanceof BookingAuthToken) {
+			return authentication.getPrincipal().toString();
+		}
+		return null;
 	}
 }
