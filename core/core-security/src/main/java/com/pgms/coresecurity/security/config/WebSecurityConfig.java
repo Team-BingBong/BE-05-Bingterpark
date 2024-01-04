@@ -1,6 +1,5 @@
 package com.pgms.coresecurity.security.config;
 
-import static org.springframework.http.HttpMethod.*;
 import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.*;
 
 import java.util.List;
@@ -85,7 +84,7 @@ public class WebSecurityConfig {
 
 	private RequestMatcher[] requestHasRoleAdmin() {
 		List<RequestMatcher> requestMatchers = List.of(
-			antMatcher(POST, "/api/v1/admin/**"));
+			antMatcher("/api/v1/admin/**"));
 		return requestMatchers.toArray(RequestMatcher[]::new);
 	}
 
