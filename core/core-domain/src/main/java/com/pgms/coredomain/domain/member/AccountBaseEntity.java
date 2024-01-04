@@ -13,10 +13,10 @@ import lombok.Getter;
 public class AccountBaseEntity extends BaseEntity {
 
 	@Column(name = "last_login_at", nullable = false)
-	protected LocalDateTime lastLoginAt;
+	protected LocalDateTime lastLoginAt = LocalDateTime.now();
 
 	@Column(name = "last_password_updated_at", nullable = false)
-	protected LocalDateTime lastPasswordUpdatedAt;
+	protected LocalDateTime lastPasswordUpdatedAt = LocalDateTime.now();
 
 	public void updateLastLoginAt() {
 		this.lastLoginAt = LocalDateTime.now();

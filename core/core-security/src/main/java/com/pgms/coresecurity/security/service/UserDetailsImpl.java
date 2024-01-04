@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.pgms.coredomain.domain.member.Admin;
+import com.pgms.coredomain.domain.member.Member;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -26,6 +27,11 @@ public class UserDetailsImpl implements UserDetails {
 	public static UserDetails from(Admin admin) {
 		List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(admin.getRole().getName()));
 		return new UserDetailsImpl(admin.getId(), admin.getEmail(), admin.getPassword(), authorities);
+	}
+
+	public static UserDetails from(Member member) {
+		List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(member.getRole().getName()));
+		return new UserDetailsImpl(member.getId(), member.getEmail(), member.getPassword(), authorities);
 	}
 
 	@Override
