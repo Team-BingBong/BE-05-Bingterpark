@@ -90,13 +90,6 @@
       <label for="zipCode">우편번호:</label>
       <input type="text" class="form-control" id="zipCode" name="zipCode" value="54321" required>
     </div>
-    <div class="form-group">
-      <label for="method">결제 수단:</label>
-      <select class="form-control" id="method" name="method" required>
-        <option value="가상계좌">가상계좌</option>
-        <option value="카드">카드</option>
-      </select>
-    </div>
     <button type="button" class="btn btn-primary" onclick="submitOrder()">주문하기</button>
   </form>
   <div id="orderResult"></div>
@@ -120,8 +113,7 @@
         streetAddress: $("#streetAddress").val(),
         detailAddress: $("#detailAddress").val(),
         zipCode: $("#zipCode").val()
-      },
-      method: $("#method").val()
+      }
     };
 
     $.ajax({

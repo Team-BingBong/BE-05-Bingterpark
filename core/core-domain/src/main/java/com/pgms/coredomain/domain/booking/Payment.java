@@ -35,7 +35,7 @@ public class Payment extends BaseEntity {
 	@Column(name = "payment_key")
 	private String paymentKey;
 
-	@Column(name = "method", nullable = false)
+	@Column(name = "method")
 	private PaymentMethod method;
 
 	@Enumerated(EnumType.STRING)
@@ -132,6 +132,10 @@ public class Payment extends BaseEntity {
 
 	public void updateStatus(PaymentStatus status) {
 		this.status = status;
+	}
+
+	public void updateMethod(PaymentMethod method) {
+		this.method = method;
 	}
 
 	public void updateFailedMsg(String failedMsg) {

@@ -35,10 +35,7 @@ public record BookingCreateRequest(
 	String buyerPhoneNumber,
 
 	@Valid
-	Optional<DeliveryAddress> deliveryAddress,
-
-	@NotBlank(message = "[결제 수단] 선택은 필수입니다.")
-	String method
+	Optional<DeliveryAddress> deliveryAddress
 ) {
 
 	public static Booking toEntity(
