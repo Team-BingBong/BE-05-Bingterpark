@@ -27,6 +27,7 @@ public enum BookingErrorCode {
 	PAYMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "PAYMENT_NOT_FOUND", "존재하지 않는 결제입니다."),
 	PAYMENT_AMOUNT_MISMATCH(HttpStatus.BAD_REQUEST, "PAYMENT_AMOUNT_MISMATCH", "결제 가격 정보가 일치하지 않습니다."),
 	INVALID_PAYMENT_METHOD(HttpStatus.BAD_REQUEST, "INVALID_PAYMENT_METHOD", "결제 수단이 올바르지 않습니다."),
+	ACCOUNT_TRANSFER_ERROR(HttpStatus.BAD_REQUEST, "ACCOUNT_TRANSFER_ERROR", "계좌 송금 오류가 발생했습니다. 확인 후 다시 시도해주세요."),
 	TOSS_PAYMENTS_ERROR(HttpStatus.BAD_REQUEST, "TOSS_PAYMENTS_CLIENT_ERROR", "Toss Payments API 오류가 발생했습니다."),
 
 	BOOKING_NOT_FOUND(HttpStatus.NOT_FOUND, "BOOKING_NOT_FOUND", "존재하지 않는 예매입니다.");
