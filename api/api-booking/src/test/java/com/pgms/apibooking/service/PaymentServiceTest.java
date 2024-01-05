@@ -16,9 +16,9 @@
 // import org.springframework.boot.test.mock.mockito.MockBean;
 // import org.springframework.web.client.RestTemplate;
 //
-// import com.pgms.apibooking.dto.request.PaymentConfirmRequest;
-// import com.pgms.apibooking.dto.response.PaymentCardResponse;
-// import com.pgms.apibooking.dto.response.PaymentSuccessResponse;
+// import com.pgms.apibooking.payment.dto.request.PaymentConfirmRequest;
+// import com.pgms.apibooking.payment.dto.response.PaymentCardResponse;
+// import com.pgms.apibooking.payment.dto.response.PaymentSuccessResponse;
 // import com.pgms.coredomain.domain.booking.Booking;
 // import com.pgms.coredomain.domain.booking.BookingStatus;
 // import com.pgms.coredomain.domain.booking.Payment;
