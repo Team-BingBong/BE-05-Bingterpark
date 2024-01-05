@@ -19,6 +19,8 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 	@EntityGraph(attributePaths = {"role"})
 	Slice<Member> findSliceBy(Pageable pageable);
 
+	Optional<Member> findByEmail(String email);
+
 	@Query("select m from Member m join fetch m.role r where m.email = :email")
 	Optional<Member> findByEmailWithRole(@Param("email") String email);
 

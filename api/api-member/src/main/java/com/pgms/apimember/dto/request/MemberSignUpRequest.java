@@ -3,6 +3,7 @@ package com.pgms.apimember.dto.request;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.pgms.coredomain.domain.member.Member;
+import com.pgms.coredomain.domain.member.Role;
 import com.pgms.coredomain.domain.member.enums.Gender;
 
 import jakarta.validation.constraints.Email;
@@ -43,7 +44,7 @@ public record MemberSignUpRequest(
 	String zipCode
 ) {
 
-	public Member toEntity(PasswordEncoder passwordEncoder) {
+	public Member toEntity(PasswordEncoder passwordEncoder, Role role) {
 		return Member.builder()
 			.email(email)
 			.password(passwordEncoder.encode(password))
@@ -54,7 +55,7 @@ public record MemberSignUpRequest(
 			.streetAddress(streetAddress)
 			.detailAddress(detailAddress)
 			.zipCode(zipCode)
-			//TODO: 회원가입시 기본 권한은 USER로 설정
+			.role(role)
 			.build();
 	}
 }

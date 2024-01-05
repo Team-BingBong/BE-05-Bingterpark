@@ -1,5 +1,6 @@
 package com.pgms.coresecurity.security.service;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -11,8 +12,9 @@ import com.pgms.coredomain.domain.member.repository.AdminRepository;
 import lombok.RequiredArgsConstructor;
 
 @Service
+@Qualifier("adminUserDetailsService")
 @RequiredArgsConstructor
-public class UserDetailsServiceImpl implements UserDetailsService {
+public class AdminUserDetailsService implements UserDetailsService {
 
 	private final AdminRepository adminRepository;
 
