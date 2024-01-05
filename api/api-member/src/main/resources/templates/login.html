@@ -2,41 +2,102 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>OAuth Login</title>
+    <title>OAuth and Standard Login</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             background-color: #f4f4f4;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
+            justify-content: center;
             height: 100vh;
             margin: 0;
         }
 
-        .login-button {
-            background-color: #fee500;
-            color: #3c1e1e;
-            padding: 10px 20px;
-            text-decoration: none;
-            font-weight: bold;
+        .login-container {
+            background-color: #fff;
+            padding: 50px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        input[type="email"], input[type="password"] {
+            margin-bottom: 15px;
+            padding: 12px;
             border-radius: 5px;
-            box-shadow: 0 2px 2px rgba(0, 0, 0, 0.2);
+            border: 1px solid #ddd;
+            width: 300px;
+        }
+
+        .button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 20px;
+            margin-bottom: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 300px;
+            font-size: 16px;
             transition: background-color 0.3s, box-shadow 0.3s;
         }
 
-        .login-button:hover {
-            background-color: #fcd200;
-            box-shadow: 0 4px 4px rgba(0, 0, 0, 0.2);
+        .button:hover {
+            background-color: #45a049;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
 
-        .login-button:active {
-            background-color: #fbc000;
-            box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+        .button:active {
+            background-color: #3e8e41;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .kakao-button {
+            background-color: #fee500;
+            color: #3c1e1e;
         }
     </style>
 </head>
 <body>
-<a href="/oauth2/authorization/kakao" class="login-button">카카오 로그인</a>
+<div class="login-container">
+    <form id="loginForm">
+        <input type="email" id="email" placeholder="이메일" required><br>
+        <input type="password" id="password" placeholder="비밀번호" required><br>
+        <button type="submit" class="button">로그인</button>
+    </form>
+    <button onclick="location.href='/oauth2/authorization/kakao'" class="button kakao-button">카카오 로그인</button>
+</div>
+
+<script>
+    document.getElementById('loginForm').addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        var email = document.getElementById('email').value;
+        var password = document.getElementById('password').value;
+        var data = JSON.stringify({
+            "email": email,
+            "password": password
+        });
+
+        fetch('http://localhost:8081/api/v1/auth/members/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: data
+        })
+            .then(response => response.json())
+            .then(data => {
+                alert("로그인에 성공. 토큰은 콘솔창에서 확인하세요.")
+                console.log('Success:', data);
+            })
+            .catch((error) => {
+                alert("로그인에 실패. 이메일과 비밀번호를 확인하세요.")
+                console.error('Error:', error);
+            });
+    });
+</script>
 </body>
 </html>
