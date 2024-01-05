@@ -90,11 +90,11 @@
         })
             .then(response => response.json())
             .then(data => {
-                alert("로그인에 성공. 토큰은 콘솔창에서 확인하세요.")
+                alert("로그인 성공. 토큰은 콘솔창에서 확인하세요.")
                 console.log('Success:', data);
             })
             .catch((error) => {
-                alert("로그인에 실패. 이메일과 비밀번호를 확인하세요.")
+                alert("로그인 실패. 이메일과 비밀번호를 확인하세요.")
                 console.error('Error:', error);
             });
     });
