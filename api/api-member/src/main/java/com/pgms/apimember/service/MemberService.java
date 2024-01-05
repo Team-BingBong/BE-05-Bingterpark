@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.pgms.apimember.dto.request.MemberInfoUpdateRequest;
 import com.pgms.apimember.dto.request.MemberPasswordUpdateRequest;
+import com.pgms.apimember.dto.request.MemberSignUpRequest;
 import com.pgms.apimember.dto.response.MemberDetailGetResponse;
 import com.pgms.apimember.exception.CustomErrorCode;
 import com.pgms.apimember.exception.MemberException;
@@ -23,6 +24,14 @@ public class MemberService {
 
 	private final MemberRepository memberRepository;
 	private final PasswordEncoder passwordEncoder;
+
+	public Long signUp(MemberSignUpRequest requestDto) {
+		if (memberRepository.existsByEmail(requestDto.email())) {
+			throw new MemberException(DUPLICATED_MEMBER_EMAIL);
+		}
+		validateNewPassword(requestDto.password(), requestDto.passwordConfirm());
+		return memberRepository.save(requestDto.toEntity(passwordEncoder)).getId();
+	}
 
 	@Transactional(readOnly = true)
 	public MemberDetailGetResponse getMemberDetail(Long memberId) {
@@ -85,5 +94,4 @@ public class MemberService {
 		return memberRepository.findByIdAndIsDeletedFalse(memberId)
 			.orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
 	}
-
 }

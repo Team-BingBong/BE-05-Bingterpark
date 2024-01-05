@@ -12,6 +12,7 @@ import org.springframework.data.repository.query.Param;
 import com.pgms.coredomain.domain.member.Member;
 
 public interface MemberRepository extends JpaRepository<Member, Long> {
+	boolean existsByEmail(String email);
 
 	boolean existsByRoleId(Long roleId);
 

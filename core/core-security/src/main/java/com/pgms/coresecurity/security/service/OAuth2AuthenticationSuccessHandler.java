@@ -66,9 +66,14 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
 
 	private Member createOrUpdateMember(String email, String name) {
 		return memberRepository.findByEmailWithRole(email).orElseGet(() -> {
-			Role guestRole = roleRepository.findByName("ROLE_GUEST") //TODO: Role Enum으로 변경
-				.orElseThrow(() -> new RuntimeException("ROLE_GUEST가 존재하지 않습니다."));
-			Member newMember = new Member(email, null, name, Provider.KAKAO, guestRole);
+			Role defaultRole = roleRepository.findByName("ROLE_USER") //TODO: Role Enum으로 변경
+				.orElseThrow(() -> new RuntimeException("ROLE_USER가 존재하지 않습니다."));
+			Member newMember = Member.builder()
+				.email(email)
+				.name(name)
+				.provider(Provider.KAKAO)
+				.role(defaultRole)
+				.build();
 			return memberRepository.save(newMember);
 		});
 	}
