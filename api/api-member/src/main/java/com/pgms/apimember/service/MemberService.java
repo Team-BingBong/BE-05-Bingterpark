@@ -2,6 +2,7 @@ package com.pgms.apimember.service;
 
 import static com.pgms.apimember.exception.CustomErrorCode.*;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 public class MemberService {
 
 	private final MemberRepository memberRepository;
+	private final PasswordEncoder passwordEncoder;
 
 	@Transactional(readOnly = true)
 	public MemberDetailGetResponse getMemberDetail(Long memberId) {
@@ -32,7 +34,7 @@ public class MemberService {
 	@Transactional(readOnly = true)
 	public void verifyPassword(Long memberId, String password) {
 		final Member member = getAvailableMember(memberId);
-		validatePlainPassword(password, member.getPassword());
+		validatePassword(password, member.getPassword());
 	}
 
 	public void updateMember(Long memberId, MemberInfoUpdateRequest requestDto) {
@@ -50,10 +52,9 @@ public class MemberService {
 
 	public void updatePassword(Long memberId, MemberPasswordUpdateRequest requestDto) {
 		final Member member = getAvailableMember(memberId);
-		validatePlainPassword(requestDto.originPassword(), member.getPassword());
-		validatePasswordAndConfirm(requestDto.newPassword(), requestDto.newPasswordConfirm());
-		member.updatePassword(requestDto.newPassword()); // TODO: 비밀번호 암호화 추가 필요
-
+		validatePassword(requestDto.originPassword(), member.getPassword());
+		validateNewPassword(requestDto.newPassword(), requestDto.newPasswordConfirm());
+		member.updatePassword(passwordEncoder.encode(requestDto.newPassword()));
 	}
 
 	public void deleteMember(Long memberId) {
@@ -68,15 +69,13 @@ public class MemberService {
 		return member.getId();
 	}
 
-	private void validatePlainPassword(String plainPassword, String encodedPassword) {
-		// TODO: 비밀번호 암호화 추가 필요
-		// encoder.matches(plainPassword, encodedPassword);
-		if (!plainPassword.equals(encodedPassword)) { // 암호화 없는 임시 검증
+	private void validatePassword(String plainPassword, String encodedPassword) {
+		if (!encodedPassword.equals(passwordEncoder.encode(plainPassword))) {
 			throw new MemberException(PASSWORD_NOT_MATCHED);
 		}
 	}
 
-	private void validatePasswordAndConfirm(String password, String passwordConfirm) {
+	private void validateNewPassword(String password, String passwordConfirm) {
 		if (!password.equals(passwordConfirm)) {
 			throw new MemberException(PASSWORD_CONFIRM_NOT_MATCHED);
 		}
