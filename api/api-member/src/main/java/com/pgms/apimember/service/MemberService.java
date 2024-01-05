@@ -70,7 +70,7 @@ public class MemberService {
 	}
 
 	private void validatePassword(String plainPassword, String encodedPassword) {
-		if (!encodedPassword.equals(passwordEncoder.encode(plainPassword))) { // 암호화 없는 임시 검증
+		if (!encodedPassword.equals(passwordEncoder.encode(plainPassword))) {
 			throw new MemberException(PASSWORD_NOT_MATCHED);
 		}
 	}
