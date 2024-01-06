@@ -1,5 +1,5 @@
 ### 로그인 - 슈퍼 관리자
-POST http://localhost:8081/api/v1/auth/login
+POST http://localhost:8081/api/v1/auth/admin/login
 Content-Type: application/json
 
 {
@@ -8,7 +8,7 @@ Content-Type: application/json
 }
 
 ### 로그인 - 관리자
-POST http://localhost:8081/api/v1/auth/login
+POST http://localhost:8081/api/v1/auth/admin/login
 Content-Type: application/json
 
 {
@@ -16,3 +16,31 @@ Content-Type: application/json
   "password": "user1234"
 }
 
+### 유저 일반 회원가입
+POST http://localhost:8081/api/v1/members/signup
+Content-Type: application/json
+
+{
+  "email": "test@test.com",
+  "password": "password",
+  "passwordConfirm": "password",
+  "name": "name",
+  "phoneNumber": "01012345678",
+  "birthDate": "20000101",
+  "gender": "MALE",
+  "streetAddress": "서울특별시 광진구 능동로",
+  "detailAddress": "A동 101호",
+  "zipCode": "12345"
+}
+
+### 유저 로그인
+POST http://localhost:8081/api/v1/auth/members/login
+Content-Type: application/json
+
+{
+  "email": "test@test.com",
+  "password": "password"
+}
+
+### 유저 OAuth 로그인 / 회원가입 (직접테스트)
+http://localhost:8081/login

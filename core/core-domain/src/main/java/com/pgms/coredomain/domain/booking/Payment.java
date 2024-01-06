@@ -35,6 +35,7 @@ public class Payment extends BaseEntity {
 	@Column(name = "payment_key")
 	private String paymentKey;
 
+	@Enumerated(EnumType.STRING)
 	@Column(name = "method")
 	private PaymentMethod method;
 

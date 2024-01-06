@@ -1,13 +1,10 @@
 // package com.pgms.apibooking.service;
 //
-// import static org.assertj.core.api.Assertions.assertThat;
-// import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+// import static org.assertj.core.api.Assertions.*;
 // import static org.mockito.Mockito.*;
 //
 // import java.time.LocalDateTime;
-// import java.util.ArrayList;
 // import java.util.List;
-// import java.util.Optional;
 //
 // import org.junit.jupiter.api.BeforeEach;
 // import org.junit.jupiter.api.Test;
@@ -16,17 +13,12 @@
 // import org.mockito.junit.jupiter.MockitoExtension;
 // import org.springframework.beans.factory.annotation.Autowired;
 // import org.springframework.boot.test.context.SpringBootTest;
-// import org.springframework.http.HttpEntity;
+// import org.springframework.boot.test.mock.mockito.MockBean;
 // import org.springframework.web.client.RestTemplate;
 //
-// import com.pgms.apibooking.dto.request.BookingCancelRequest;
-// import com.pgms.apibooking.dto.request.RefundAccountRequest;
-// import com.pgms.apibooking.dto.response.PaymentCancelDetailResponse;
-// import com.pgms.apibooking.dto.response.PaymentCancelResponse;
-// import com.pgms.apibooking.dto.response.PaymentCardResponse;
-// import com.pgms.apibooking.dto.response.PaymentSuccessResponse;
-// import com.pgms.apibooking.exception.BookingErrorCode;
-// import com.pgms.apibooking.exception.BookingException;
+// import com.pgms.apibooking.payment.dto.request.PaymentConfirmRequest;
+// import com.pgms.apibooking.payment.dto.response.PaymentCardResponse;
+// import com.pgms.apibooking.payment.dto.response.PaymentSuccessResponse;
 // import com.pgms.coredomain.domain.booking.Booking;
 // import com.pgms.coredomain.domain.booking.BookingStatus;
 // import com.pgms.coredomain.domain.booking.Payment;
@@ -37,24 +29,23 @@
 // import com.pgms.coredomain.domain.booking.repository.PaymentRepository;
 // import com.pgms.coredomain.domain.event.Event;
 // import com.pgms.coredomain.domain.event.EventHall;
+// import com.pgms.coredomain.domain.event.EventHallSeat;
+// import com.pgms.coredomain.domain.event.EventSeat;
+// import com.pgms.coredomain.domain.event.EventSeatArea;
+// import com.pgms.coredomain.domain.event.EventSeatStatus;
 // import com.pgms.coredomain.domain.event.EventTime;
 // import com.pgms.coredomain.domain.event.GenreType;
+// import com.pgms.coredomain.domain.event.SeatAreaType;
 // import com.pgms.coredomain.domain.event.repository.EventHallRepository;
 // import com.pgms.coredomain.domain.event.repository.EventRepository;
+// import com.pgms.coredomain.domain.event.repository.EventSeatAreaRepository;
+// import com.pgms.coredomain.domain.event.repository.EventSeatRepository;
 // import com.pgms.coredomain.domain.event.repository.EventTimeRepository;
 //
-// @ExtendWith(MockitoExtension.class)
 // @SpringBootTest
+// @ExtendWith(MockitoExtension.class)
 // class PaymentServiceTest {
 //
-// 	@Autowired
-// 	private BookingRepository bookingRepository;
-//
-// 	@Autowired
-// 	private PaymentRepository paymentRepository;
-//
-// 	@Autowired
-// 	private PaymentService paymentService;
 //
 // 	@Autowired
 // 	private EventHallRepository eventHallRepository;
@@ -65,23 +56,35 @@
 // 	@Autowired
 // 	private EventRepository eventRepository;
 //
+// 	@Autowired
+// 	private EventSeatAreaRepository eventSeatAreaRepository;
+//
 // 	@Mock
 // 	private RestTemplate restTemplate;
 //
 // 	private Booking booking;
-// 	private EventHall eventHall;
-// 	private EventTime time;
-// 	private Event event;
+//
+//
+// 	@Autowired
+// 	private BookingRepository bookingRepository;
+//
+// 	@Autowired
+// 	private PaymentRepository paymentRepository;
+// 	@MockBean
+// 	public TossPaymentService tossPaymentService;
+// 	@Autowired
+// 	private EventSeatRepository eventSeatRepository;
 //
 // 	@BeforeEach
 // 	public void setUp() {
-// 		eventHall = eventHallRepository.save(EventHall.builder()
+// 		EventHallSeat eventHallSeat = new EventHallSeat("A1");
+// 		EventHall eventHall = eventHallRepository.save(EventHall.builder()
 // 			.name("예술공간서울")
 // 			.address("서울특별시 종로구 명륜2가 성균관로4길 19")
-// 			.eventHallSeats(new ArrayList<>())
+// 			.eventHallSeats(List.of(eventHallSeat))
 // 			.build());
 //
-// 		event = eventRepository.save(Event.builder()
+// 		Event event = eventRepository.save(Event.builder()
 // 			.title("공연 1")
 // 			.description("공연1 입니다.")
 // 			.runningTime(60)
@@ -95,11 +98,23 @@
 // 			.eventHall(eventHall)
 // 			.build());
 //
-// 		time = eventTimeRepository.save(new EventTime(
+// 		EventTime time = eventTimeRepository.save(new EventTime(
 // 			1,
 // 			LocalDateTime.of(2024, 1, 1, 0, 0),
 // 			LocalDateTime.of(2024, 1, 1, 0, 0),
 // 			event));
+//
+// 		EventSeatArea eventSeatArea = eventSeatAreaRepository.save(new EventSeatArea(
+// 			SeatAreaType.S,
+// 			100000,
+// 			event));
+//
+// 		eventSeatRepository.save(
+// 			EventSeat.builder()
+// 			.name("A1")
+// 			.status(EventSeatStatus.AVAILABLE)
+// 			.eventSeatArea(eventSeatArea)
+// 			.eventTime(time).build());
 //
 // 		booking = Booking.builder()
 // 			.id("bookingTestId")
@@ -144,81 +159,84 @@
 // 			null
 // 		);
 //
-// 		when(restTemplate.postForObject(anyString(), any(HttpEntity.class), eq(PaymentSuccessResponse.class)))
+// 		PaymentService paymentService = new PaymentService(paymentRepository, bookingRepository, tossPaymentService);
+//
+// 		when(tossPaymentService.requestTossPaymentConfirmation(any(PaymentConfirmRequest.class)))
 // 			.thenReturn(mockSuccessResponse);
 //
 // 		// when
 // 		PaymentSuccessResponse response = paymentService.successPayment(paymentKey, booking.getId(),
 // 			booking.getAmount());
 //
+//
 // 		// then
-// 		verify(restTemplate, times(1)).postForObject(anyString(), any(HttpEntity.class),
-// 			eq(PaymentSuccessResponse.class));
+// 		verify(tossPaymentService, times(1)).requestTossPaymentConfirmation(any(PaymentConfirmRequest.class));
+//
+// 		assertThat(response.status()).isEqualTo("DONE");
+// 		assertThat(payment.getCardNumber()).isEqualTo(response.card().number());
 //
 // 		assertThat(booking.getStatus()).isEqualTo(BookingStatus.PAYMENT_COMPLETED);
-// 		assertThat(payment.getStatus()).isEqualTo(PaymentStatus.DONE);
-// 		assertThat(payment.getCardNumber()).isEqualTo(response.card().number());
 // 		assertThat(payment.getAccountNumber()).isNull();
 // 	}
 //
-// 	@Test
-// 	public void 결제_가격_불일치_오류_테스트() {
-// 		// given
-// 		String paymentKey = "paymentKey";
-// 		Payment payment = Payment.builder()
-// 			.method(PaymentMethod.CARD)
-// 			.amount(booking.getAmount())
-// 			.status(PaymentStatus.READY)
-// 			.build();
-// 		booking.updatePayment(payment);
-// 		when(bookingRepository.findWithPaymentById(anyString())).thenReturn(Optional.of(booking));
-//
-// 		// when & then
-// 		assertThatThrownBy(() -> paymentService.successPayment(paymentKey, booking.getId(), 170000))
-// 			.isInstanceOf(BookingException.class)
-// 			.hasMessageContaining(BookingErrorCode.PAYMENT_AMOUNT_MISMATCH.getMessage());
-// 	}
-//
-// 	@Test
-// 	public void 카드_결제_취소_테스트() {
-// 		String paymentKey = "paymentKey";
-// 		Payment payment = Payment.builder()
-// 			.method(PaymentMethod.CARD)
-// 			.amount(booking.getAmount())
-// 			.status(PaymentStatus.READY)
-// 			.build();
-// 		booking.updatePayment(payment);
-//
-// 		BookingCancelRequest cancelRequest = new BookingCancelRequest(
-// 			"고객이 결제 취소",
-// 			180000,
-// 			Optional.of(new RefundAccountRequest("20", "352-123", "김환불"))
-// 		);
-//
-// 		PaymentCancelResponse mockCancelResponse = new PaymentCancelResponse(
-// 			paymentKey,
-// 			booking.getId(),
-// 			booking.getBookingName(),
-// 			payment.getMethod().getDescription(),
-// 			"180000",
-// 			"CANCELED",
-// 			"2024-01-01T10:01:00+05:00",
-// 			"2024-01-01T10:01:00+05:00",
-// 			new PaymentCardResponse("card_num", 2, false),
-// 			null,
-// 			List.of(new PaymentCancelDetailResponse(cancelRequest.cancelReason(), 180000, "2024-01-02T10:01:00+05:00"))
-// 		);
-//
-// 		when(paymentRepository.findByPaymentKey(paymentKey)).thenReturn(Optional.of(payment));
-// 		when(restTemplate.postForObject(any(), any(HttpEntity.class), eq(PaymentCancelResponse.class)))
-// 			.thenReturn(mockCancelResponse);
-//
-// 		// when
-// 		PaymentCancelResponse response = paymentService.cancelPayment(paymentKey, cancelRequest);
-//
-// 		// then
-// 		verify(restTemplate, times(1)).postForObject(any(), any(HttpEntity.class), eq(PaymentCancelResponse.class));
-// 		assertThat(payment.getStatus()).isEqualTo(PaymentStatus.CANCELED);
-// 		assertThat(booking.getStatus()).isEqualTo(BookingStatus.CANCELED);
-// 	}
+// 	// @Test
+// 	// public void 결제_가격_불일치_오류_테스트() {
+// 	// 	// given
+// 	// 	String paymentKey = "paymentKey";
+// 	// 	Payment payment = Payment.builder()
+// 	// 		.method(PaymentMethod.CARD)
+// 	// 		.amount(booking.getAmount())
+// 	// 		.status(PaymentStatus.READY)
+// 	// 		.build();
+// 	// 	booking.updatePayment(payment);
+// 	// 	when(bookingRepository.findWithPaymentById(anyString())).thenReturn(Optional.of(booking));
+// 	//
+// 	// 	// when & then
+// 	// 	assertThatThrownBy(() -> paymentService.successPayment(paymentKey, booking.getId(), 170000))
+// 	// 		.isInstanceOf(BookingException.class)
+// 	// 		.hasMessageContaining(BookingErrorCode.PAYMENT_AMOUNT_MISMATCH.getMessage());
+// 	// }
+// 	//
+// 	// @Test
+// 	// public void 카드_결제_취소_테스트() {
+// 	// 	String paymentKey = "paymentKey";
+// 	// 	Payment payment = Payment.builder()
+// 	// 		.method(PaymentMethod.CARD)
+// 	// 		.amount(booking.getAmount())
+// 	// 		.status(PaymentStatus.READY)
+// 	// 		.build();
+// 	// 	booking.updatePayment(payment);
+// 	//
+// 	// 	BookingCancelRequest cancelRequest = new BookingCancelRequest(
+// 	// 		"고객이 결제 취소",
+// 	// 		180000,
+// 	// 		Optional.of(new RefundAccountRequest("20", "352-123", "김환불"))
+// 	// 	);
+// 	//
+// 	// 	PaymentCancelResponse mockCancelResponse = new PaymentCancelResponse(
+// 	// 		paymentKey,
+// 	// 		booking.getId(),
+// 	// 		booking.getBookingName(),
+// 	// 		payment.getMethod().getDescription(),
+// 	// 		"180000",
+// 	// 		"CANCELED",
+// 	// 		"2024-01-01T10:01:00+05:00",
+// 	// 		"2024-01-01T10:01:00+05:00",
+// 	// 		new PaymentCardResponse("card_num", 2, false),
+// 	// 		null,
+// 	// 		List.of(new PaymentCancelDetailResponse(cancelRequest.cancelReason(), 180000, "2024-01-02T10:01:00+05:00"))
+// 	// 	);
+// 	//
+// 	// 	when(paymentRepository.findByPaymentKey(paymentKey)).thenReturn(Optional.of(payment));
+// 	// 	when(restTemplate.postForObject(any(), any(HttpEntity.class), eq(PaymentCancelResponse.class)))
+// 	// 		.thenReturn(mockCancelResponse);
+// 	//
+// 	// 	// when
+// 	// 	PaymentCancelResponse response = paymentService.cancelPayment(paymentKey, cancelRequest);
+// 	//
+// 	// 	// then
+// 	// 	verify(restTemplate, times(1)).postForObject(any(), any(HttpEntity.class), eq(PaymentCancelResponse.class));
+// 	// 	assertThat(payment.getStatus()).isEqualTo(PaymentStatus.CANCELED);
+// 	// 	assertThat(booking.getStatus()).isEqualTo(BookingStatus.CANCELED);
+// 	// }
 // }

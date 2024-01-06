@@ -5,7 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 
 import com.pgms.apibooking.fake.TossPaymentServiceFake;
-import com.pgms.apibooking.service.TossPaymentService;
+import com.pgms.apibooking.domain.payment.service.TossPaymentService;
 import com.pgms.coredomain.domain.booking.repository.BookingRepository;
 import com.pgms.coredomain.domain.booking.repository.PaymentRepository;
 

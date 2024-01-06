@@ -17,6 +17,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -63,7 +64,7 @@ public class Member extends AccountBaseEntity {
 	@Enumerated(EnumType.STRING)
 	private AccountStatus status;
 
-	@Column(name = "provider", nullable = false)
+	@Column(name = "provider")
 	@Enumerated(EnumType.STRING)
 	private Provider provider;
 
@@ -71,16 +72,29 @@ public class Member extends AccountBaseEntity {
 	@JoinColumn(name = "role_id")
 	private Role role;
 
+	@Builder
 	public Member(
 		String email,
 		String password,
 		String name,
+		String phoneNumber,
+		String birthDate,
+		Gender gender,
+		String streetAddress,
+		String detailAddress,
+		String zipCode,
 		Provider provider,
 		Role role
 	) {
 		this.email = email;
 		this.password = password;
 		this.name = name;
+		this.phoneNumber = phoneNumber;
+		this.birthDate = birthDate;
+		this.gender = gender;
+		this.streetAddress = streetAddress;
+		this.detailAddress = detailAddress;
+		this.zipCode = zipCode;
 		this.provider = provider;
 		this.role = role;
 		this.status = ACTIVE;
