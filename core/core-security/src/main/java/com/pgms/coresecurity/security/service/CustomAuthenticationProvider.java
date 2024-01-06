@@ -1,6 +1,5 @@
 package com.pgms.coresecurity.security.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -17,7 +16,6 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
 	private final AdminUserDetailsService adminUserDetailsService;
 	private final MemberUserDetailsService memberUserDetailsService;
 
-	@Autowired
 	public CustomAuthenticationProvider(
 		PasswordEncoder passwordEncoder,
 		@Qualifier("adminUserDetailsService") AdminUserDetailsService adminUserDetailsService,

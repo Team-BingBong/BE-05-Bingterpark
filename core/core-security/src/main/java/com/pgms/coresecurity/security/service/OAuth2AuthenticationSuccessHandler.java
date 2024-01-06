@@ -12,7 +12,6 @@ import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pgms.coredomain.domain.member.Member;
 import com.pgms.coredomain.domain.member.Role;
 import com.pgms.coredomain.domain.member.enums.Provider;
@@ -31,8 +30,6 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 @RequiredArgsConstructor
 public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccessHandler {
-
-	private static final ObjectMapper objectMapper = new ObjectMapper();
 
 	private final MemberRepository memberRepository;
 	private final RoleRepository roleRepository;
