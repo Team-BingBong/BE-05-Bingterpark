@@ -1,7 +1,5 @@
 package com.pgms.apimember.dto.request;
 
-import org.springframework.security.crypto.password.PasswordEncoder;
-
 import com.pgms.coredomain.domain.member.Member;
 import com.pgms.coredomain.domain.member.Role;
 import com.pgms.coredomain.domain.member.enums.Gender;
@@ -44,10 +42,10 @@ public record MemberSignUpRequest(
 	String zipCode
 ) {
 
-	public Member toEntity(PasswordEncoder passwordEncoder, Role role) {
+	public Member toEntity(String encodedPassword, Role role) {
 		return Member.builder()
 			.email(email)
-			.password(passwordEncoder.encode(password))
+			.password(encodedPassword)
 			.name(name)
 			.phoneNumber(phoneNumber)
 			.birthDate(birthDate)

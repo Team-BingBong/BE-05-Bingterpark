@@ -37,7 +37,12 @@ public class MemberService {
 			throw new MemberException(DUPLICATED_MEMBER_EMAIL);
 		}
 		validateNewPassword(requestDto.password(), requestDto.passwordConfirm());
-		return memberRepository.save(requestDto.toEntity(passwordEncoder, getRole(DEFAULT_ROLE_NAME))).getId();
+		return memberRepository.save(
+				requestDto.toEntity(
+					passwordEncoder.encode(requestDto.password()),
+					getRole(DEFAULT_ROLE_NAME))
+			)
+			.getId();
 	}
 
 	@Transactional(readOnly = true)
