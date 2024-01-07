@@ -10,13 +10,10 @@ import com.pgms.apimember.dto.request.MemberInfoUpdateRequest;
 import com.pgms.apimember.dto.request.MemberPasswordUpdateRequest;
 import com.pgms.apimember.dto.request.MemberSignUpRequest;
 import com.pgms.apimember.dto.response.MemberDetailGetResponse;
-import com.pgms.apimember.exception.AdminException;
 import com.pgms.apimember.exception.CustomErrorCode;
 import com.pgms.apimember.exception.MemberException;
 import com.pgms.coredomain.domain.member.Member;
-import com.pgms.coredomain.domain.member.Role;
 import com.pgms.coredomain.domain.member.repository.MemberRepository;
-import com.pgms.coredomain.domain.member.repository.RoleRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -29,7 +26,6 @@ public class MemberService {
 	private static final String DEFAULT_ROLE_NAME = "ROLE_USER";
 
 	private final MemberRepository memberRepository;
-	private final RoleRepository roleRepository;
 	private final PasswordEncoder passwordEncoder;
 
 	public Long signUp(MemberSignUpRequest requestDto) {
@@ -37,18 +33,13 @@ public class MemberService {
 			throw new MemberException(DUPLICATED_MEMBER_EMAIL);
 		}
 		validateNewPassword(requestDto.password(), requestDto.passwordConfirm());
-		return memberRepository.save(
-				requestDto.toEntity(
-					passwordEncoder.encode(requestDto.password()),
-					getRole(DEFAULT_ROLE_NAME))
-			)
-			.getId();
+		return memberRepository.save(requestDto.toEntity(passwordEncoder.encode(requestDto.password()))).getId();
 	}
 
 	@Transactional(readOnly = true)
 	public MemberDetailGetResponse getMemberDetail(Long memberId) {
 		return MemberDetailGetResponse.from(
-			memberRepository.findByIdWithRole(memberId).
+			memberRepository.findById(memberId).
 				orElseThrow(() -> new MemberException(CustomErrorCode.MEMBER_NOT_FOUND)));
 	}
 
@@ -105,10 +96,5 @@ public class MemberService {
 	private Member getAvailableMember(Long memberId) {
 		return memberRepository.findByIdAndIsDeletedFalse(memberId)
 			.orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
-	}
-
-	private Role getRole(String roleName) {
-		return roleRepository.findByName(roleName)
-			.orElseThrow(() -> new AdminException(ADMIN_ROLE_NOT_FOUND));
 	}
 }

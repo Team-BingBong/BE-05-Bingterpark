@@ -1,6 +1,7 @@
 package com.pgms.apimember.dto.request;
 
 import com.pgms.coredomain.domain.member.enums.AccountStatus;
+import com.pgms.coredomain.domain.member.enums.Role;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -26,6 +27,6 @@ public record AdminUpdateRequest(
 	AccountStatus status,
 
 	@NotBlank(message = "역할을 입력해주세요.")
-	String roleName
+	Role role
 ) {
 }

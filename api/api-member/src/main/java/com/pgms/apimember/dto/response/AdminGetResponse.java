@@ -3,8 +3,8 @@ package com.pgms.apimember.dto.response;
 import java.time.LocalDateTime;
 
 import com.pgms.coredomain.domain.member.Admin;
-import com.pgms.coredomain.domain.member.Role;
 import com.pgms.coredomain.domain.member.enums.AccountStatus;
+import com.pgms.coredomain.domain.member.enums.Role;
 
 public record AdminGetResponse(
 	Long id,
