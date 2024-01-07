@@ -1,0 +1,43 @@
+### 공연 생성
+POST http://localhost:8080/api/v1/events
+Content-Type: application/json
+
+{
+  "title": "엘라스틱 서치",
+  "description": "test",
+  "runningTime": 100,
+  "startedAt": "2024-01-05T12:00:00",
+  "endedAt": "2024-01-06T12:00:00",
+  "viewRating": "12",
+  "genreType": "CONCERT",
+  "eventHallId": 1
+}
+
+### 공연 아이디로 조회
+GET http://localhost:8080/api/v1/events/1
+
+### 공연 목록 - 랭킹
+GET http://localhost:8080/api/v1/events/sort/ranking?page=1&size=10&genreType=CONCERT&dateOffset=7
+
+### 공연 목록 - 리뷰순
+GET http://localhost:8080/api/v1/events/sort/review?page=1&size=10&genreType=CONCERT&dateOffset=7
+
+### 공연 목록 - 예약마감일자순
+GET http://localhost:8080/api/v1/events/sort/ended-at?page=1&size=10&genreType=CONCERT&dateOffset=7
+
+### 공연 수정
+PUT http://localhost:8080/api/v1/events/2
+Content-Type: application/json
+
+{
+  "title": "update title22",
+  "description": "update description",
+  "runningTime": 120,
+  "startedAt": "2024-03-02T12:00:00",
+  "endedAt": "2024-04-02T12:00:00",
+  "viewRating": "14",
+  "genreType": "CONCERT",
+  "bookingStartedAt": "2024-03-02T12:00:00",
+  "bookingEndedAt": "2024-03-02T12:00:00",
+  "eventHallId": 1
+}
