@@ -85,7 +85,7 @@ public class BookingService { //TODO: 테스트 코드 작성
 			.orElseThrow(() -> new BookingException(BookingErrorCode.BOOKING_NOT_FOUND));
 
 		if (!Objects.equals(member, booking.getMember())) {
-			throw new IllegalArgumentException("예매자가 아닙니다!");
+			throw new BookingException(BookingErrorCode.NOT_SAME_BOOKER);
 		}
 
 		if (!booking.isCancelable()) {
