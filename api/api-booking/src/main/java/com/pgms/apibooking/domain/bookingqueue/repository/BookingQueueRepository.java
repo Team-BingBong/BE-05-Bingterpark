@@ -12,8 +12,11 @@ public class BookingQueueRepository {
 	private final RedisTemplate<String, String> redisTemplate;
 
 	public void add(Long eventId, String sessionId) {
-		Long waitingNumber = redisTemplate.opsForValue().increment(generateWaitingNumberKey(eventId), 1);
-		redisTemplate.opsForZSet().add(String.valueOf(eventId), sessionId, waitingNumber);
+		double currentTimeSeconds = System.currentTimeMillis() / 1000.0;
+		redisTemplate.opsForZSet().add(String.valueOf(eventId), sessionId, currentTimeSeconds);
+
+		double timeLimitSeconds = currentTimeSeconds - (7 * 60);
+		redisTemplate.opsForZSet().removeRangeByScore(String.valueOf(eventId), 0, timeLimitSeconds);
 	}
 	
 	public Long getRank(Long eventId, String sessionId) {
@@ -26,9 +29,5 @@ public class BookingQueueRepository {
 
 	public void remove(Long eventId, String sessionId) {
 		redisTemplate.opsForZSet().remove(String.valueOf(eventId), sessionId);
-	}
-
-	private String generateWaitingNumberKey(Long eventId) {
-		return "waitingNumber:" + eventId;
 	}
 }
