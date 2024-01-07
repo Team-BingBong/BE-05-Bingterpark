@@ -1,3 +1,5 @@
+@token = eyJhbGciOiJIUzI1NiJ9.eyJpZCI6Mywic3ViIjoiZGh4bDUwQG5hdmVyLmNvbSIsImlhdCI6MTcwNDYxNjU4NSwiZXhwIjoyMDY0NjE2NTg1LCJhdXRob3JpdHkiOiJST0xFX1VTRVIifQ.OIiQazdvmv-bsZp0VroiouW5gEqNAj7ROqRTOcLbWXQ
+
 ### 로그인 - 슈퍼 관리자
 POST http://localhost:8081/api/v1/auth/admin/login
 Content-Type: application/json
@@ -45,7 +47,7 @@ Content-Type: application/json
   "zipCode": "12345"
 }
 
-### 유저 로그인
+### 멤버 로그인
 POST http://localhost:8081/api/v1/auth/members/login
 Content-Type: application/json
 
@@ -54,5 +56,53 @@ Content-Type: application/json
   "password": "password"
 }
 
-### 유저 OAuth 로그인 / 회원가입 (직접테스트)
+### 멤버 OAuth 로그인 / 회원가입 (직접테스트)
 http://localhost:8081/login
+
+### 멤버 본인 정보 조회 (토큰 필요)
+GET http://localhost:8081/api/v1/members/me
+Authorization: Bearer {{token}}
+
+### 멤버 본인 정보 수정 (토큰 필요)
+PATCH http://localhost:8081/api/v1/members/me
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "변경된 이름",
+  "phoneNumber": "01099999999",
+  "birthDate": "19990101",
+  "gender": "MALE",
+  "streetAddress": "",
+  "detailAddress": "",
+  "zipCode": "01012"
+}
+
+### 멤버 본인 비밀번호 변경 (토큰 필요, 카카오는 불가능)
+PATCH http://localhost:8081/api/v1/members/me/password
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "originPassword": "",
+  "newPassword": "",
+  "newPasswordConfirm": ""
+}
+
+### 멤버 본인 비밀번호 확인 (토큰 필요, 카카오는 불가능)
+POST http://localhost:8081/api/v1/members/me/verify-password
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "password": ""
+}
+
+### 멤버 본인 탈퇴 (토큰 필요)
+DELETE http://localhost:8081/api/v1/members/me
+Authorization: Bearer {{token}}
+
+### 멤버 계정 복구 (토큰 필요)
+POST http://localhost:8081/api/v1/members/restore
+Content-Type: application/x-www-form-urlencoded
+Authorization: Bearer {{token}}
