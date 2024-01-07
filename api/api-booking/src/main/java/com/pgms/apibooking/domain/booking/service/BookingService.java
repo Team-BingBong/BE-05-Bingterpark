@@ -50,7 +50,6 @@ public class BookingService { //TODO: 테스트 코드 작성
 	private final PaymentService paymentService;
 
 	public BookingCreateResponse createBooking(BookingCreateRequest request, Long memberId) {
-		System.out.println("memberId : "+ memberId);
 		Member member = getMemberById(memberId);
 		EventTime time = getBookableTimeWithEvent(request.timeId());
 		List<EventSeat> seats = getBookableSeatsWithArea(request.timeId(), request.seatIds());
