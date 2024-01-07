@@ -26,12 +26,18 @@ public class BookingQueueService {
 	private final BookingJwtProvider bookingJwtProvider;
 
 	public void enterQueue(BookingQueueEnterRequest request, String sessionId) {
-		bookingQueueRepository.add(request.eventId(), sessionId);
+		double currentTimeSeconds = System.currentTimeMillis() / 1000.0;
+		bookingQueueRepository.add(request.eventId(), sessionId, currentTimeSeconds);
 	}
 
 	public OrderInQueueGetResponse getOrderInQueue(Long eventId, String sessionId) {
 		Long myOrder = bookingQueueRepository.getRank(eventId, sessionId);
 		Boolean isMyTurn = isMyTurn(eventId, sessionId);
+
+		double currentTimeSeconds = System.currentTimeMillis() / 1000.0;
+		double timeLimitSeconds = currentTimeSeconds - (7 * 60);
+		bookingQueueRepository.removeRangeByScore(eventId, 0, timeLimitSeconds);
+
 		return OrderInQueueGetResponse.of(myOrder, isMyTurn);
 	}
 
