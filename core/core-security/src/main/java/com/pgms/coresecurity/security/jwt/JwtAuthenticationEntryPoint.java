@@ -32,7 +32,12 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 		throws IOException {
 		log.warn("Unauthorized: ", authException);
 
-		ErrorResponse errorResponse = new ErrorResponse("UNAUTHORIZED", "로그인 해주세요.");
+		ErrorResponse errorResponse;
+		if (request.getAttribute("expired") != null) {
+			errorResponse = new ErrorResponse("ACCESS_TOKEN_EXPIRED", "토큰이 만료되었습니다.");
+		} else {
+			errorResponse = new ErrorResponse("UNAUTHORIZED", "로그인 해주세요.");
+		}
 
 		response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 		response.setStatus(HttpStatus.UNAUTHORIZED.value());

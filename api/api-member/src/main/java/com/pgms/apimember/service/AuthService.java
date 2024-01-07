@@ -55,9 +55,6 @@ public class AuthService {
 	}
 
 	public AuthResponse refresh(RefreshTokenRequest request) {
-		if (request.refreshToken() == null)
-			throw new SecurityException(CustomErrorCode.UNAUTHORIZED);
-
 		// refresh token이 만료됐는지 확인
 		RefreshToken refreshToken = refreshTokenRepository.findById(request.refreshToken())
 			.orElseThrow(() -> new SecurityException(CustomErrorCode.REFRESH_TOKEN_EXPIRED));

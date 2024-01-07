@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -23,11 +24,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 		throws ServletException, IOException {
 		try {
-			String jwt = parseJwt(request);
-			if (jwt != null && jwtTokenProvider.validateJwtToken(jwt)) {
-				Authentication authentication = jwtTokenProvider.getAuthentication(jwt);
+			String accessToken = parseJwt(request);
+			if (accessToken != null && jwtTokenProvider.validateAccessToken(accessToken)) {
+				Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
 				SecurityContextHolder.getContext().setAuthentication(authentication);
 			}
+		} catch (ExpiredJwtException e) {
+			logger.warn("JWT token is expired: ", e);
+			request.setAttribute("expired", e.getMessage());
 		} catch (Exception e) {
 			logger.error("Cannot set user authentication: ", e);
 		}

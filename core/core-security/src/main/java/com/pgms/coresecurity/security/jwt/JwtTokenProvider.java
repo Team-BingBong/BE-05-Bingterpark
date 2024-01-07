@@ -21,7 +21,6 @@ import org.springframework.stereotype.Component;
 import com.pgms.coresecurity.security.service.UserDetailsImpl;
 
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -61,11 +60,11 @@ public class JwtTokenProvider {
 		return Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey));
 	}
 
-	public Authentication getAuthentication(String token) {
+	public Authentication getAuthentication(String accessToken) {
 		Claims claims = Jwts.parserBuilder()
 			.setSigningKey(key())
 			.build()
-			.parseClaimsJws(token)
+			.parseClaimsJws(accessToken)
 			.getBody();
 
 		Collection<? extends GrantedAuthority> authorities =
@@ -78,14 +77,12 @@ public class JwtTokenProvider {
 		return new UsernamePasswordAuthenticationToken(principal, null, authorities);
 	}
 
-	public boolean validateJwtToken(String authToken) {
+	public boolean validateAccessToken(String authToken) {
 		try {
 			Jwts.parserBuilder().setSigningKey(key()).build().parse(authToken);
 			return true;
 		} catch (MalformedJwtException e) {
 			logger.error("Invalid JWT token: {}", e.getMessage());
-		} catch (ExpiredJwtException e) {
-			logger.error("JWT token is expired: {}", e.getMessage());
 		} catch (UnsupportedJwtException e) {
 			logger.error("JWT token is unsupported: {}", e.getMessage());
 		} catch (IllegalArgumentException e) {
