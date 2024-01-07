@@ -15,6 +15,7 @@ import com.pgms.apibooking.domain.booking.dto.request.BookingCreateRequest;
 import com.pgms.apibooking.domain.booking.dto.response.BookingCreateResponse;
 import com.pgms.apibooking.domain.booking.service.BookingService;
 import com.pgms.coredomain.response.ApiResponse;
+import com.pgms.coresecurity.security.resolver.CurrentAccount;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -29,9 +30,10 @@ public class BookingController {
 
 	@PostMapping
 	public ResponseEntity<ApiResponse<BookingCreateResponse>> createBooking(
+		@CurrentAccount Long memberId,
 		@RequestBody @Valid BookingCreateRequest request,
 		HttpServletRequest httpRequest) {
-		BookingCreateResponse createdBooking = bookingService.createBooking(request);
+		BookingCreateResponse createdBooking = bookingService.createBooking(request, memberId);
 		ApiResponse<BookingCreateResponse> response = ApiResponse.ok(createdBooking);
 		URI location = UriComponentsBuilder
 			.fromHttpUrl(httpRequest.getRequestURL().toString())
@@ -43,9 +45,10 @@ public class BookingController {
 
 	@PostMapping("/{id}/cancel")
 	public ResponseEntity<Void> cancelBooking(
+		@CurrentAccount Long memberId,
 		@PathVariable String id,
 		@RequestBody @Valid BookingCancelRequest request) {
-		bookingService.cancelBooking(id, request);
+		bookingService.cancelBooking(id, request, memberId);
 		return ResponseEntity.ok().build();
 	}
 

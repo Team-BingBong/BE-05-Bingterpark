@@ -1,6 +1,8 @@
 package com.pgms.apibooking.domain.booking.service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
@@ -29,6 +31,8 @@ import com.pgms.coredomain.domain.event.EventTime;
 import com.pgms.coredomain.domain.booking.Ticket;
 import com.pgms.coredomain.domain.event.repository.EventSeatRepository;
 import com.pgms.coredomain.domain.event.repository.EventTimeRepository;
+import com.pgms.coredomain.domain.member.Member;
+import com.pgms.coredomain.domain.member.repository.MemberRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -41,17 +45,19 @@ public class BookingService { //TODO: 테스트 코드 작성
 	private final EventSeatRepository eventSeatRepository;
 	private final BookingRepository bookingRepository;
 	private final TicketRepository ticketRepository;
+	private final MemberRepository memberRepository;
 	private final TossPaymentConfig tossPaymentConfig;
 	private final PaymentService paymentService;
 
-	public BookingCreateResponse createBooking(BookingCreateRequest request) {
+	public BookingCreateResponse createBooking(BookingCreateRequest request, Long memberId) {
+		Member member = getMemberById(memberId);
 		EventTime time = getBookableTimeWithEvent(request.timeId());
 		List<EventSeat> seats = getBookableSeatsWithArea(request.timeId(), request.seatIds());
 
 		ReceiptType receiptType = ReceiptType.fromDescription(request.receiptType());
 		validateDeliveryAddress(receiptType, request.deliveryAddress());
 
-		Booking booking = BookingCreateRequest.toEntity(request, time, seats, null); //TODO: 인증된 멤버 지정
+		Booking booking = BookingCreateRequest.toEntity(request, time, seats, member);
 
 		seats.forEach(seat -> booking.addTicket(
 			Ticket.builder()
@@ -73,9 +79,14 @@ public class BookingService { //TODO: 테스트 코드 작성
 		return BookingCreateResponse.of(booking, tossPaymentConfig.getSuccessUrl(), tossPaymentConfig.getFailUrl());
 	}
 
-	public void cancelBooking(String id, BookingCancelRequest request) {
+	public void cancelBooking(String id, BookingCancelRequest request, Long memberId) {
+		Member member = getMemberById(memberId);
 		Booking booking = bookingRepository.findBookingInfoById(id)
 			.orElseThrow(() -> new BookingException(BookingErrorCode.BOOKING_NOT_FOUND));
+
+		if (!Objects.equals(member, booking.getMember())) {
+			throw new BookingException(BookingErrorCode.NOT_SAME_BOOKER);
+		}
 
 		if (!booking.isCancelable()) {
 			throw new BookingException(BookingErrorCode.UNCANCELABLE_BOOKING);
@@ -95,7 +106,7 @@ public class BookingService { //TODO: 테스트 코드 작성
 		);
 
 		booking.cancel(
-			BookingCancelRequest.toEntity(request, cancelAmount, "사용자", booking) //TODO: 취소 요청자 지정
+			BookingCancelRequest.toEntity(request, cancelAmount, member.getEmail(), booking) 
 		);
 	}
 
@@ -142,5 +153,11 @@ public class BookingService { //TODO: 테스트 코드 작성
 		if (paymentMethod == PaymentMethod.VIRTUAL_ACCOUNT && refundReceiveAccount.isEmpty()) {
 			throw new BookingException(BookingErrorCode.REFUND_ACCOUNT_REQUIRED);
 		}
+	}
+
+	private Member getMemberById(Long memberId) {
+		System.out.println("member id get " + memberId);
+		return memberRepository.findById(memberId)
+			.orElseThrow(() -> new NoSuchElementException("Member not found"));
 	}
 }

@@ -73,7 +73,7 @@ public class Booking extends BaseEntity {
 	private Integer amount;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "member_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT)) //TODO: nullalbe = false 추가
+	@JoinColumn(name = "member_id", nullable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
 	private Member member;
 
 	@ManyToOne(fetch = FetchType.LAZY)
