@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.pgms.apibooking.jwt.BookingJwtProvider;
+import com.pgms.apibooking.common.jwt.BookingJwtProvider;
 
 import io.jsonwebtoken.security.Keys;
 import lombok.Getter;

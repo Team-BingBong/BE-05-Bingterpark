@@ -8,7 +8,7 @@ server:
 
 spring:
   profiles:
-    include: infra
+    include: infra, security
     active: dev
 
 payment:

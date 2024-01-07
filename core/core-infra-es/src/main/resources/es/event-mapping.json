@@ -1,25 +1,42 @@
 {
-  "properties" : {
-    "id" : {"type" :  "keyword"},
-    "title" : {
-      "type" :  "text",
-      "analyzer" : "korean"
+  "properties": {
+    "id": {
+      "type": "short"
     },
-    "description" : {
-      "type" :  "text",
-      "analyzer" : "korean"
+    "title": {
+      "type": "text",
+      "analyzer": "korean",
+      "copy_to": [
+        "title_chosung"
+      ]
     },
-    "startedAt" : {
-      "type" :  "date",
+    "title_chosung": {
+      "type": "text",
+      "analyzer": "chosung"
+    },
+    "description": {
+      "type": "text",
+      "analyzer": "korean"
+    },
+    "startedAt": {
+      "type": "date",
       "format": "yyyy-MM-dd'T'HH:mm:ss||epoch_second"
     },
-    "endedAt" : {
-      "type" :  "date",
+    "endedAt": {
+      "type": "date",
       "format": "yyyy-MM-dd'T'HH:mm:ss||epoch_second"
     },
-    "viewRating" : {"type" :  "keyword"},
-    "genreType" : {"type" :  "keyword"},
-    "averageScore" : {"type" :  "double"},
-    "eventHallId" : {"type" : "keyword"}
+    "viewRating": {
+      "type": "keyword"
+    },
+    "genreType": {
+      "type": "keyword"
+    },
+    "averageScore": {
+      "type": "double"
+    },
+    "eventHallId": {
+      "type": "keyword"
+    }
   }
 }

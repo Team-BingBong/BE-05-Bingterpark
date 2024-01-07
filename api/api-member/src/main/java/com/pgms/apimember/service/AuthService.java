@@ -9,8 +9,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.pgms.apimember.dto.request.LoginRequest;
 import com.pgms.apimember.dto.response.LoginResponse;
-import com.pgms.apimember.security.jwt.JwtUtils;
-import com.pgms.apimember.security.service.UserDetailsImpl;
+import com.pgms.coresecurity.security.jwt.JwtUtils;
+import com.pgms.coresecurity.security.service.UserDetailsImpl;
 
 import lombok.RequiredArgsConstructor;
 
@@ -22,12 +22,13 @@ public class AuthService {
 	private final AuthenticationManager authenticationManager;
 	private final JwtUtils jwtUtils;
 
-	public LoginResponse login(LoginRequest request) {
+	public LoginResponse login(LoginRequest request, String accountType) {
 		// 인증 전의 auth 객체
-		Authentication authentication = new UsernamePasswordAuthenticationToken(
+		UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
 			request.email(),
 			request.password()
 		);
+		authentication.setDetails(accountType);
 
 		// 인증 후의 auth 객체
 		Authentication authenticated = authenticationManager.authenticate(authentication);

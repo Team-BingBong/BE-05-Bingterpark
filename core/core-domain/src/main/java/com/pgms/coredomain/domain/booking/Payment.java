@@ -35,7 +35,8 @@ public class Payment extends BaseEntity {
 	@Column(name = "payment_key")
 	private String paymentKey;
 
-	@Column(name = "method", nullable = false)
+	@Enumerated(EnumType.STRING)
+	@Column(name = "method")
 	private PaymentMethod method;
 
 	@Enumerated(EnumType.STRING)
@@ -134,6 +135,10 @@ public class Payment extends BaseEntity {
 		this.status = status;
 	}
 
+	public void updateMethod(PaymentMethod method) {
+		this.method = method;
+	}
+
 	public void updateFailedMsg(String failedMsg) {
 		this.failedMsg = failedMsg;
 	}
@@ -144,5 +149,9 @@ public class Payment extends BaseEntity {
 
 	public boolean isCanceled() {
 		return this.status == PaymentStatus.CANCELED;
+	}
+
+	public boolean isPaid() {
+		return this.status == PaymentStatus.DONE;
 	}
 }

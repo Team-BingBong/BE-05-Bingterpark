@@ -12,9 +12,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.pgms.apimember.dto.request.MemberInfoUpdateRequest;
 import com.pgms.apimember.dto.request.MemberPasswordUpdateRequest;
 import com.pgms.apimember.dto.request.MemberPasswordVerifyRequest;
+import com.pgms.apimember.dto.request.MemberSignUpRequest;
 import com.pgms.apimember.dto.response.MemberDetailGetResponse;
 import com.pgms.apimember.service.MemberService;
 import com.pgms.coredomain.response.ApiResponse;
+import com.pgms.coresecurity.security.resolver.CurrentAccount;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -26,15 +28,19 @@ public class MemberController {
 
 	private final MemberService memberService;
 
+	@PostMapping("/signup")
+	public ResponseEntity<ApiResponse<Long>> signUp(@RequestBody @Valid MemberSignUpRequest requestDto) {
+		return ResponseEntity.ok(ApiResponse.ok(memberService.signUp(requestDto)));
+	}
+
 	@GetMapping("/me")
-	public ResponseEntity<ApiResponse<MemberDetailGetResponse>> getMyInfo(Long memberId) {
-		// TODO: 현재 로그인한 사용자의 ID를 가져오는 어노테이션 필요 (security)
+	public ResponseEntity<ApiResponse<MemberDetailGetResponse>> getMyInfo(@CurrentAccount Long memberId) {
 		return ResponseEntity.ok(ApiResponse.ok(memberService.getMemberDetail(memberId)));
 	}
 
 	@PatchMapping("/me")
 	public ResponseEntity<Void> updateMyInfo(
-		Long memberId,
+		@CurrentAccount Long memberId,
 		@RequestBody @Valid MemberInfoUpdateRequest requestDto) {
 		memberService.updateMember(memberId, requestDto);
 		return ResponseEntity.noContent().build();
@@ -42,27 +48,27 @@ public class MemberController {
 
 	@PatchMapping("/me/password")
 	public ResponseEntity<Void> updatePassword(
-		Long memberId,
+		@CurrentAccount Long memberId,
 		@RequestBody @Valid MemberPasswordUpdateRequest requestDto) {
 		memberService.updatePassword(memberId, requestDto);
 		return ResponseEntity.noContent().build();
 	}
 
 	@PostMapping("/me/verify-password")
-	public ResponseEntity<Void> verifyPassword(Long memberId, @RequestBody MemberPasswordVerifyRequest requestDto) {
+	public ResponseEntity<Void> verifyPassword(@CurrentAccount Long memberId,
+		@RequestBody MemberPasswordVerifyRequest requestDto) {
 		memberService.verifyPassword(memberId, requestDto.password());
 		return ResponseEntity.noContent().build();
 	}
 
 	@DeleteMapping("/me")
-	public ResponseEntity<ApiResponse<Void>> deleteMyAccount(Long memberId) {
+	public ResponseEntity<ApiResponse<Void>> deleteMyAccount(@CurrentAccount Long memberId) {
 		memberService.deleteMember(memberId);
 		return ResponseEntity.noContent().build();
 	}
 
 	@PostMapping("/restore")
-	public ResponseEntity<ApiResponse<Long>> restoreMember(Long memberId) {
+	public ResponseEntity<ApiResponse<Long>> restoreMember(@CurrentAccount Long memberId) {
 		return ResponseEntity.ok(ApiResponse.ok(memberService.restoreMember(memberId)));
 	}
-
 }

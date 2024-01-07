@@ -16,9 +16,9 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
-import com.pgms.apibooking.exception.BookingExceptionHandlerFilter;
-import com.pgms.apibooking.exception.BookingAuthEntryPoint;
-import com.pgms.apibooking.jwt.BookingJwtAuthFilter;
+import com.pgms.apibooking.common.exception.BookingExceptionHandlerFilter;
+import com.pgms.apibooking.common.exception.BookingAuthEntryPoint;
+import com.pgms.apibooking.common.jwt.BookingJwtAuthFilter;
 
 import lombok.RequiredArgsConstructor;
 
@@ -32,7 +32,7 @@ public class SecurityConfig {
 	private final BookingAuthEntryPoint bookingAuthEntryPoint;
 
 	@Bean
-	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+	public SecurityFilterChain bookingFilterChain(HttpSecurity http) throws Exception {
 		List<RequestMatcher> permitAllMatchers = List.of(
 			new AntPathRequestMatcher("/api/*/bookings/enter-queue", HttpMethod.POST.toString()),
 			new AntPathRequestMatcher("/api/*/bookings/order-in-queue", HttpMethod.GET.toString()),

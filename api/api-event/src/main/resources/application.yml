@@ -1,6 +1,6 @@
 spring:
   profiles:
-    include: infra
+    include: infra, security
     active: dev
 
 server:
@@ -18,3 +18,12 @@ cloud:
       auto: false
     stack:
       auto: false
+
+logging:
+  level:
+    org:
+      springframework:
+        data:
+          elasticsearch:
+            client:
+              WIRE: TRACE

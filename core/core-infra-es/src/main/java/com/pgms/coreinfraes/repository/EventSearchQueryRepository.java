@@ -1,46 +1,159 @@
 package com.pgms.coreinfraes.repository;
 
-import com.pgms.coreinfraes.document.EventDocument;
-import com.pgms.coreinfraes.dto.request.EventSearchRequest;
-import lombok.RequiredArgsConstructor;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.elasticsearch.client.elc.NativeQuery;
+import org.springframework.data.elasticsearch.client.elc.NativeQueryBuilder;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHit;
+import org.springframework.data.elasticsearch.core.SearchHitSupport;
 import org.springframework.data.elasticsearch.core.SearchHits;
+import org.springframework.data.elasticsearch.core.document.Document;
+import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
 import org.springframework.data.elasticsearch.core.query.Criteria;
 import org.springframework.data.elasticsearch.core.query.CriteriaQuery;
+import org.springframework.data.elasticsearch.core.query.UpdateQuery;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
+import com.pgms.coreinfraes.document.EventDocument;
+import com.pgms.coreinfraes.dto.EventKeywordSearchDto;
+import com.pgms.coreinfraes.dto.EventSearchDto;
+
+import co.elastic.clients.elasticsearch._types.FieldValue;
+import co.elastic.clients.elasticsearch._types.query_dsl.FieldValueFactorModifier;
+import co.elastic.clients.elasticsearch._types.query_dsl.FieldValueFactorScoreFunction;
+import co.elastic.clients.elasticsearch._types.query_dsl.FunctionScore;
+import co.elastic.clients.elasticsearch._types.query_dsl.Query;
+import co.elastic.clients.elasticsearch._types.query_dsl.QueryBuilders;
+import co.elastic.clients.elasticsearch._types.query_dsl.TermsQueryField;
+import co.elastic.clients.json.JsonData;
+import lombok.RequiredArgsConstructor;
 
 @Repository
 @RequiredArgsConstructor
 public class EventSearchQueryRepository {
 
-    private final ElasticsearchOperations elasticsearchOperations;
+	private static final String MINIMUM_SHOULD_MATCH_PERCENTAGE = "75%";
 
-    public List<EventDocument> findByCondition(EventSearchRequest eventSearchRequest){
-        CriteriaQuery query = createConditionCriteriaQuery(eventSearchRequest);
+	private final ElasticsearchOperations elasticsearchOperations;
 
-        SearchHits<EventDocument> search = elasticsearchOperations.search(query, EventDocument.class);
+	public Page<EventDocument> findByCondition(EventSearchDto eventSearchDto) {
+		Pageable pageable = eventSearchDto.pageable();
+		CriteriaQuery query = createConditionCriteriaQuery(eventSearchDto, pageable);
 
-        return search.stream()
-                .map(SearchHit::getContent)
-                .toList();
-    }
+		SearchHits<EventDocument> searchHits = elasticsearchOperations.search(query, EventDocument.class);
 
-    private CriteriaQuery createConditionCriteriaQuery(EventSearchRequest eventSearchRequest){
+		return SearchHitSupport.searchPageFor(searchHits, query.getPageable()).map(SearchHit::getContent);
+	}
 
-        CriteriaQuery query = new CriteriaQuery(new Criteria());
+	public Page<EventDocument> findByKeyword(EventKeywordSearchDto eventKeywordSearchDto) {
+		Pageable pageable = eventKeywordSearchDto.pageable();
+		NativeQuery query = getKeywordSearchNativeQuery(eventKeywordSearchDto).setPageable(pageable);
 
-        if(eventSearchRequest == null)
-            return query;
+		SearchHits<EventDocument> searchHits = elasticsearchOperations.search(query, EventDocument.class);
+		return SearchHitSupport.searchPageFor(searchHits, query.getPageable()).map(SearchHit::getContent);
+	}
 
-        if(eventSearchRequest.title() != null)
-            return query.addCriteria(Criteria.where("title").is(eventSearchRequest.title()));
+	private static NativeQuery getKeywordSearchNativeQuery(EventKeywordSearchDto eventKeywordSearchDto) {
+		NativeQueryBuilder queryBuilder = new NativeQueryBuilder();
 
-        if(eventSearchRequest.genreType() != null)
-            return query.addCriteria(Criteria.where("genreType").is(eventSearchRequest.genreType()));
+		Query multiQuery = QueryBuilders.multiMatch()
+			.query(eventKeywordSearchDto.keyword())
+			.fields("title^1", "title_chosung^1", "description^1", "genreType^1")
+			.minimumShouldMatch(MINIMUM_SHOULD_MATCH_PERCENTAGE)
+			.build()._toQuery();
 
-        return query;
-    }
+		List<Query> filterList = new ArrayList<>();
+
+		if (eventKeywordSearchDto.genreType() != null) {
+			List<FieldValue> fieldValues = eventKeywordSearchDto.genreType().stream()
+				.map(FieldValue::of)
+				.toList();
+
+			TermsQueryField termsQueryField = new TermsQueryField.Builder()
+				.value(fieldValues)
+				.build();
+
+			Query genreFilterQuery = QueryBuilders
+				.terms()
+				.field("genreType")
+				.terms(termsQueryField)
+				.build()._toQuery();
+
+			filterList.add(genreFilterQuery);
+		}
+
+		if (eventKeywordSearchDto.startedAt() != null) {
+			Query startedAtFilterQuery = QueryBuilders
+				.range()
+				.field("startedAt")
+				.gte(JsonData.of(eventKeywordSearchDto.startedAt()))
+				.build()._toQuery();
+
+			filterList.add(startedAtFilterQuery);
+		}
+
+		if (eventKeywordSearchDto.endedAt() != null) {
+			Query endedAtFilterQuery = QueryBuilders
+				.range()
+				.field("endedAt")
+				.gte(JsonData.of(eventKeywordSearchDto.endedAt()))
+				.build()._toQuery();
+
+			filterList.add(endedAtFilterQuery);
+		}
+
+		Query boolQuery = QueryBuilders.bool()
+			.filter(filterList)
+			.must(multiQuery)
+			.build()._toQuery();
+
+		FunctionScore fieldValueFactorScoreFunction = new FieldValueFactorScoreFunction.Builder()
+			.field("id")
+			.factor(1.2)
+			.modifier(FieldValueFactorModifier.None)
+			.missing(1.0)
+			.build()._toFunctionScore();
+
+		Query functionScoreQuery = QueryBuilders.functionScore()
+			.functions(List.of(fieldValueFactorScoreFunction))
+			.query(boolQuery)
+			.build()._toQuery();
+
+		return queryBuilder.withQuery(functionScoreQuery)
+			.build();
+	}
+
+	public <T> void bulkUpdate(List<T> documents) {
+		try {
+			List<UpdateQuery> updateQueries = new ArrayList<>();
+			for (T document : documents) {
+				Document esDocument = elasticsearchOperations.getElasticsearchConverter().mapObject(document);
+				UpdateQuery updateQuery = UpdateQuery.builder(esDocument.getId())
+					.withDocument(esDocument)
+					.withDocAsUpsert(true)
+					.build();
+				updateQueries.add(updateQuery);
+			}
+			elasticsearchOperations.bulkUpdate(updateQueries, IndexCoordinates.of("event"));
+		} catch (Exception e) {
+			throw e;
+		}
+	}
+
+	private CriteriaQuery createConditionCriteriaQuery(EventSearchDto eventSearchDto, Pageable pageable) {
+		CriteriaQuery query = new CriteriaQuery(new Criteria()).setPageable(pageable);
+
+		if (eventSearchDto == null)
+			return query;
+		if (eventSearchDto.title() != null)
+			return query.addCriteria(Criteria.where("title").is(eventSearchDto.title()));
+
+		if (eventSearchDto.genreType() != null)
+			return query.addCriteria(Criteria.where("genreType").is(eventSearchDto.genreType()));
+		return query;
+	}
 }

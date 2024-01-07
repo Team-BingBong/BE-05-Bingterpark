@@ -3,6 +3,7 @@ package com.pgms.coredomain.domain.event;
 import com.pgms.coredomain.domain.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -28,6 +29,7 @@ public class EventSeatArea extends BaseEntity {
 	@JoinColumn(name = "event_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
 	private Event event;
 
+	@Builder
 	public EventSeatArea(SeatAreaType seatAreaType, int price, Event event) {
 		this.seatAreaType = seatAreaType;
 		this.price = price;

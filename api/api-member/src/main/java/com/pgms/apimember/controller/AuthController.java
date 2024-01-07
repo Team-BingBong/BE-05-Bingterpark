@@ -24,9 +24,16 @@ public class AuthController {
 	/**
 	 * 로그인, 토큰 발급
 	 */
-	@PostMapping("/login")
-	public ResponseEntity<ApiResponse<LoginResponse>> login(@Valid @RequestBody LoginRequest request) {
-		LoginResponse response = authService.login(request);
+	@PostMapping("/admin/login")
+	public ResponseEntity<ApiResponse<LoginResponse>> adminLogin(@Valid @RequestBody LoginRequest request) {
+		LoginResponse response = authService.login(request, "admin");
+		return ResponseEntity.ok(ApiResponse.ok(response));
+	}
+
+	@PostMapping("/members/login")
+	public ResponseEntity<ApiResponse<LoginResponse>> memberLogin(@Valid @RequestBody LoginRequest request) {
+		// TODO: 나중에 enum으로..?
+		LoginResponse response = authService.login(request, "member");
 		return ResponseEntity.ok(ApiResponse.ok(response));
 	}
 

@@ -1,7 +1,5 @@
 package com.pgms.apibooking.service;
 
-import static org.assertj.core.api.Assertions.*;
-
 import java.util.UUID;
 
 import org.junit.jupiter.api.AfterEach;
@@ -11,11 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.RedisTemplate;
 
-import com.pgms.apibooking.dto.request.BookingQueueEnterRequest;
-import com.pgms.apibooking.dto.request.TokenIssueRequest;
-import com.pgms.apibooking.dto.response.OrderInQueueGetResponse;
-import com.pgms.apibooking.dto.response.TokenIssueResponse;
-import com.pgms.apibooking.repository.BookingQueueRepository;
+import com.pgms.apibooking.domain.bookingqueue.dto.request.TokenIssueRequest;
+import com.pgms.apibooking.domain.bookingqueue.dto.response.TokenIssueResponse;
+import com.pgms.apibooking.domain.bookingqueue.service.BookingQueueService;
+import com.pgms.apibooking.domain.bookingqueue.repository.BookingQueueRepository;
 
 @SpringBootTest
 class BookingQueueServiceTest {

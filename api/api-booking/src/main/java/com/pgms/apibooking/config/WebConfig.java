@@ -5,7 +5,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import com.pgms.apibooking.interceptor.BookingSessionInterceptor;
+import com.pgms.apibooking.common.interceptor.BookingSessionInterceptor;
 
 import lombok.RequiredArgsConstructor;
 
