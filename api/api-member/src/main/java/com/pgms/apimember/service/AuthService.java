@@ -48,33 +48,37 @@ public class AuthService {
 		String accessToken = jwtTokenProvider.generateJwtToken((UserDetailsImpl)authenticated.getPrincipal());
 		String refreshToken = jwtTokenProvider.generateRefreshToken();
 
-		// redis에 저장
+		// redis에 토큰 정보 저장
 		refreshTokenRepository.save(new RefreshToken(refreshToken, accessToken, accountType,
 			((UserDetailsImpl)authenticated.getPrincipal()).getEmail()));
 		return new AuthResponse(accessToken, refreshToken);
 	}
 
 	public AuthResponse refresh(RefreshTokenRequest request) {
-		// 기존에 저장된 refreshToken, refreshToken이 만료됐다면 다시 로그인하도록
 		if (request.refreshToken() == null)
 			throw new SecurityException(CustomErrorCode.UNAUTHORIZED);
+
+		// refresh token이 만료됐는지 확인
 		RefreshToken refreshToken = refreshTokenRepository.findById(request.refreshToken())
 			.orElseThrow(() -> new SecurityException(CustomErrorCode.REFRESH_TOKEN_EXPIRED));
 
-		// 사용자의 정보를 로드
-		UserDetailsImpl userDetails;
-		if (refreshToken.getAccountType().equals("admin")) {
-			userDetails = (UserDetailsImpl)adminUserDetailsService.loadUserByUsername(refreshToken.getEmail());
-		} else {
-			userDetails = (UserDetailsImpl)memberUserDetailsService.loadUserByUsername(refreshToken.getEmail());
-		}
+		// 회원 정보 로드
+		UserDetailsImpl userDetails = loadUserDetails(refreshToken.getAccountType(), refreshToken.getEmail());
 
 		// 새로운 accessToken 발급
 		String newAccessToken = jwtTokenProvider.generateJwtToken(userDetails);
 
-		// redis에 저장
+		// redis에 토큰 정보 저장
 		refreshTokenRepository.save(new RefreshToken(refreshToken.getRefreshToken(), newAccessToken,
 			refreshToken.getAccountType(), refreshToken.getEmail()));
 		return new AuthResponse(newAccessToken, refreshToken.getRefreshToken());
+	}
+
+	private UserDetailsImpl loadUserDetails(String accountType, String email) {
+		if ("admin".equals(accountType)) {
+			return (UserDetailsImpl)adminUserDetailsService.loadUserByUsername(email);
+		} else {
+			return (UserDetailsImpl)memberUserDetailsService.loadUserByUsername(email);
+		}
 	}
 }
