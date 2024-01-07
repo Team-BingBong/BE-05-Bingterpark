@@ -1,12 +1,8 @@
 package com.pgms.coreinfraes.repository;
 
-import co.elastic.clients.elasticsearch._types.FieldValue;
-import co.elastic.clients.elasticsearch._types.query_dsl.*;
-import co.elastic.clients.json.JsonData;
-import com.pgms.coreinfraes.document.EventDocument;
-import com.pgms.coreinfraes.dto.EventKeywordSearchDto;
-import com.pgms.coreinfraes.dto.EventSearchDto;
-import lombok.RequiredArgsConstructor;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.client.elc.NativeQuery;
@@ -22,14 +18,25 @@ import org.springframework.data.elasticsearch.core.query.CriteriaQuery;
 import org.springframework.data.elasticsearch.core.query.UpdateQuery;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.pgms.coreinfraes.document.EventDocument;
+import com.pgms.coreinfraes.dto.EventKeywordSearchDto;
+import com.pgms.coreinfraes.dto.EventSearchDto;
+
+import co.elastic.clients.elasticsearch._types.FieldValue;
+import co.elastic.clients.elasticsearch._types.query_dsl.FieldValueFactorModifier;
+import co.elastic.clients.elasticsearch._types.query_dsl.FieldValueFactorScoreFunction;
+import co.elastic.clients.elasticsearch._types.query_dsl.FunctionScore;
+import co.elastic.clients.elasticsearch._types.query_dsl.Query;
+import co.elastic.clients.elasticsearch._types.query_dsl.QueryBuilders;
+import co.elastic.clients.elasticsearch._types.query_dsl.TermsQueryField;
+import co.elastic.clients.json.JsonData;
+import lombok.RequiredArgsConstructor;
 
 @Repository
 @RequiredArgsConstructor
 public class EventSearchQueryRepository {
 
-	private static final String MINUM_SHOULD_MATCH_PERCENTAGE = "75%";
+	private static final String MINIMUM_SHOULD_MATCH_PERCENTAGE = "75%";
 
 	private final ElasticsearchOperations elasticsearchOperations;
 
@@ -44,95 +51,95 @@ public class EventSearchQueryRepository {
 
 	public Page<EventDocument> findByKeyword(EventKeywordSearchDto eventKeywordSearchDto) {
 		Pageable pageable = eventKeywordSearchDto.pageable();
-		NativeQuery query = getKeywordSearchNativeQuery(eventKeywordSearchDto, pageable).setPageable(pageable);
+		NativeQuery query = getKeywordSearchNativeQuery(eventKeywordSearchDto).setPageable(pageable);
 
 		SearchHits<EventDocument> searchHits = elasticsearchOperations.search(query, EventDocument.class);
 		return SearchHitSupport.searchPageFor(searchHits, query.getPageable()).map(SearchHit::getContent);
 	}
 
-	private static NativeQuery getKeywordSearchNativeQuery(EventKeywordSearchDto eventKeywordSearchDto, Pageable pageable) {
+	private static NativeQuery getKeywordSearchNativeQuery(EventKeywordSearchDto eventKeywordSearchDto) {
 		NativeQueryBuilder queryBuilder = new NativeQueryBuilder();
 
 		Query multiQuery = QueryBuilders.multiMatch()
-				.query(eventKeywordSearchDto.keyword())
-				.fields("title^1", "title_chosung^1", "description^1", "genreType^1")
-				.minimumShouldMatch(MINUM_SHOULD_MATCH_PERCENTAGE)
-				.build()._toQuery();
+			.query(eventKeywordSearchDto.keyword())
+			.fields("title^1", "title_chosung^1", "description^1", "genreType^1")
+			.minimumShouldMatch(MINIMUM_SHOULD_MATCH_PERCENTAGE)
+			.build()._toQuery();
 
 		List<Query> filterList = new ArrayList<>();
 
-		if(eventKeywordSearchDto.genreType() != null){
+		if (eventKeywordSearchDto.genreType() != null) {
 			List<FieldValue> fieldValues = eventKeywordSearchDto.genreType().stream()
-					.map(FieldValue::of)
-					.toList();
+				.map(FieldValue::of)
+				.toList();
 
 			TermsQueryField termsQueryField = new TermsQueryField.Builder()
-					.value(fieldValues)
-					.build();
+				.value(fieldValues)
+				.build();
 
 			Query genreFilterQuery = QueryBuilders
-					.terms()
-					.field("genreType")
-					.terms(termsQueryField)
-					.build()._toQuery();
+				.terms()
+				.field("genreType")
+				.terms(termsQueryField)
+				.build()._toQuery();
 
 			filterList.add(genreFilterQuery);
 		}
 
-		if(eventKeywordSearchDto.startedAt() != null){
+		if (eventKeywordSearchDto.startedAt() != null) {
 			Query startedAtFilterQuery = QueryBuilders
-					.range()
-					.field("startedAt")
-					.gte(JsonData.of(eventKeywordSearchDto.startedAt()))
-					.build()._toQuery();
+				.range()
+				.field("startedAt")
+				.gte(JsonData.of(eventKeywordSearchDto.startedAt()))
+				.build()._toQuery();
 
 			filterList.add(startedAtFilterQuery);
 		}
 
-		if(eventKeywordSearchDto.endedAt() != null){
+		if (eventKeywordSearchDto.endedAt() != null) {
 			Query endedAtFilterQuery = QueryBuilders
-					.range()
-					.field("endedAt")
-					.gte(JsonData.of(eventKeywordSearchDto.endedAt()))
-					.build()._toQuery();
+				.range()
+				.field("endedAt")
+				.gte(JsonData.of(eventKeywordSearchDto.endedAt()))
+				.build()._toQuery();
 
 			filterList.add(endedAtFilterQuery);
 		}
 
 		Query boolQuery = QueryBuilders.bool()
-				.filter(filterList)
-				.must(multiQuery)
-				.build()._toQuery();
+			.filter(filterList)
+			.must(multiQuery)
+			.build()._toQuery();
 
 		FunctionScore fieldValueFactorScoreFunction = new FieldValueFactorScoreFunction.Builder()
-				.field("id")
-				.factor(1.2)
-				.modifier(FieldValueFactorModifier.None)
-				.missing(1.0)
-				.build()._toFunctionScore();
+			.field("id")
+			.factor(1.2)
+			.modifier(FieldValueFactorModifier.None)
+			.missing(1.0)
+			.build()._toFunctionScore();
 
 		Query functionScoreQuery = QueryBuilders.functionScore()
-				.functions(List.of(fieldValueFactorScoreFunction))
-				.query(boolQuery)
-				.build()._toQuery();
+			.functions(List.of(fieldValueFactorScoreFunction))
+			.query(boolQuery)
+			.build()._toQuery();
 
 		return queryBuilder.withQuery(functionScoreQuery)
-				.build();
+			.build();
 	}
 
-	public<T> void bulkUpdate(List<T> documents) {
-		try{
+	public <T> void bulkUpdate(List<T> documents) {
+		try {
 			List<UpdateQuery> updateQueries = new ArrayList<>();
 			for (T document : documents) {
 				Document esDocument = elasticsearchOperations.getElasticsearchConverter().mapObject(document);
 				UpdateQuery updateQuery = UpdateQuery.builder(esDocument.getId())
-						.withDocument(esDocument)
-						.withDocAsUpsert(true)
-						.build();
+					.withDocument(esDocument)
+					.withDocAsUpsert(true)
+					.build();
 				updateQueries.add(updateQuery);
 			}
 			elasticsearchOperations.bulkUpdate(updateQueries, IndexCoordinates.of("event"));
-		} catch (Exception e){
+		} catch (Exception e) {
 			throw e;
 		}
 	}

@@ -8,11 +8,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.pgms.apimember.dto.request.MemberInfoUpdateRequest;
 import com.pgms.apimember.dto.request.MemberPasswordUpdateRequest;
+import com.pgms.apimember.dto.request.MemberSignUpRequest;
 import com.pgms.apimember.dto.response.MemberDetailGetResponse;
+import com.pgms.apimember.exception.AdminException;
 import com.pgms.apimember.exception.CustomErrorCode;
 import com.pgms.apimember.exception.MemberException;
 import com.pgms.coredomain.domain.member.Member;
+import com.pgms.coredomain.domain.member.Role;
 import com.pgms.coredomain.domain.member.repository.MemberRepository;
+import com.pgms.coredomain.domain.member.repository.RoleRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -21,8 +25,25 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class MemberService {
 
+	// TODO: role의 기본값을 어떻게 할 지 논의해봐야함
+	private static final String DEFAULT_ROLE_NAME = "ROLE_USER";
+
 	private final MemberRepository memberRepository;
+	private final RoleRepository roleRepository;
 	private final PasswordEncoder passwordEncoder;
+
+	public Long signUp(MemberSignUpRequest requestDto) {
+		if (memberRepository.existsByEmail(requestDto.email())) {
+			throw new MemberException(DUPLICATED_MEMBER_EMAIL);
+		}
+		validateNewPassword(requestDto.password(), requestDto.passwordConfirm());
+		return memberRepository.save(
+				requestDto.toEntity(
+					passwordEncoder.encode(requestDto.password()),
+					getRole(DEFAULT_ROLE_NAME))
+			)
+			.getId();
+	}
 
 	@Transactional(readOnly = true)
 	public MemberDetailGetResponse getMemberDetail(Long memberId) {
@@ -86,4 +107,8 @@ public class MemberService {
 			.orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
 	}
 
+	private Role getRole(String roleName) {
+		return roleRepository.findByName(roleName)
+			.orElseThrow(() -> new AdminException(ADMIN_ROLE_NOT_FOUND));
+	}
 }

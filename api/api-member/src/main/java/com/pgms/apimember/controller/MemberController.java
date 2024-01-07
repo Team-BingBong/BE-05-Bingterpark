@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.pgms.apimember.dto.request.MemberInfoUpdateRequest;
 import com.pgms.apimember.dto.request.MemberPasswordUpdateRequest;
 import com.pgms.apimember.dto.request.MemberPasswordVerifyRequest;
+import com.pgms.apimember.dto.request.MemberSignUpRequest;
 import com.pgms.apimember.dto.response.MemberDetailGetResponse;
 import com.pgms.apimember.service.MemberService;
 import com.pgms.coredomain.response.ApiResponse;
@@ -26,6 +27,11 @@ import lombok.RequiredArgsConstructor;
 public class MemberController {
 
 	private final MemberService memberService;
+
+	@PostMapping("/signup")
+	public ResponseEntity<ApiResponse<Long>> signUp(@RequestBody @Valid MemberSignUpRequest requestDto) {
+		return ResponseEntity.ok(ApiResponse.ok(memberService.signUp(requestDto)));
+	}
 
 	@GetMapping("/me")
 	public ResponseEntity<ApiResponse<MemberDetailGetResponse>> getMyInfo(@CurrentAccount Long memberId) {
