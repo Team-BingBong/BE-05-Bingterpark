@@ -45,7 +45,7 @@ public class AuthService {
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 
 		// accessToken, refreshToken 생성
-		String accessToken = jwtTokenProvider.generateJwtToken((UserDetailsImpl)authenticated.getPrincipal());
+		String accessToken = jwtTokenProvider.generateAccessToken((UserDetailsImpl)authenticated.getPrincipal());
 		String refreshToken = jwtTokenProvider.generateRefreshToken();
 
 		// redis에 토큰 정보 저장
@@ -66,7 +66,7 @@ public class AuthService {
 		UserDetailsImpl userDetails = loadUserDetails(refreshToken.getAccountType(), refreshToken.getEmail());
 
 		// 새로운 accessToken 발급
-		String newAccessToken = jwtTokenProvider.generateJwtToken(userDetails);
+		String newAccessToken = jwtTokenProvider.generateAccessToken(userDetails);
 
 		// redis에 토큰 정보 저장
 		refreshTokenRepository.save(new RefreshToken(refreshToken.getRefreshToken(), newAccessToken,

@@ -39,7 +39,7 @@ public class JwtTokenProvider {
 	@Value("${jwt.expiry-seconds}")
 	private int expirySeconds;
 
-	public String generateJwtToken(UserDetailsImpl userDetails) {
+	public String generateAccessToken(UserDetailsImpl userDetails) {
 		Instant now = Instant.now();
 		Instant expirationTime = now.plusSeconds(expirySeconds);
 

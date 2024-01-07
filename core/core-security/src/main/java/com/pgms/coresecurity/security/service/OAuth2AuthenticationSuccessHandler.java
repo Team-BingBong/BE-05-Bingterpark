@@ -57,7 +57,7 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
 
 		// 토큰 생성 후 반환
 		Map<String, Object> body = new HashMap<>();
-		body.put("accessToken", jwtTokenProvider.generateJwtToken((UserDetailsImpl)authenticated.getPrincipal()));
+		body.put("accessToken", jwtTokenProvider.generateAccessToken((UserDetailsImpl)authenticated.getPrincipal()));
 		HttpResponseUtil.setSuccessResponse(response, HttpStatus.OK, body);
 	}
 
