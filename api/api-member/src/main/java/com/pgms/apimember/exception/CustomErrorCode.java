@@ -24,7 +24,11 @@ public enum CustomErrorCode {
 	MEMBER_ALREADY_DELETED("MEMBER ALREADY DELETED", HttpStatus.BAD_REQUEST, "이미 탈퇴한 회원입니다."),
 	PASSWORD_NOT_MATCHED("PASSWORD NOT MATCHED", HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다."),
 	PASSWORD_CONFIRM_NOT_MATCHED("PASSWORD CONFIRM NOT MATCHED", HttpStatus.BAD_REQUEST, "비밀번호 확인이 일치하지 않습니다."),
-	VALIDATION_FAILED("VALIDATION FAILED", HttpStatus.BAD_REQUEST, "입력값에 대한 검증에 실패했습니다.");
+	VALIDATION_FAILED("VALIDATION FAILED", HttpStatus.BAD_REQUEST, "입력값에 대한 검증에 실패했습니다."),
+
+	// security
+	UNAUTHORIZED("UNAUTHORIZED", HttpStatus.UNAUTHORIZED, "로그인 해주세요."),
+	REFRESH_TOKEN_EXPIRED("REFRESH TOKEN EXPIRED", HttpStatus.UNAUTHORIZED, "다시 로그인 해주세요.");
 
 	private final String errorCode;
 	private final HttpStatus status;
