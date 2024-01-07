@@ -13,6 +13,6 @@ public class RefreshToken {
 	@Id
 	private String refreshToken;
 	private String accessToken;
-	private String accountType; // admin, member
+	private String accountType; // admin, member -> TODO : enum으로 개선
 	private String email;
 }
