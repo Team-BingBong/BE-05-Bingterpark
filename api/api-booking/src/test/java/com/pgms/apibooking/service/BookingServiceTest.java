@@ -6,18 +6,19 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.pgms.apibooking.domain.booking.service.BookingService;
 import com.pgms.apibooking.config.TestConfig;
 import com.pgms.apibooking.domain.booking.dto.request.BookingCancelRequest;
 import com.pgms.apibooking.domain.booking.dto.request.BookingCreateRequest;
-import com.pgms.apibooking.domain.payment.dto.request.RefundAccountRequest;
 import com.pgms.apibooking.domain.booking.dto.response.BookingCreateResponse;
+import com.pgms.apibooking.domain.booking.service.BookingService;
+import com.pgms.apibooking.domain.payment.dto.request.RefundAccountRequest;
 import com.pgms.apibooking.exception.BookingErrorCode;
 import com.pgms.apibooking.exception.BookingException;
 import com.pgms.apibooking.factory.BookingFactory;
@@ -49,6 +50,11 @@ import com.pgms.coredomain.domain.event.repository.EventRepository;
 import com.pgms.coredomain.domain.event.repository.EventSeatAreaRepository;
 import com.pgms.coredomain.domain.event.repository.EventSeatRepository;
 import com.pgms.coredomain.domain.event.repository.EventTimeRepository;
+import com.pgms.coredomain.domain.member.Member;
+import com.pgms.coredomain.domain.member.Role;
+import com.pgms.coredomain.domain.member.enums.Provider;
+import com.pgms.coredomain.domain.member.repository.MemberRepository;
+import com.pgms.coredomain.domain.member.repository.RoleRepository;
 
 @SpringBootTest
 @Import(TestConfig.class)
@@ -77,6 +83,20 @@ class BookingServiceTest {
 
 	@Autowired
 	private BookingService bookingService;
+	@Autowired
+	private MemberRepository memberRepository;
+
+	@Autowired
+	private RoleRepository roleRepository;
+
+	private Member member;
+
+	@BeforeEach
+	void setup() {
+		Role role = roleRepository.save(new Role("ROLE_USER"));
+		member = memberRepository.save(
+			new Member("test@gmail.com", "test1234!", "홍길동", Provider.KAKAO, role));
+	}
 
 	@Test
 	void 예매를_생성한다() {
@@ -130,7 +150,7 @@ class BookingServiceTest {
 		);
 
 		// when
-		BookingCreateResponse response = bookingService.createBooking(request);
+		BookingCreateResponse response = bookingService.createBooking(request, member.getId());
 
 		// then
 		Booking booking = bookingRepository.findBookingInfoById(response.bookingId()).get();
@@ -201,7 +221,7 @@ class BookingServiceTest {
 		);
 
 		// when & then
-		assertThatThrownBy(() -> bookingService.createBooking(request))
+		assertThatThrownBy(() -> bookingService.createBooking(request, member.getId()))
 			.isInstanceOf(BookingException.class)
 			.hasMessage(BookingErrorCode.UNBOOKABLE_EVENT.getMessage());
 	}
@@ -253,7 +273,7 @@ class BookingServiceTest {
 		);
 
 		// when & then
-		assertThatThrownBy(() -> bookingService.createBooking(request))
+		assertThatThrownBy(() -> bookingService.createBooking(request, member.getId()))
 			.isInstanceOf(BookingException.class)
 			.hasMessage(BookingErrorCode.NON_EXISTENT_SEAT_INCLUSION.getMessage());
 	}
@@ -303,7 +323,7 @@ class BookingServiceTest {
 		);
 
 		// when & then
-		assertThatThrownBy(() -> bookingService.createBooking(request))
+		assertThatThrownBy(() -> bookingService.createBooking(request, member.getId()))
 			.isInstanceOf(BookingException.class)
 			.hasMessage(BookingErrorCode.UNBOOKABLE_SEAT_INCLUSION.getMessage());
 	}
@@ -353,7 +373,7 @@ class BookingServiceTest {
 		);
 
 		// when & then
-		assertThatThrownBy(() -> bookingService.createBooking(request))
+		assertThatThrownBy(() -> bookingService.createBooking(request, member.getId()))
 			.isInstanceOf(BookingException.class)
 			.hasMessage(BookingErrorCode.DELIVERY_ADDRESS_REQUIRED.getMessage());
 	}
@@ -388,7 +408,7 @@ class BookingServiceTest {
 		eventSeatRepository.save(seat);
 
 		Booking booking = BookingFactory.generate(
-			null,
+			member,
 			time,
 			seat.getEventSeatArea().getPrice(),
 			BookingStatus.PAYMENT_COMPLETED
@@ -407,7 +427,7 @@ class BookingServiceTest {
 		);
 
 		// when
-		bookingService.cancelBooking(booking.getId(), request);
+		bookingService.cancelBooking(booking.getId(), request, member.getId());
 
 		// then
 		Booking canceledBooking = bookingRepository.findBookingInfoById(booking.getId()).get();
@@ -455,7 +475,7 @@ class BookingServiceTest {
 		eventSeatRepository.save(seat);
 
 		Booking booking = BookingFactory.generate(
-			null,
+			member,
 			time,
 			seat.getEventSeatArea().getPrice(),
 			BookingStatus.CANCELED
@@ -474,7 +494,7 @@ class BookingServiceTest {
 		);
 
 		// when & then
-		assertThatThrownBy(() -> bookingService.cancelBooking(booking.getId(), request))
+		assertThatThrownBy(() -> bookingService.cancelBooking(booking.getId(), request, member.getId()))
 			.isInstanceOf(BookingException.class)
 			.hasMessage(BookingErrorCode.UNCANCELABLE_BOOKING.getMessage());
 	}
@@ -509,7 +529,7 @@ class BookingServiceTest {
 		eventSeatRepository.save(seat);
 
 		Booking booking = BookingFactory.generate(
-			null,
+			member,
 			time,
 			seat.getEventSeatArea().getPrice(),
 			BookingStatus.PAYMENT_COMPLETED
@@ -529,7 +549,7 @@ class BookingServiceTest {
 		);
 
 		// when & then
-		assertThatThrownBy(() -> bookingService.cancelBooking(booking.getId(), request))
+		assertThatThrownBy(() -> bookingService.cancelBooking(booking.getId(), request, member.getId()))
 			.isInstanceOf(BookingException.class)
 			.hasMessage(BookingErrorCode.REFUND_ACCOUNT_REQUIRED.getMessage());
 	}
@@ -564,7 +584,7 @@ class BookingServiceTest {
 		eventSeatRepository.save(seat);
 
 		Booking booking = BookingFactory.generate(
-			null,
+			member,
 			time,
 			seat.getEventSeatArea().getPrice(),
 			BookingStatus.PAYMENT_COMPLETED
@@ -583,7 +603,7 @@ class BookingServiceTest {
 		);
 
 		// when
-		bookingService.cancelBooking(booking.getId(), request);
+		bookingService.cancelBooking(booking.getId(), request, member.getId());
 
 		// then
 		Booking canceledBooking = bookingRepository.findBookingInfoById(booking.getId()).get();
@@ -620,7 +640,7 @@ class BookingServiceTest {
 		eventSeatRepository.save(seat);
 
 		Booking booking = BookingFactory.generate(
-			null,
+			member,
 			time,
 			seat.getEventSeatArea().getPrice(),
 			BookingStatus.WAITING_FOR_PAYMENT
@@ -646,7 +666,7 @@ class BookingServiceTest {
 		);
 
 		// when
-		bookingService.cancelBooking(booking.getId(), request);
+		bookingService.cancelBooking(booking.getId(), request, member.getId());
 
 		// then
 		Booking canceledBooking = bookingRepository.findBookingInfoById(booking.getId()).get();
