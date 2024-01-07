@@ -5,17 +5,15 @@ import static com.pgms.coredomain.domain.member.enums.AccountStatus.*;
 import com.pgms.coredomain.domain.member.enums.AccountStatus;
 import com.pgms.coredomain.domain.member.enums.Gender;
 import com.pgms.coredomain.domain.member.enums.Provider;
+import com.pgms.coredomain.domain.member.enums.Role;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Builder;
 import lombok.Getter;
@@ -68,8 +66,8 @@ public class Member extends AccountBaseEntity {
 	@Enumerated(EnumType.STRING)
 	private Provider provider;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "role_id")
+	@Enumerated(EnumType.STRING)
+	@Column(name = "role")
 	private Role role;
 
 	@Builder
@@ -83,8 +81,7 @@ public class Member extends AccountBaseEntity {
 		String streetAddress,
 		String detailAddress,
 		String zipCode,
-		Provider provider,
-		Role role
+		Provider provider
 	) {
 		this.email = email;
 		this.password = password;
@@ -96,7 +93,7 @@ public class Member extends AccountBaseEntity {
 		this.detailAddress = detailAddress;
 		this.zipCode = zipCode;
 		this.provider = provider;
-		this.role = role;
+		this.role = Role.ROLE_USER;
 		this.status = ACTIVE;
 	}
 

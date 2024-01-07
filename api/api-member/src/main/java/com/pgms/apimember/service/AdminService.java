@@ -18,10 +18,8 @@ import com.pgms.apimember.dto.response.MemberDetailGetResponse;
 import com.pgms.apimember.dto.response.MemberSummaryGetResponse;
 import com.pgms.apimember.exception.AdminException;
 import com.pgms.coredomain.domain.member.Admin;
-import com.pgms.coredomain.domain.member.Role;
 import com.pgms.coredomain.domain.member.repository.AdminRepository;
 import com.pgms.coredomain.domain.member.repository.MemberRepository;
-import com.pgms.coredomain.domain.member.repository.RoleRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -32,7 +30,6 @@ public class AdminService {
 
 	private final AdminRepository adminRepository;
 	private final MemberRepository memberRepository;
-	private final RoleRepository roleRepository;
 	private final PasswordEncoder passwordEncoder;
 
 	// 슈퍼 관리자 기능
@@ -45,7 +42,7 @@ public class AdminService {
 		final Admin admin = AdminCreateRequest.toEntity(
 			requestDto,
 			passwordEncoder.encode(requestDto.password()),
-			getRole(requestDto.roleName())
+			requestDto.role()
 		);
 		return adminRepository.save(admin).getId();
 	}
@@ -59,15 +56,14 @@ public class AdminService {
 	public void updateAdmin(Long adminId, AdminUpdateRequest requestDto) {
 		validatePasswordAndConfirm(requestDto.password(), requestDto.passwordConfirm());
 
-		final Admin admin = adminRepository.findByIdWithRole(adminId)
+		final Admin admin = adminRepository.findById(adminId)
 			.orElseThrow(() -> new AdminException(ADMIN_NOT_FOUND));
 
-		final Role role = getRole(requestDto.roleName());
 		admin.update(
 			requestDto.name(),
 			passwordEncoder.encode(requestDto.password()),
 			requestDto.phoneNumber(),
-			requestDto.status(), role
+			requestDto.status(), requestDto.role()
 		);
 	}
 
@@ -85,7 +81,7 @@ public class AdminService {
 
 	@Transactional(readOnly = true)
 	public AdminGetResponse getAdmin(Long adminId) {
-		final Admin admin = adminRepository.findByIdWithRole(adminId)
+		final Admin admin = adminRepository.findById(adminId)
 			.orElseThrow(() -> new AdminException(ADMIN_NOT_FOUND));
 		return AdminGetResponse.from(admin);
 	}
@@ -108,10 +104,4 @@ public class AdminService {
 			throw new AdminException(PASSWORD_CONFIRM_NOT_MATCHED);
 		}
 	}
-
-	private Role getRole(String roleName) {
-		return roleRepository.findByName(roleName)
-			.orElseThrow(() -> new AdminException(ADMIN_ROLE_NOT_FOUND));
-	}
-
 }

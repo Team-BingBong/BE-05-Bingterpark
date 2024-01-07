@@ -3,16 +3,15 @@ package com.pgms.coredomain.domain.member;
 import static lombok.AccessLevel.*;
 
 import com.pgms.coredomain.domain.member.enums.AccountStatus;
+import com.pgms.coredomain.domain.member.enums.Role;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Builder;
 import lombok.Getter;
@@ -45,7 +44,8 @@ public class Admin extends AccountBaseEntity {
 	@Enumerated(EnumType.STRING)
 	private AccountStatus status;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@Enumerated(EnumType.STRING)
+	@Column(name = "role")
 	private Role role;
 
 	@Builder

@@ -1,7 +1,7 @@
 package com.pgms.apimember.dto.request;
 
 import com.pgms.coredomain.domain.member.Admin;
-import com.pgms.coredomain.domain.member.Role;
+import com.pgms.coredomain.domain.member.enums.Role;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -29,7 +29,7 @@ public record AdminCreateRequest(
 	String email,
 
 	@NotBlank(message = "역할은 필수 항목입니다.")
-	String roleName
+	Role role
 ) {
 	public static Admin toEntity(AdminCreateRequest requestDto, String encodedPassword, Role role) {
 		return Admin.builder()

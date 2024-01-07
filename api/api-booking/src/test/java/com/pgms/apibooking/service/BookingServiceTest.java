@@ -51,10 +51,8 @@ import com.pgms.coredomain.domain.event.repository.EventSeatAreaRepository;
 import com.pgms.coredomain.domain.event.repository.EventSeatRepository;
 import com.pgms.coredomain.domain.event.repository.EventTimeRepository;
 import com.pgms.coredomain.domain.member.Member;
-import com.pgms.coredomain.domain.member.Role;
 import com.pgms.coredomain.domain.member.enums.Provider;
 import com.pgms.coredomain.domain.member.repository.MemberRepository;
-import com.pgms.coredomain.domain.member.repository.RoleRepository;
 
 @SpringBootTest
 @Import(TestConfig.class)
@@ -86,20 +84,15 @@ class BookingServiceTest {
 	@Autowired
 	private MemberRepository memberRepository;
 
-	@Autowired
-	private RoleRepository roleRepository;
-
 	private Member member;
 
 	@BeforeEach
 	void setup() {
-		Role role = roleRepository.save(new Role("ROLE_USER"));
 		member = memberRepository.save(Member.builder()
 			.email("test@gmail.com")
 			.password("test1234!")
 			.name("홍길동")
 			.provider(Provider.KAKAO)
-			.role(role)
 			.phoneNumber("010-123-456")
 			.build());
 	}

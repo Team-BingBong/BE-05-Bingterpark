@@ -70,7 +70,7 @@ public class AuthService {
 		refreshTokenRepository.delete(refreshToken);
 		refreshTokenRepository.save(new RefreshToken(newRefreshToken, newAccessToken,
 			refreshToken.getAccountType(), refreshToken.getEmail()));
-		return new AuthResponse(newAccessToken, refreshToken.getRefreshToken());
+		return new AuthResponse(newAccessToken, newRefreshToken);
 	}
 
 	private UserDetailsImpl loadUserDetails(String accountType, String email) {
