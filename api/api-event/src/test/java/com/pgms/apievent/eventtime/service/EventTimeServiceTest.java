@@ -1,5 +1,18 @@
 package com.pgms.apievent.eventtime.service;
 
+import static org.assertj.core.api.Assertions.*;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.IntStream;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ContextConfiguration;
+
 import com.pgms.apievent.EventTestConfig;
 import com.pgms.apievent.eventtime.dto.request.EventTimeCreateRequest;
 import com.pgms.apievent.eventtime.dto.request.EventTimeUpdateRequest;
@@ -13,19 +26,6 @@ import com.pgms.coredomain.domain.event.EventTime;
 import com.pgms.coredomain.domain.event.repository.EventHallRepository;
 import com.pgms.coredomain.domain.event.repository.EventRepository;
 import com.pgms.coredomain.domain.event.repository.EventTimeRepository;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ContextConfiguration;
-
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.IntStream;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
 @ContextConfiguration(classes = EventTestConfig.class)
@@ -45,13 +45,9 @@ class EventTimeServiceTest {
 	@Autowired
 	private EventHallRepository eventHallRepository;
 
-	private Event event;
-
 	@BeforeEach
 	void setUp() {
-		EventHall eventHall = EventHallFactory.createEventHall();
-		eventHallRepository.save(eventHall);
-		event = eventRepository.save(EventFactory.createEvent(eventHall));
+		eventRepository.deleteAll();
 	}
 
 	@AfterEach
@@ -62,6 +58,9 @@ class EventTimeServiceTest {
 	@Test
 	void 공연_회차_생성_테스트() {
 		// Given
+		EventHall eventHall = EventHallFactory.createEventHall();
+		eventHallRepository.save(eventHall);
+		Event event = eventRepository.save(EventFactory.createEvent(eventHall));
 		EventTimeCreateRequest request = new EventTimeCreateRequest(1, event.getStartedAt(), event.getEndedAt());
 
 		// When
@@ -75,6 +74,10 @@ class EventTimeServiceTest {
 	@Test
 	void 공연_회차_중복_생성_실패_테스트() {
 		// Given
+		EventHall eventHall = EventHallFactory.createEventHall();
+		eventHallRepository.save(eventHall);
+		Event event = eventRepository.save(EventFactory.createEvent(eventHall));
+
 		EventTimeCreateRequest request = new EventTimeCreateRequest(1, event.getStartedAt(), event.getEndedAt());
 		EventTime eventTime = request.toEntity(event);
 		eventTimeRepository.save(eventTime);
@@ -87,6 +90,10 @@ class EventTimeServiceTest {
 	@Test
 	void 공연_회차_단건_조회_테스트() {
 		// Given
+		EventHall eventHall = EventHallFactory.createEventHall();
+		eventHallRepository.save(eventHall);
+		Event event = eventRepository.save(EventFactory.createEvent(eventHall));
+
 		EventTime eventTime = eventTimeRepository.save(
 			new EventTime(1, event.getStartedAt(), event.getEndedAt(), event));
 
@@ -101,7 +108,10 @@ class EventTimeServiceTest {
 	@Test
 	void 공연_아이디로_회차_전체_조회_테스트() {
 		// Given
-		Long eventId = event.getId();
+		EventHall eventHall = EventHallFactory.createEventHall();
+		eventHallRepository.save(eventHall);
+		Event event = eventRepository.save(EventFactory.createEvent(eventHall));
+
 		IntStream.range(0, REQUEST_NUMBER)
 			.forEach(i -> eventTimeRepository.save(new EventTime(
 				i + 1,
@@ -110,7 +120,7 @@ class EventTimeServiceTest {
 				event)));
 
 		// When
-		List<EventTimeResponse> responses = eventTimeService.getEventTimesByEventId(eventId);
+		List<EventTimeResponse> responses = eventTimeService.getEventTimesByEventId(event.getId());
 
 		// Then
 		assertThat(responses).hasSize(REQUEST_NUMBER);
@@ -119,8 +129,16 @@ class EventTimeServiceTest {
 	@Test
 	void 공연_회차_수정_테스트() {
 		// Given
-		EventTime eventTime = eventTimeRepository.save(
-			new EventTime(1, event.getStartedAt(), event.getEndedAt(), event));
+		EventHall eventHall = EventHallFactory.createEventHall();
+		eventHallRepository.save(eventHall);
+		Event event = eventRepository.save(EventFactory.createEvent(eventHall));
+
+		EventTime eventTime = eventTimeRepository.save(new EventTime(
+			1,
+			event.getStartedAt(),
+			event.getEndedAt(),
+			event));
+
 		EventTimeUpdateRequest request = new EventTimeUpdateRequest(
 			LocalDateTime.of(2023, 12, 31, 15, 0),
 			LocalDateTime.of(2024, 1, 25, 18, 0));
@@ -136,8 +154,17 @@ class EventTimeServiceTest {
 	@Test
 	void 공연_회차_삭제_테스트() {
 		// Given
+		EventHall eventHall = EventHallFactory.createEventHall();
+		eventHallRepository.save(eventHall);
+		Event event = eventRepository.save(EventFactory.createEvent(eventHall));
+
 		EventTime eventTime = eventTimeRepository.save(
-			new EventTime(1, event.getStartedAt(), event.getEndedAt(), event));
+			new EventTime(
+				1,
+				event.getStartedAt(),
+				event.getEndedAt(),
+				event)
+		);
 
 		// When
 		eventTimeService.deleteEventTimeById(eventTime.getId());
