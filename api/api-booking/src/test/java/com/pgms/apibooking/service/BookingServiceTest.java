@@ -94,8 +94,14 @@ class BookingServiceTest {
 	@BeforeEach
 	void setup() {
 		Role role = roleRepository.save(new Role("ROLE_USER"));
-		member = memberRepository.save(
-			new Member("test@gmail.com", "test1234!", "홍길동", Provider.KAKAO, role));
+		member = memberRepository.save(Member.builder()
+			.email("test@gmail.com")
+			.password("test1234!")
+			.name("홍길동")
+			.provider(Provider.KAKAO)
+			.role(role)
+			.phoneNumber("010-123-456")
+			.build());
 	}
 
 	@Test
