@@ -17,7 +17,7 @@ import com.pgms.coredomain.domain.member.Role;
 import com.pgms.coredomain.domain.member.enums.Provider;
 import com.pgms.coredomain.domain.member.repository.MemberRepository;
 import com.pgms.coredomain.domain.member.repository.RoleRepository;
-import com.pgms.coresecurity.security.jwt.JwtUtils;
+import com.pgms.coresecurity.security.jwt.JwtTokenProvider;
 import com.pgms.coresecurity.security.util.HttpResponseUtil;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -33,7 +33,7 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
 
 	private final MemberRepository memberRepository;
 	private final RoleRepository roleRepository;
-	private final JwtUtils jwtUtils;
+	private final JwtTokenProvider jwtTokenProvider;
 
 	@Override
 	@Transactional
@@ -57,7 +57,7 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
 
 		// 토큰 생성 후 반환
 		Map<String, Object> body = new HashMap<>();
-		body.put("accessToken", jwtUtils.generateJwtToken(authenticated));
+		body.put("accessToken", jwtTokenProvider.generateJwtToken((UserDetailsImpl)authenticated.getPrincipal()));
 		HttpResponseUtil.setSuccessResponse(response, HttpStatus.OK, body);
 	}
 
