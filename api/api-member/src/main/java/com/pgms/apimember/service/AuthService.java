@@ -65,11 +65,13 @@ public class AuthService {
 		// 회원 정보 로드
 		UserDetailsImpl userDetails = loadUserDetails(refreshToken.getAccountType(), refreshToken.getEmail());
 
-		// 새로운 accessToken 발급
+		// 새로운 accessToken, refreshToken 발급
 		String newAccessToken = jwtTokenProvider.generateAccessToken(userDetails);
+		String newRefreshToken = jwtTokenProvider.generateRefreshToken();
 
-		// redis에 토큰 정보 저장
-		refreshTokenRepository.save(new RefreshToken(refreshToken.getRefreshToken(), newAccessToken,
+		// 기존 refreshToken 삭제, redis에 토큰 정보 저장
+		refreshTokenRepository.delete(refreshToken);
+		refreshTokenRepository.save(new RefreshToken(newRefreshToken, newAccessToken,
 			refreshToken.getAccountType(), refreshToken.getEmail()));
 		return new AuthResponse(newAccessToken, refreshToken.getRefreshToken());
 	}
