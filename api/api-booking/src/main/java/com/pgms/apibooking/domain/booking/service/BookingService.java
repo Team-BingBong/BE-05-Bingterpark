@@ -5,34 +5,35 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.pgms.apibooking.common.exception.BookingErrorCode;
+import com.pgms.apibooking.common.exception.BookingException;
+import com.pgms.apibooking.common.jwt.BookingAuthToken;
 import com.pgms.apibooking.config.TossPaymentConfig;
 import com.pgms.apibooking.domain.booking.dto.request.BookingCancelRequest;
 import com.pgms.apibooking.domain.booking.dto.request.BookingCreateRequest;
 import com.pgms.apibooking.domain.booking.dto.request.DeliveryAddress;
 import com.pgms.apibooking.domain.booking.dto.response.BookingCreateResponse;
+import com.pgms.apibooking.domain.bookingqueue.repository.BookingQueueRepository;
 import com.pgms.apibooking.domain.payment.dto.request.PaymentCancelRequest;
 import com.pgms.apibooking.domain.payment.dto.request.RefundAccountRequest;
-import com.pgms.apibooking.common.exception.BookingErrorCode;
-import com.pgms.apibooking.common.exception.BookingException;
 import com.pgms.apibooking.domain.payment.service.PaymentService;
-import com.pgms.apibooking.common.jwt.BookingAuthToken;
-import com.pgms.apibooking.domain.bookingqueue.repository.BookingQueueRepository;
 import com.pgms.coredomain.domain.booking.Booking;
 import com.pgms.coredomain.domain.booking.Payment;
 import com.pgms.coredomain.domain.booking.PaymentMethod;
 import com.pgms.coredomain.domain.booking.PaymentStatus;
 import com.pgms.coredomain.domain.booking.ReceiptType;
+import com.pgms.coredomain.domain.booking.Ticket;
 import com.pgms.coredomain.domain.booking.repository.BookingRepository;
 import com.pgms.coredomain.domain.booking.repository.TicketRepository;
 import com.pgms.coredomain.domain.event.EventSeat;
 import com.pgms.coredomain.domain.event.EventSeatStatus;
 import com.pgms.coredomain.domain.event.EventTime;
-import com.pgms.coredomain.domain.booking.Ticket;
 import com.pgms.coredomain.domain.event.repository.EventSeatRepository;
 import com.pgms.coredomain.domain.event.repository.EventTimeRepository;
 import com.pgms.coredomain.domain.member.Member;
@@ -81,8 +82,7 @@ public class BookingService { //TODO: 테스트 코드 작성
 
 		seats.forEach(seat -> seat.updateStatus(EventSeatStatus.BOOKED));
 
-		//TODO: 비동기 함수로 분리
-		bookingQueueRepository.remove(booking.getTime().getEvent().getId(), getCurrentSessionId());
+		removeSessionIdInBookingQueue(booking.getTime().getEvent().getId());
 
 		return BookingCreateResponse.of(booking, tossPaymentConfig.getSuccessUrl(), tossPaymentConfig.getFailUrl());
 	}
@@ -175,5 +175,10 @@ public class BookingService { //TODO: 테스트 코드 작성
 			return authentication.getPrincipal().toString();
 		}
 		return null;
+	}
+
+	@Async
+	protected void removeSessionIdInBookingQueue(Long eventId) {
+		bookingQueueRepository.remove(eventId, getCurrentSessionId());
 	}
 }
