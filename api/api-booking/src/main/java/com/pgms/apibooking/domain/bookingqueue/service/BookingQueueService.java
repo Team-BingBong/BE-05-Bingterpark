@@ -4,16 +4,16 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
+import com.pgms.apibooking.common.exception.BookingErrorCode;
+import com.pgms.apibooking.common.exception.BookingException;
+import com.pgms.apibooking.common.jwt.BookingJwtPayload;
+import com.pgms.apibooking.common.jwt.BookingJwtProvider;
 import com.pgms.apibooking.domain.bookingqueue.dto.request.BookingQueueEnterRequest;
 import com.pgms.apibooking.domain.bookingqueue.dto.request.BookingQueueExitRequest;
 import com.pgms.apibooking.domain.bookingqueue.dto.request.TokenIssueRequest;
 import com.pgms.apibooking.domain.bookingqueue.dto.response.OrderInQueueGetResponse;
 import com.pgms.apibooking.domain.bookingqueue.dto.response.SessionIdIssueResponse;
 import com.pgms.apibooking.domain.bookingqueue.dto.response.TokenIssueResponse;
-import com.pgms.apibooking.common.exception.BookingErrorCode;
-import com.pgms.apibooking.common.exception.BookingException;
-import com.pgms.apibooking.common.jwt.BookingJwtPayload;
-import com.pgms.apibooking.common.jwt.BookingJwtProvider;
 import com.pgms.apibooking.domain.bookingqueue.repository.BookingQueueRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -48,8 +48,6 @@ public class BookingQueueService {
 
 		BookingJwtPayload payload = new BookingJwtPayload(sessionId);
 		String token = bookingJwtProvider.generateToken(payload);
-
-		bookingQueueRepository.remove(request.eventId(), sessionId);
 
 		return TokenIssueResponse.from(token);
 	}
