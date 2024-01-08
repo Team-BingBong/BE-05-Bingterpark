@@ -81,6 +81,7 @@ public class BookingService { //TODO: 테스트 코드 작성
 
 		seats.forEach(seat -> seat.updateStatus(EventSeatStatus.BOOKED));
 
+		//TODO: 비동기 함수로 분리
 		bookingQueueRepository.remove(booking.getTime().getEvent().getId(), getCurrentSessionId());
 
 		return BookingCreateResponse.of(booking, tossPaymentConfig.getSuccessUrl(), tossPaymentConfig.getFailUrl());
