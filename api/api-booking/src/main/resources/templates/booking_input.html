@@ -2,148 +2,155 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>주문 정보 입력</title>
-  <!-- 필요한 스타일 및 스크립트 추가 -->
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-  <script src="https://js.tosspayments.com/v1/payment-widget"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>주문 정보 입력</title>
+    <!-- 필요한 스타일 및 스크립트 추가 -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://js.tosspayments.com/v1/payment-widget"></script>
 
-  <style>
-    body {
-      background-color: #f8f9fa; /* Optional: Set a background color for the entire page */
-    }
+    <style>
+        body {
+            background-color: #f8f9fa; /* Optional: Set a background color for the entire page */
+        }
 
-    /* Add custom styles for centering and reducing form size */
-    #orderForm {
-      margin: auto; /* Center the form */
-      max-width: 600px; /* Set the maximum width of the form */
-      background-color: #ffffff; /* Optional: Set a background color for the form */
-      padding: 20px; /* Optional: Add padding to the form */
-      border-radius: 10px; /* Optional: Add border radius for rounded corners */
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Optional: Add a subtle box shadow for depth */
-    }
+        /* Add custom styles for centering and reducing form size */
+        #orderForm {
+            margin: auto; /* Center the form */
+            max-width: 600px; /* Set the maximum width of the form */
+            background-color: #ffffff; /* Optional: Set a background color for the form */
+            padding: 20px; /* Optional: Add padding to the form */
+            border-radius: 10px; /* Optional: Add border radius for rounded corners */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Optional: Add a subtle box shadow for depth */
+        }
 
-    /* Optional: Add some spacing between form elements for better readability */
-    #orderForm .form-group {
-      margin-bottom: 15px;
-    }
+        /* Optional: Add some spacing between form elements for better readability */
+        #orderForm .form-group {
+            margin-bottom: 15px;
+        }
 
-    /* Optional: Style the order result container */
-    #orderResult {
-      margin-top: 20px;
-      padding: 10px;
-      background-color: #d4edda;
-      border: 1px solid #c3e6cb;
-      border-radius: 5px;
-    }
-  </style>
+        /* Optional: Style the order result container */
+        #orderResult {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            border-radius: 5px;
+        }
+    </style>
 </head>
 
 <body>
 <div class="container">
-  <h2>주문 정보 입력</h2>
-  <form id="orderForm">
-    <div class="form-row">
-      <div class="form-group col-md-6">
-        <label for="timeId">시간 ID:</label>
-        <input type="text" class="form-control" id="timeId" name="timeId" value=1 required>
-      </div>
-      <div class="form-group col-md-6">
-        <label for="seatIds">좌석 ID:</label>
-        <input type="text" class="form-control" id="seatIds" name="seatIds" placeholder="여러 좌석 ID를 쉼표로 구분하여 입력하세요" required>
-      </div>
-    </div>
-    <div class="form-group">
-      <label for="buyerName">구매자 이름:</label>
-      <input type="text" class="form-control" id="buyerName" name="buyerName" value="김토스" required>
-    </div>
-    <div class="form-group">
-      <label for="buyerPhoneNumber">구매자 전화번호:</label>
-      <input type="tel" class="form-control" id="buyerPhoneNumber" name="buyerPhoneNumber" value="010-123-456" required>
-    </div>
-    <div class="form-group">
-      <label for="recipientName">수취인 이름:</label>
-      <input type="text" class="form-control" id="recipientName" name="recipientName" value="빙봉" required>
-    </div>
-    <div class="form-group">
-      <label for="recipientPhoneNumber">수취인 전화번호:</label>
-      <input type="tel" class="form-control" id="recipientPhoneNumber" name="recipientPhoneNumber" value="010-456-789" required>
-    </div>
-    <div class="form-group">
-      <label for="receiptType">결제 수단:</label>
-      <select class="form-control" id="receiptType" name="receiptType" required>
-        <option value="배송">배송</option>
-        <option value="현장수령">현장수령</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label for="streetAddress">도로명 주소:</label>
-      <input type="text" class="form-control" id="streetAddress" name="streetAddress" value="456 Oak St" required>
-    </div>
-    <div class="form-group">
-      <label for="detailAddress">상세 주소:</label>
-      <input type="text" class="form-control" id="detailAddress" name="detailAddress" value="Apt 301">
-    </div>
-    <div class="form-group">
-      <label for="zipCode">우편번호:</label>
-      <input type="text" class="form-control" id="zipCode" name="zipCode" value="54321" required>
-    </div>
-    <button type="button" class="btn btn-primary" onclick="submitOrder()">주문하기</button>
-  </form>
-  <div id="orderResult"></div>
+    <h2>주문 정보 입력</h2>
+    <form id="orderForm">
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <label for="timeId">시간 ID:</label>
+                <input type="text" class="form-control" id="timeId" name="timeId" value=1 required>
+            </div>
+            <div class="form-group col-md-6">
+                <label for="seatIds">좌석 ID:</label>
+                <input type="text" class="form-control" id="seatIds" name="seatIds"
+                       placeholder="여러 좌석 ID를 쉼표로 구분하여 입력하세요" value="1,2" required>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="buyerName">구매자 이름:</label>
+            <input type="text" class="form-control" id="buyerName" name="buyerName" value="김토스" required>
+        </div>
+        <div class="form-group">
+            <label for="buyerPhoneNumber">구매자 전화번호:</label>
+            <input type="tel" class="form-control" id="buyerPhoneNumber" name="buyerPhoneNumber" value="010-123-456"
+                   required>
+        </div>
+        <div class="form-group">
+            <label for="recipientName">수취인 이름:</label>
+            <input type="text" class="form-control" id="recipientName" name="recipientName" value="빙봉" required>
+        </div>
+        <div class="form-group">
+            <label for="recipientPhoneNumber">수취인 전화번호:</label>
+            <input type="tel" class="form-control" id="recipientPhoneNumber" name="recipientPhoneNumber"
+                   value="010-456-789" required>
+        </div>
+        <div class="form-group">
+            <label for="receiptType">결제 수단:</label>
+            <select class="form-control" id="receiptType" name="receiptType" required>
+                <option value="배송">배송</option>
+                <option value="현장수령">현장수령</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="streetAddress">도로명 주소:</label>
+            <input type="text" class="form-control" id="streetAddress" name="streetAddress" value="456 Oak St" required>
+        </div>
+        <div class="form-group">
+            <label for="detailAddress">상세 주소:</label>
+            <input type="text" class="form-control" id="detailAddress" name="detailAddress" value="Apt 301">
+        </div>
+        <div class="form-group">
+            <label for="zipCode">우편번호:</label>
+            <input type="text" class="form-control" id="zipCode" name="zipCode" value="54321" required>
+        </div>
+        <button type="button" class="btn btn-primary" onclick="submitOrder()">주문하기</button>
+    </form>
+    <div id="orderResult"></div>
 
 </div>
 <!-- 주문 결과를 표시할 곳 -->
 
 <script>
 
-  function submitOrder() {
-    var seatIds = $("#seatIds").val().split(',');
-    var orderData = {
-      timeId: $("#timeId").val(),
-      seatIds: seatIds,
-      receiptType: $("#receiptType").val(),
-      buyerPhoneNumber: $("#buyerPhoneNumber").val(),
-      buyerName: $("#buyerName").val(),
-      deliveryAddress: {
-        recipientName: $("#recipientName").val(),
-        recipientPhoneNumber: $("#recipientPhoneNumber").val(),
-        streetAddress: $("#streetAddress").val(),
-        detailAddress: $("#detailAddress").val(),
-        zipCode: $("#zipCode").val()
-      }
-    };
+    function submitOrder() {
+        var seatIds = $("#seatIds").val().split(',');
+        var orderData = {
+            timeId: $("#timeId").val(),
+            seatIds: seatIds,
+            receiptType: $("#receiptType").val(),
+            buyerPhoneNumber: $("#buyerPhoneNumber").val(),
+            buyerName: $("#buyerName").val(),
+            deliveryAddress: {
+                recipientName: $("#recipientName").val(),
+                recipientPhoneNumber: $("#recipientPhoneNumber").val(),
+                streetAddress: $("#streetAddress").val(),
+                detailAddress: $("#detailAddress").val(),
+                zipCode: $("#zipCode").val()
+            }
+        };
 
-    $.ajax({
-      type: "POST",
-      url: "/api/v1/bookings", // 실제 서버 엔드포인트에 맞게 수정
-      contentType: "application/json",
-      data: JSON.stringify(orderData),
-      success: function (result) {
-        // 주문 결과를 표시
-        $("#orderResult").html("<p>주문이 성공적으로 완료되었습니다. 주문 번호: " + result.data.bookingId + "</p>");
+        $.ajax({
+            type: "POST",
+            url: "/api/v1/bookings", // 실제 서버 엔드포인트에 맞게 수정
+            contentType: "application/json",
+            headers: {
+                // "Authorization": "Bearer " + "eyJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwic3ViIjoiam9obi5kb2VAZXhhbXBsZS5jb20iLCJpYXQiOjE3MDQ2OTE0OTEsImV4cCI6MTgwNDY4MzI5MSwiYXV0aG9yaXR5IjoiUk9MRV9VU0VSIn0.wFNSz2uwRa35jP1KihNlTOewVLgMMeg3ADQ5Kztl3QQ",
+                "Booking-Authorization": "Bearer " + "eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJib29raW5nIiwiaWF0IjoxNzA0NzAwODQ3LCJleHAiOjE3MDQ3MDI2NDcsInNlc3Npb25JZCI6Ins_Pz8_P30ifQ.I7C_rzpgdh7Reu5u9yqQ9p4kMwMG9v1UO32AiYEBQqnoxhggeC3Mj6dHs5lZ95aKb9fqxlMPVwYUIwCcby3g7w"
+            },
+            data: JSON.stringify(orderData),
+            success: function (result) {
+                // 주문 결과를 표시
+                $("#orderResult").html("<p>주문이 성공적으로 완료되었습니다. 주문 번호: " + result.data.bookingId + "</p>");
 
-        // 주문 성공 후 결제 위젯 업데이트
-        updatePaymentWidget(result.data);
-      },
-      error: function (error) {
-        // 주문 실패 시 에러 메시지 표시
-        $("#orderResult").html("<p>주문이 실패하였습니다. 에러 메시지: " + error.responseText + "</p>");
-      }
-    });
-  }
+                // 주문 성공 후 결제 위젯 업데이트
+                updatePaymentWidget(result.data);
+            },
+            error: function (error) {
+                // 주문 실패 시 에러 메시지 표시
+                $("#orderResult").html("<p>주문이 실패하였습니다. 에러 메시지: " + error.responseText + "</p>");
+            }
+        });
+    }
 
-  // updatePaymentWidget 함수 수정 없음
-  function updatePaymentWidget(result) {
-    // 주문 정보로 requestPayment 업데이트
-    window.location.href = "/payments?orderId=" + result.bookingId +
+    // updatePaymentWidget 함수 수정 없음
+    function updatePaymentWidget(result) {
+        // 주문 정보로 requestPayment 업데이트
+        window.location.href = "/payments?orderId=" + result.bookingId +
             "&orderName=" + result.bookingName +
             "&amount=" + result.amount +
             "&buyerPhoneNumber=" + result.buyerPhoneNumber +
             "&buyerName=" + result.buyerName;
-  }
+    }
 
 </script>
 </body>
