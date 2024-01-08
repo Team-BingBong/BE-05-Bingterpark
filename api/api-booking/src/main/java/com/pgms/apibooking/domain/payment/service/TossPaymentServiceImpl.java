@@ -18,8 +18,8 @@ import com.pgms.apibooking.domain.payment.dto.request.PaymentCancelRequest;
 import com.pgms.apibooking.domain.payment.dto.request.PaymentConfirmRequest;
 import com.pgms.apibooking.domain.payment.dto.response.PaymentCancelResponse;
 import com.pgms.apibooking.domain.payment.dto.response.PaymentSuccessResponse;
-import com.pgms.apibooking.exception.BookingErrorCode;
-import com.pgms.apibooking.exception.BookingException;
+import com.pgms.apibooking.common.exception.BookingErrorCode;
+import com.pgms.apibooking.common.exception.BookingException;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
