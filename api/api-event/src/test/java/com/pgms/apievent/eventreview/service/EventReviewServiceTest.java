@@ -1,5 +1,16 @@
 package com.pgms.apievent.eventreview.service;
 
+import static org.assertj.core.api.Assertions.*;
+
+import java.util.List;
+import java.util.stream.IntStream;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ContextConfiguration;
+
 import com.pgms.apievent.EventTestConfig;
 import com.pgms.apievent.eventreview.dto.request.EventReviewCreateRequest;
 import com.pgms.apievent.eventreview.dto.request.EventReviewUpdateRequest;
@@ -13,24 +24,13 @@ import com.pgms.coredomain.domain.event.EventReview;
 import com.pgms.coredomain.domain.event.repository.EventHallRepository;
 import com.pgms.coredomain.domain.event.repository.EventRepository;
 import com.pgms.coredomain.domain.event.repository.EventReviewRepository;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ContextConfiguration;
-
-import java.util.List;
-import java.util.stream.IntStream;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @ContextConfiguration(classes = EventTestConfig.class)
 class EventReviewServiceTest {
 
 	private static final int REQUEST_NUMBER = 8;
-	private static final double AVERAGE_REVIEW_SCORE = 3.6;
+	private static final double AVERAGE_REVIEW_SCORE = 3.5;
 
 	@Autowired
 	private EventReviewService eventReviewService;
@@ -44,17 +44,6 @@ class EventReviewServiceTest {
 	@Autowired
 	private EventHallRepository eventHallRepository;
 
-	private Event event;
-
-	private EventReview eventReview;
-
-	@BeforeEach
-	void setUp() {
-		EventHall eventHall = eventHallRepository.save(EventHallFactory.createEventHall());
-		event = eventRepository.save(EventFactory.createEvent(eventHall));
-		eventReview = eventReviewRepository.save(EventReviewFactory.createEventReview(event));
-	}
-
 	@AfterEach
 	void tearDown() {
 		eventReviewRepository.deleteAll();
@@ -63,6 +52,8 @@ class EventReviewServiceTest {
 	@Test
 	void 공연_리뷰_생성_테스트() {
 		// Given
+		EventHall eventHall = eventHallRepository.save(EventHallFactory.createEventHall());
+		Event event = eventRepository.save(EventFactory.createEvent(eventHall));
 		EventReviewCreateRequest request = new EventReviewCreateRequest(5, "공연이 너무 재밌어요 !");
 
 		// When
@@ -77,6 +68,8 @@ class EventReviewServiceTest {
 	@Test
 	void 공연_리뷰_평점_평균_계산_테스트() {
 		// Given
+		EventHall eventHall = eventHallRepository.save(EventHallFactory.createEventHall());
+		Event event = eventRepository.save(EventFactory.createEvent(eventHall));
 		List<EventReviewCreateRequest> requestList = IntStream.range(0, REQUEST_NUMBER)
 			.mapToObj(i -> new EventReviewCreateRequest(i, "리뷰 내용 " + i))
 			.toList();
@@ -93,6 +86,10 @@ class EventReviewServiceTest {
 	@Test
 	void 공연_리뷰_수정_테스트() {
 		// Given
+		EventHall eventHall = eventHallRepository.save(EventHallFactory.createEventHall());
+		Event event = eventRepository.save(EventFactory.createEvent(eventHall));
+		EventReview eventReview = eventReviewRepository.save(EventReviewFactory.createEventReview(event));
+
 		EventReviewUpdateRequest request = new EventReviewUpdateRequest("공연 후기 수정입니다~!");
 
 		// When
@@ -105,6 +102,9 @@ class EventReviewServiceTest {
 	@Test
 	void 공연_리뷰_아이디로_단건_조회_테스트() {
 		// Given
+		EventHall eventHall = eventHallRepository.save(EventHallFactory.createEventHall());
+		Event event = eventRepository.save(EventFactory.createEvent(eventHall));
+		EventReview eventReview = eventReviewRepository.save(EventReviewFactory.createEventReview(event));
 		Long eventReviewId = eventReview.getId();
 
 		// When
@@ -119,12 +119,13 @@ class EventReviewServiceTest {
 	@Test
 	void 특정_공연_리뷰_전체_조회_테스트() {
 		// Given
-		Long eventId = event.getId();
-		IntStream.range(0, REQUEST_NUMBER - 1)
+		EventHall eventHall = eventHallRepository.save(EventHallFactory.createEventHall());
+		Event event = eventRepository.save(EventFactory.createEvent(eventHall));
+		IntStream.range(0, REQUEST_NUMBER)
 			.forEach(i -> eventReviewRepository.save(new EventReview(i, "리뷰 내용 " + i, event)));
 
 		// When
-		List<EventReviewResponse> responses = eventReviewService.getEventReviewsForEventByEventId(eventId);
+		List<EventReviewResponse> responses = eventReviewService.getEventReviewsForEventByEventId(event.getId());
 
 		// Then
 		assertThat(responses).hasSize(REQUEST_NUMBER);
@@ -133,10 +134,12 @@ class EventReviewServiceTest {
 	@Test
 	void 공연_리뷰_아이디로_삭제_테스트() {
 		// Given
-		Long eventReviewId = eventReview.getId();
+		EventHall eventHall = eventHallRepository.save(EventHallFactory.createEventHall());
+		Event event = eventRepository.save(EventFactory.createEvent(eventHall));
+		EventReview eventReview = eventReviewRepository.save(EventReviewFactory.createEventReview(event));
 
 		// When
-		eventReviewService.deleteEventReviewById(eventReviewId);
+		eventReviewService.deleteEventReviewById(eventReview.getId());
 
 		// Then
 		assertThat(eventReviewRepository.findAll()).hasSize(0);

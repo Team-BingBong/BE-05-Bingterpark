@@ -1,0 +1,27 @@
+### 공연 회차 생성
+POST http://localhost:8080/api/v1/event-times/2
+Content-Type: application/json
+
+{
+  "round": 1,
+  "startTime": "2024-01-05T12:00:00",
+  "endTime": "2024-01-05T12:00:00"
+}
+
+### 회차 아이디로 회차 정보 조회
+GET http://localhost:8080/api/v1/event-times/1
+
+### 공연 아이디로 특정 공연에 대한 전체 회차 정보 조회
+GET http://localhost:8080/api/v1/event-times/events/2
+
+### 회차 아이디로 회차 정보 수정
+PATCH http://localhost:8080/api/v1/event-times/2
+Content-Type: application/json
+
+{
+  "startTime": "2024-02-06T12:00:00",
+  "endTime": "2024-03-05T12:00:00"
+}
+
+### 회차 아이디로 회차 삭제
+DELETE http://localhost:8080/api/v1/event-times/1

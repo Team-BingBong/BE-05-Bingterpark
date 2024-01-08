@@ -1,5 +1,16 @@
 package com.pgms.apievent.event.service;
 
+import static org.assertj.core.api.Assertions.*;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ContextConfiguration;
+
 import com.pgms.apievent.EventTestConfig;
 import com.pgms.apievent.event.dto.request.EventUpdateRequest;
 import com.pgms.apievent.event.dto.response.EventResponse;
@@ -10,17 +21,6 @@ import com.pgms.coredomain.domain.event.EventHall;
 import com.pgms.coredomain.domain.event.GenreType;
 import com.pgms.coredomain.domain.event.repository.EventHallRepository;
 import com.pgms.coredomain.domain.event.repository.EventRepository;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ContextConfiguration;
-
-import java.time.LocalDateTime;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @ContextConfiguration(classes = EventTestConfig.class)
@@ -35,30 +35,20 @@ class EventServiceTest {
 	@Autowired
 	private EventHallRepository eventHallRepository;
 
-	private EventHall eventHall;
-
-	private Event event;
-
 	@BeforeEach
 	void setUp() {
-		eventRepository.deleteAll();
-		eventHall = EventHallFactory.createEventHall();
-		eventHallRepository.save(eventHall);
-		event = eventRepository.save(EventFactory.createEvent(eventHall));
-	}
-
-	@AfterEach
-	void tearDown() {
 		eventRepository.deleteAll();
 	}
 
 	@Test
 	void 공연_아이디로_조회_테스트() {
 		// Given
-		Long eventId = event.getId();
+		EventHall eventHall = EventHallFactory.createEventHall();
+		eventHallRepository.save(eventHall);
+		Event event = eventRepository.save(EventFactory.createEvent(eventHall));
 
 		// When
-		EventResponse response = eventService.getEventById(eventId);
+		EventResponse response = eventService.getEventById(event.getId());
 
 		// Then
 		assertThat(response.id()).isEqualTo(event.getId());
@@ -68,7 +58,10 @@ class EventServiceTest {
 	@Test
 	void 공연_수정_테스트() {
 		// Given
-		Long eventId = event.getId();
+		EventHall eventHall = EventHallFactory.createEventHall();
+		eventHallRepository.save(eventHall);
+		Event event = eventRepository.save(EventFactory.createEvent(eventHall));
+
 		EventUpdateRequest request = new EventUpdateRequest(
 			"공연 1 수정",
 			"공연 1 내용 수정입니다.",
@@ -82,7 +75,7 @@ class EventServiceTest {
 			eventHall.getId());
 
 		// When
-		EventResponse response = eventService.updateEvent(eventId, request);
+		EventResponse response = eventService.updateEvent(event.getId(), request);
 
 		// Then
 		assertThat(response.title()).isEqualTo(request.title());
@@ -92,10 +85,12 @@ class EventServiceTest {
 	@Test
 	void 공연_삭제_테스트() {
 		// Given
-		Long eventId = event.getId();
+		EventHall eventHall = EventHallFactory.createEventHall();
+		eventHallRepository.save(eventHall);
+		Event event = eventRepository.save(EventFactory.createEvent(eventHall));
 
 		// When
-		eventService.deleteEventById(eventId);
+		eventService.deleteEventById(event.getId());
 
 		// Then
 		List<Event> events = eventRepository.findAll();

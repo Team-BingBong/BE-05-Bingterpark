@@ -1,5 +1,18 @@
 package com.pgms.apievent.eventHall.service;
 
+import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.Matchers.*;
+
+import java.util.List;
+import java.util.stream.IntStream;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.pgms.apievent.EventTestConfig;
 import com.pgms.apievent.eventHall.dto.request.EventHallCreateRequest;
 import com.pgms.apievent.eventHall.dto.request.EventHallSeatCreateRequest;
@@ -8,18 +21,6 @@ import com.pgms.apievent.eventHall.dto.response.EventHallResponse;
 import com.pgms.coredomain.domain.event.EventHall;
 import com.pgms.coredomain.domain.event.EventHallSeat;
 import com.pgms.coredomain.domain.event.repository.EventHallRepository;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.stream.IntStream;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
 
 @SpringBootTest
 @Transactional
@@ -38,7 +39,7 @@ class EventHallServiceTest {
 	}
 
 	@Test
-	public void 공연장_생성_성공() {
+	void 공연장_생성_성공() {
 		// given
 		List<EventHallSeatCreateRequest> eventHallSeatCreateRequests = IntStream.range(0, 10)
 			.mapToObj(i -> new EventHallSeatCreateRequest("T" + String.valueOf(i)))
@@ -56,7 +57,7 @@ class EventHallServiceTest {
 	}
 
 	@Test
-	public void 공연장_삭제_성공() {
+	void 공연장_삭제_성공() {
 		// given
 		List<EventHallSeat> eventHallSeats = IntStream.range(0, 10)
 			.mapToObj(i -> new EventHallSeat("T" + String.valueOf(i)))
@@ -78,7 +79,7 @@ class EventHallServiceTest {
 	}
 
 	@Test
-	public void 공연장_수정_성공() {
+	void 공연장_수정_성공() {
 		// given
 		List<EventHallSeat> eventHallSeats = IntStream.range(0, 10)
 			.mapToObj(i -> new EventHallSeat("T" + String.valueOf(i)))
@@ -109,7 +110,7 @@ class EventHallServiceTest {
 	}
 
 	@Test
-	public void 공연장_목록_조회_성공() {
+	void 공연장_목록_조회_성공() {
 		// given
 
 		List<EventHallSeat> eventHallSeats = IntStream.range(0, 10)
