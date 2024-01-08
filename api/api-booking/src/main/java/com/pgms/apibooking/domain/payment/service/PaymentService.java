@@ -12,9 +12,9 @@ import com.pgms.apibooking.domain.payment.dto.request.RefundAccountRequest;
 import com.pgms.apibooking.domain.payment.dto.response.PaymentCardResponse;
 import com.pgms.apibooking.domain.payment.dto.response.PaymentFailResponse;
 import com.pgms.apibooking.domain.payment.dto.response.PaymentVirtualResponse;
-import com.pgms.apibooking.exception.BookingErrorCode;
-import com.pgms.apibooking.exception.BookingException;
-import com.pgms.apibooking.util.DateTimeUtil;
+import com.pgms.apibooking.common.exception.BookingErrorCode;
+import com.pgms.apibooking.common.exception.BookingException;
+import com.pgms.apibooking.common.util.DateTimeUtil;
 import com.pgms.coredomain.domain.booking.Booking;
 import com.pgms.coredomain.domain.booking.BookingStatus;
 import com.pgms.coredomain.domain.booking.Payment;
@@ -75,7 +75,7 @@ public class PaymentService {
 		return response;
 	}
 
-	public PaymentFailResponse failPayment(String errorCode, String errorMessage, String bookingId) {
+	public PaymentFailResponse failPayment(String errorCode, String errorMessage, String bookingId) {//TODO : booking 상태값 변경
 		Payment payment = getPaymentByBookingId(bookingId);
 		payment.updateStatus(PaymentStatus.ABORTED);
 		payment.updateFailedMsg(errorMessage);

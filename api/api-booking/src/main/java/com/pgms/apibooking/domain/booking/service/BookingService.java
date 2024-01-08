@@ -5,6 +5,8 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,9 +17,11 @@ import com.pgms.apibooking.domain.booking.dto.request.DeliveryAddress;
 import com.pgms.apibooking.domain.booking.dto.response.BookingCreateResponse;
 import com.pgms.apibooking.domain.payment.dto.request.PaymentCancelRequest;
 import com.pgms.apibooking.domain.payment.dto.request.RefundAccountRequest;
-import com.pgms.apibooking.exception.BookingErrorCode;
-import com.pgms.apibooking.exception.BookingException;
+import com.pgms.apibooking.common.exception.BookingErrorCode;
+import com.pgms.apibooking.common.exception.BookingException;
 import com.pgms.apibooking.domain.payment.service.PaymentService;
+import com.pgms.apibooking.common.jwt.BookingAuthToken;
+import com.pgms.apibooking.domain.bookingqueue.repository.BookingQueueRepository;
 import com.pgms.coredomain.domain.booking.Booking;
 import com.pgms.coredomain.domain.booking.Payment;
 import com.pgms.coredomain.domain.booking.PaymentMethod;
@@ -46,6 +50,7 @@ public class BookingService { //TODO: 테스트 코드 작성
 	private final BookingRepository bookingRepository;
 	private final TicketRepository ticketRepository;
 	private final MemberRepository memberRepository;
+	private final BookingQueueRepository bookingQueueRepository;
 	private final TossPaymentConfig tossPaymentConfig;
 	private final PaymentService paymentService;
 
@@ -75,6 +80,9 @@ public class BookingService { //TODO: 테스트 코드 작성
 		bookingRepository.save(booking);
 
 		seats.forEach(seat -> seat.updateStatus(EventSeatStatus.BOOKED));
+
+		//TODO: 비동기 함수로 분리
+		bookingQueueRepository.remove(booking.getTime().getEvent().getId(), getCurrentSessionId());
 
 		return BookingCreateResponse.of(booking, tossPaymentConfig.getSuccessUrl(), tossPaymentConfig.getFailUrl());
 	}
@@ -106,7 +114,7 @@ public class BookingService { //TODO: 테스트 코드 작성
 		);
 
 		booking.cancel(
-			BookingCancelRequest.toEntity(request, cancelAmount, member.getEmail(), booking) 
+			BookingCancelRequest.toEntity(request, cancelAmount, member.getEmail(), booking)
 		);
 	}
 
@@ -159,5 +167,13 @@ public class BookingService { //TODO: 테스트 코드 작성
 		System.out.println("member id get " + memberId);
 		return memberRepository.findById(memberId)
 			.orElseThrow(() -> new NoSuchElementException("Member not found"));
+	}
+
+	private String getCurrentSessionId() {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		if (authentication instanceof BookingAuthToken) {
+			return authentication.getPrincipal().toString();
+		}
+		return null;
 	}
 }
