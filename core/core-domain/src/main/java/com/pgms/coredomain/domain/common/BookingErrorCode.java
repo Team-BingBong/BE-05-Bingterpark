@@ -35,6 +35,7 @@ public enum BookingErrorCode implements BaseErrorCode{
 	BOOKING_TOKEN_NOT_EXIST(HttpStatus.UNAUTHORIZED, "BOOKING_TOKEN_NOT_EXIST", "예매 토큰이 존재하지 않습니다."),
 	INVALID_BOOKING_TOKEN(HttpStatus.UNAUTHORIZED, "INVALID_BOOKING_TOKEN", "올바르지 않은 예매 토큰입니다."),
 	OUT_OF_ORDER(HttpStatus.BAD_REQUEST, "OUT_OF_ORDER", "예매 순서가 아닙니다."),
+	NOT_IN_QUEUE(HttpStatus.BAD_REQUEST, "NOT_IN_QUEUE", "대기열에 존재하지 않습니다."),
 
 	INVALID_INPUT_VALUE(HttpStatus.BAD_REQUEST, "INVALID_INPUT_VALUE", "입력값을 확인해 주세요."),
 	INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR", "서버 에러");
