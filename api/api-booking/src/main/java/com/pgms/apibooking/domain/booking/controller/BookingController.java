@@ -24,16 +24,16 @@ import lombok.RequiredArgsConstructor;
 @Controller
 @RequestMapping("/api/v1/bookings")
 @RequiredArgsConstructor
-public class BookingController {
+public class BookingController { //TODO: 인증된 멤버 연동
 
 	private final BookingService bookingService;
 
 	@PostMapping
 	public ResponseEntity<ApiResponse<BookingCreateResponse>> createBooking(
-		@CurrentAccount Long memberId,
+		//@CurrentAccount Long memberId,
 		@RequestBody @Valid BookingCreateRequest request,
 		HttpServletRequest httpRequest) {
-		BookingCreateResponse createdBooking = bookingService.createBooking(request, memberId);
+		BookingCreateResponse createdBooking = bookingService.createBooking(request, 1L);
 		ApiResponse<BookingCreateResponse> response = ApiResponse.ok(createdBooking);
 		URI location = UriComponentsBuilder
 			.fromHttpUrl(httpRequest.getRequestURL().toString())
@@ -45,10 +45,10 @@ public class BookingController {
 
 	@PostMapping("/{id}/cancel")
 	public ResponseEntity<Void> cancelBooking(
-		@CurrentAccount Long memberId,
+		//@CurrentAccount Long memberId,
 		@PathVariable String id,
 		@RequestBody @Valid BookingCancelRequest request) {
-		bookingService.cancelBooking(id, request, memberId);
+		bookingService.cancelBooking(id, request, 1L);
 		return ResponseEntity.ok().build();
 	}
 
