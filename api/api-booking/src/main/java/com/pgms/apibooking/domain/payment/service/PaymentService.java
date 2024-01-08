@@ -12,7 +12,7 @@ import com.pgms.apibooking.domain.payment.dto.request.RefundAccountRequest;
 import com.pgms.apibooking.domain.payment.dto.response.PaymentCardResponse;
 import com.pgms.apibooking.domain.payment.dto.response.PaymentFailResponse;
 import com.pgms.apibooking.domain.payment.dto.response.PaymentVirtualResponse;
-import com.pgms.apibooking.common.exception.BookingErrorCode;
+import com.pgms.coredomain.domain.common.BookingErrorCode;
 import com.pgms.apibooking.common.exception.BookingException;
 import com.pgms.apibooking.common.util.DateTimeUtil;
 import com.pgms.coredomain.domain.booking.Booking;
@@ -75,7 +75,8 @@ public class PaymentService {
 		return response;
 	}
 
-	public PaymentFailResponse failPayment(String errorCode, String errorMessage, String bookingId) {//TODO : booking 상태값 변경
+	public PaymentFailResponse failPayment(String errorCode, String errorMessage,
+		String bookingId) {//TODO : booking 상태값 변경
 		Payment payment = getPaymentByBookingId(bookingId);
 		payment.updateStatus(PaymentStatus.ABORTED);
 		payment.updateFailedMsg(errorMessage);
@@ -115,9 +116,8 @@ public class PaymentService {
 	}
 
 	private Booking getBookingById(String bookingId) {
-		Booking booking = bookingRepository.findWithPaymentById(bookingId)
+		return bookingRepository.findWithPaymentById(bookingId)
 			.orElseThrow(() -> new BookingException(BookingErrorCode.BOOKING_NOT_FOUND));
-		return booking;
 	}
 
 	private Payment getPaymentByPaymentKey(String paymentKey) {

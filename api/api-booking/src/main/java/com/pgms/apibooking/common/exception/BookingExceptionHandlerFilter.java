@@ -7,6 +7,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.pgms.coredomain.domain.common.BaseErrorCode;
+import com.pgms.coredomain.domain.common.BookingErrorCode;
 import com.pgms.coredomain.response.ErrorResponse;
 
 import jakarta.servlet.FilterChain;
@@ -31,7 +33,7 @@ public class BookingExceptionHandlerFilter extends OncePerRequestFilter {
 		try {
 			filterChain.doFilter(request, response);
 		} catch (BookingException e) {
-			BookingErrorCode bookingErrorCode = e.getErrorCode();
+			BaseErrorCode bookingErrorCode = e.getErrorCode();
 			sendFailResponse(response, bookingErrorCode);
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
@@ -40,11 +42,11 @@ public class BookingExceptionHandlerFilter extends OncePerRequestFilter {
 		}
 	}
 
-	private void sendFailResponse(HttpServletResponse response, BookingErrorCode bookingErrorCode) throws IOException {
-		response.setStatus(bookingErrorCode.getStatus().value());
+	private void sendFailResponse(HttpServletResponse response, BaseErrorCode baseErrorCode) throws IOException {
+		response.setStatus(baseErrorCode.getStatus().value());
 		response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 
-		ErrorResponse errorResponse = new ErrorResponse(bookingErrorCode.getCode(), bookingErrorCode.getMessage());
+		ErrorResponse errorResponse = baseErrorCode.getErrorResponse();
 		response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
 	}
 }

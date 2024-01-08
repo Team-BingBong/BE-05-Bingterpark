@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import com.pgms.coredomain.domain.common.BaseErrorCode;
+import com.pgms.coredomain.domain.common.BookingErrorCode;
 import com.pgms.coredomain.response.ErrorResponse;
 
 import lombok.extern.slf4j.Slf4j;
@@ -27,8 +29,7 @@ public class BookingExceptionHandler extends ResponseEntityExceptionHandler {
 	protected ResponseEntity<Object> handleExceptionInternal(Exception ex, Object body, HttpHeaders headers,
 		HttpStatusCode statusCode, WebRequest request) {
 		if (ex instanceof BindException) {
-			BookingErrorCode errorCode = BookingErrorCode.INVALID_INPUT_VALUE;
-			ErrorResponse response = new ErrorResponse(errorCode.getCode(), errorCode.getMessage());
+			ErrorResponse response = BookingErrorCode.INVALID_INPUT_VALUE.getErrorResponse();
 
 			((BindException)ex).getBindingResult().getAllErrors().forEach(e -> {
 				String fieldName = ((FieldError)e).getField();
@@ -41,16 +42,14 @@ public class BookingExceptionHandler extends ResponseEntityExceptionHandler {
 
 		log.error(ex.getMessage(), ex);
 
-		BookingErrorCode errorCode = BookingErrorCode.INTERNAL_SERVER_ERROR;
-		ErrorResponse response = new ErrorResponse(errorCode.getCode(), errorCode.getMessage());
+		ErrorResponse response = BookingErrorCode.INTERNAL_SERVER_ERROR.getErrorResponse();
 		return ResponseEntity.internalServerError().body(response);
 	}
 
 	@Override
 	protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex,
 		HttpHeaders headers, HttpStatusCode status, WebRequest request) {
-		BookingErrorCode errorCode = BookingErrorCode.INVALID_INPUT_VALUE;
-		ErrorResponse response = new ErrorResponse(errorCode.getCode(), errorCode.getMessage());
+		ErrorResponse response = BookingErrorCode.INVALID_INPUT_VALUE.getErrorResponse();
 		return ResponseEntity.badRequest().body(response);
 	}
 
@@ -60,13 +59,14 @@ public class BookingExceptionHandler extends ResponseEntityExceptionHandler {
 		BindingResult bindingResult = ex.getBindingResult();
 		String errorMessage = Objects.requireNonNull(bindingResult.getFieldError()).getDefaultMessage();
 		log.warn("Validation Failed: {}", errorMessage);
-		ErrorResponse response = new ErrorResponse(BookingErrorCode.INVALID_INPUT_VALUE.getCode(), errorMessage);
+		ErrorResponse response = BookingErrorCode.INVALID_INPUT_VALUE.getErrorResponse();
 		return ResponseEntity.status(status).body(response);
 	}
 
 	@ExceptionHandler(BookingException.class)
 	protected ResponseEntity<ErrorResponse> handleBookingException(BookingException ex) {
-		ErrorResponse response = new ErrorResponse(ex.getErrorCode().getCode(), ex.getErrorCode().getMessage());
+		BaseErrorCode errorCode = ex.getErrorCode();
+		ErrorResponse response = errorCode.getErrorResponse();
 		log.warn("Booking Exception Occurred : {}", response.getErrorMessage());
 		return ResponseEntity.status(ex.getErrorCode().getStatus()).body(response);
 	}
