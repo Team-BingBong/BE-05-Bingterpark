@@ -10,17 +10,19 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.pgms.apibooking.common.exception.BookingErrorCode;
+import com.pgms.apibooking.common.exception.BookingException;
 import com.pgms.apibooking.config.TestConfig;
 import com.pgms.apibooking.domain.booking.dto.request.BookingCancelRequest;
 import com.pgms.apibooking.domain.booking.dto.request.BookingCreateRequest;
 import com.pgms.apibooking.domain.booking.dto.response.BookingCreateResponse;
 import com.pgms.apibooking.domain.booking.service.BookingService;
+import com.pgms.apibooking.domain.bookingqueue.repository.BookingQueueRepository;
 import com.pgms.apibooking.domain.payment.dto.request.RefundAccountRequest;
-import com.pgms.apibooking.common.exception.BookingErrorCode;
-import com.pgms.apibooking.common.exception.BookingException;
 import com.pgms.apibooking.factory.BookingFactory;
 import com.pgms.apibooking.factory.EventFactory;
 import com.pgms.apibooking.factory.EventHallFactory;
@@ -88,6 +90,9 @@ class BookingServiceTest {
 
 	@Autowired
 	private RoleRepository roleRepository;
+
+	@MockBean
+	private BookingQueueRepository bookingQueueRepository;
 
 	private Member member;
 
