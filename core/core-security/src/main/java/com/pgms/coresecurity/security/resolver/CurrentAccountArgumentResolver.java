@@ -10,6 +10,8 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
+import com.pgms.coredomain.domain.common.SecurityErrorCode;
+import com.pgms.coresecurity.security.exception.SecurityCustomException;
 import com.pgms.coresecurity.security.service.UserDetailsImpl;
 
 public class CurrentAccountArgumentResolver implements HandlerMethodArgumentResolver {
@@ -32,7 +34,7 @@ public class CurrentAccountArgumentResolver implements HandlerMethodArgumentReso
 
 	private void checkAuthenticated(Authentication authentication) {
 		if (Objects.isNull(authentication)) {
-			throw new RuntimeException("인증되지 않은 요청입니다.");
+			throw new SecurityCustomException(SecurityErrorCode.UNAUTHORIZED);
 		}
 	}
 }

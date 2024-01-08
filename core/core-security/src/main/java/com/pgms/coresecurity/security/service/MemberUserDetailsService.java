@@ -6,8 +6,10 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import com.pgms.coredomain.domain.common.MemberErrorCode;
 import com.pgms.coredomain.domain.member.Member;
 import com.pgms.coredomain.domain.member.repository.MemberRepository;
+import com.pgms.coresecurity.security.exception.SecurityCustomException;
 
 import lombok.RequiredArgsConstructor;
 
@@ -21,7 +23,7 @@ public class MemberUserDetailsService implements UserDetailsService {
 	@Override
 	public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 		Member member = memberRepository.findByEmail(email)
-			.orElseThrow(() -> new RuntimeException("해당 멤버가 존재하지 않습니다."));
+			.orElseThrow(() -> new SecurityCustomException(MemberErrorCode.MEMBER_NOT_FOUND));
 
 		return UserDetailsImpl.from(member);
 	}

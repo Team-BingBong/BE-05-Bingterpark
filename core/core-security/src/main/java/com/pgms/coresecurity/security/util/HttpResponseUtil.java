@@ -9,7 +9,6 @@ import org.springframework.http.MediaType;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pgms.coredomain.response.ApiResponse;
-import com.pgms.coredomain.response.ErrorResponse;
 
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NoArgsConstructor;
@@ -28,13 +27,11 @@ public class HttpResponseUtil {
 		response.getWriter().write(responseBody);
 	}
 
-	public static void setErrorResponse(HttpServletResponse response, HttpStatus httpStatus)
+	public static void setErrorResponse(HttpServletResponse response, HttpStatus httpStatus, Object body)
 		throws IOException {
-		String responseBody = objectMapper.writeValueAsString(
-			new ErrorResponse(httpStatus.name(), httpStatus.getReasonPhrase()));
 		response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 		response.setStatus(httpStatus.value());
 		response.setCharacterEncoding("UTF-8");
-		response.getWriter().write(responseBody);
+		objectMapper.writeValue(response.getOutputStream(), body);
 	}
 }

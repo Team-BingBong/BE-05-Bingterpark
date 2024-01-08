@@ -16,23 +16,17 @@ VALUES (1, '2024-01-01T10:00:00', '2024-01-01T12:00:00', 1);
 
 -- EventSeatArea
 INSERT INTO event_seat_area (price, area_type, event_id)
-VALUES (100000, 'S', 1);
-INSERT INTO event_seat_area (price, area_type, event_id)
-VALUES (80000, 'R', 1);
+VALUES (100000, 'S', 1),
+       (80000, 'R', 1);
 
 -- EventSeat
 INSERT INTO event_seat (name, status, event_seat_area_id, event_time_id)
-VALUES ('A1', 'BEING_BOOKED', 1, 1);
-INSERT INTO event_seat (name, status, event_seat_area_id, event_time_id)
-VALUES ('A2', 'BEING_BOOKED', 1, 1);
-INSERT INTO event_seat (name, status, event_seat_area_id, event_time_id)
-VALUES ('A3', 'BEING_BOOKED', 1, 1);
-INSERT INTO event_seat (name, status, event_seat_area_id, event_time_id)
-VALUES ('E1', 'BEING_BOOKED', 2, 1);
-INSERT INTO event_seat (name, status, event_seat_area_id, event_time_id)
-VALUES ('E2', 'BEING_BOOKED', 2, 1);
-INSERT INTO event_seat (name, status, event_seat_area_id, event_time_id)
-VALUES ('E3', 'BEING_BOOKED', 2, 1);
+VALUES ('A1', 'BEING_BOOKED', 1, 1)
+     , ('A2', 'BEING_BOOKED', 1, 1)
+     , ('A3', 'BEING_BOOKED', 1, 1)
+     , ('E1', 'BEING_BOOKED', 2, 1)
+     , ('E2', 'BEING_BOOKED', 2, 1)
+     , ('E3', 'BEING_BOOKED', 2, 1);
 
 -- EventReview
 INSERT INTO event_review (score, content, event_id)
@@ -56,5 +50,75 @@ VALUES ('슈퍼관리자', 'superadmin@example.com', '$2a$10$tfdM.PjviEH0zMEXVYj
         'ACTIVE', 'ROLE_ADMIN', NOW(), NOW()),
        ('오래된 슈퍼관리자', 'oldSuperadmin@example.com', '$2a$10$tfdM.PjviEH0zMEXVYjH.ODJPSviQRrYpb17rdMjvJtbWbSnC8nTa',
         '01012345678', 'ACTIVE', 'ROLE_SUPERADMIN', '2020-01-01', NOW());
+
+
+-- Booking
+INSERT INTO booking (id,
+                     amount,
+                     booking_name,
+                     buyer_name,
+                     buyer_phone_number,
+                     status,
+                     receipt_type,
+                     member_id,
+                     time_id)
+VALUES ('bookingCreateTestId',
+        180000,
+        '빙봉의 주문',
+        '빙봉',
+        '010-1234-5678',
+        'WAITING_FOR_PAYMENT',
+        'PICK_UP',
+        1,
+        1),
+       ('bookingCancelTestId',
+        180000,
+        '주영의 주문',
+        '주영',
+        '010-1234-5678',
+        'PAYMENT_COMPLETED',
+        'PICK_UP',
+        1,
+        1);
+
+
+-- Ticket
+INSERT INTO ticket (booking_id, seat_id)
+VALUES ('bookingCreateTestId', 1),
+       ('bookingCreateTestId', 2),
+       ('bookingCancelTestId', 3);
+
+
+-- Payment
+INSERT INTO payment (amount,
+                     approved_at,
+                     card_number,
+                     installment_plan_months,
+                     is_interest_free,
+                     method,
+                     payment_key,
+                     requested_at,
+                     status,
+                     booking_id)
+VALUES (180000,
+        CURRENT_TIMESTAMP,
+        '5555-5555-5555-5555',
+        0,
+        false,
+        'CARD',
+        'paymentkey1',
+        CURRENT_TIMESTAMP,
+        'READY',
+        'bookingCreateTestId'),
+       (180000,
+        CURRENT_TIMESTAMP,
+        '5555-5555-5555-5555',
+        0,
+        false,
+        'CARD',
+        'paymentkey2',
+        CURRENT_TIMESTAMP,
+        'DONE',
+        'bookingCancelTestId')
 
 
