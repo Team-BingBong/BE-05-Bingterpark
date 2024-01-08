@@ -1,7 +1,9 @@
 package com.pgms.apimember.exception;
 
+import com.pgms.coredomain.domain.common.MemberErrorCode;
+
 public class SecurityException extends CustomException {
-	public SecurityException(CustomErrorCode errorCode) {
+	public SecurityException(MemberErrorCode errorCode) {
 		super(errorCode);
 	}
 }

@@ -1,6 +1,6 @@
 package com.pgms.apimember.service;
 
-import static com.pgms.apimember.exception.CustomErrorCode.*;
+import static com.pgms.coredomain.domain.common.MemberErrorCode.*;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -10,8 +10,8 @@ import com.pgms.apimember.dto.request.MemberInfoUpdateRequest;
 import com.pgms.apimember.dto.request.MemberPasswordUpdateRequest;
 import com.pgms.apimember.dto.request.MemberSignUpRequest;
 import com.pgms.apimember.dto.response.MemberDetailGetResponse;
-import com.pgms.apimember.exception.CustomErrorCode;
 import com.pgms.apimember.exception.MemberException;
+import com.pgms.coredomain.domain.common.MemberErrorCode;
 import com.pgms.coredomain.domain.member.Member;
 import com.pgms.coredomain.domain.member.repository.MemberRepository;
 
@@ -40,7 +40,7 @@ public class MemberService {
 	public MemberDetailGetResponse getMemberDetail(Long memberId) {
 		return MemberDetailGetResponse.from(
 			memberRepository.findById(memberId).
-				orElseThrow(() -> new MemberException(CustomErrorCode.MEMBER_NOT_FOUND)));
+				orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND)));
 	}
 
 	@Transactional(readOnly = true)

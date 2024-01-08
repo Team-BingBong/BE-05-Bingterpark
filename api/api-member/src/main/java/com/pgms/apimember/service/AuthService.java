@@ -10,10 +10,10 @@ import org.springframework.transaction.annotation.Transactional;
 import com.pgms.apimember.dto.request.LoginRequest;
 import com.pgms.apimember.dto.request.RefreshTokenRequest;
 import com.pgms.apimember.dto.response.AuthResponse;
-import com.pgms.apimember.exception.CustomErrorCode;
 import com.pgms.apimember.exception.SecurityException;
 import com.pgms.apimember.redis.RefreshToken;
 import com.pgms.apimember.redis.RefreshTokenRepository;
+import com.pgms.coredomain.domain.common.MemberErrorCode;
 import com.pgms.coresecurity.security.jwt.JwtTokenProvider;
 import com.pgms.coresecurity.security.service.AdminUserDetailsService;
 import com.pgms.coresecurity.security.service.MemberUserDetailsService;
@@ -57,7 +57,7 @@ public class AuthService {
 	public AuthResponse refresh(RefreshTokenRequest request) {
 		// refresh token이 만료됐는지 확인
 		RefreshToken refreshToken = refreshTokenRepository.findById(request.refreshToken())
-			.orElseThrow(() -> new SecurityException(CustomErrorCode.REFRESH_TOKEN_EXPIRED));
+			.orElseThrow(() -> new SecurityException(MemberErrorCode.REFRESH_TOKEN_EXPIRED));
 
 		// 회원 정보 로드
 		UserDetailsImpl userDetails = loadUserDetails(refreshToken.getAccountType(), refreshToken.getEmail());

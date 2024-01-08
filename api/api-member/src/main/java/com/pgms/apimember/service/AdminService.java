@@ -1,6 +1,6 @@
 package com.pgms.apimember.service;
 
-import static com.pgms.apimember.exception.CustomErrorCode.*;
+import static com.pgms.coredomain.domain.common.MemberErrorCode.*;
 
 import java.util.List;
 
