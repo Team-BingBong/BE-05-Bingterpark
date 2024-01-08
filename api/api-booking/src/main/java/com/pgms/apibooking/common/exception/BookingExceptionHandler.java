@@ -1,4 +1,4 @@
-package com.pgms.apibooking.exception;
+package com.pgms.apibooking.common.exception;
 
 import java.util.Objects;
 

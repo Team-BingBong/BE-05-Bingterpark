@@ -9,8 +9,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.pgms.apibooking.domain.seat.dto.request.SeatsGetRequest;
 import com.pgms.apibooking.domain.seat.dto.response.AreaResponse;
-import com.pgms.apibooking.exception.BookingErrorCode;
-import com.pgms.apibooking.exception.BookingException;
+import com.pgms.apibooking.common.exception.BookingErrorCode;
+import com.pgms.apibooking.common.exception.BookingException;
 import com.pgms.coredomain.domain.event.EventSeat;
 import com.pgms.coredomain.domain.event.EventSeatStatus;
 import com.pgms.coredomain.domain.event.repository.EventSeatRepository;

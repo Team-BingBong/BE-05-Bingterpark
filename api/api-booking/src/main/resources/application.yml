@@ -1,10 +1,15 @@
+server:
+  port: 8082
+  servlet:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+
 spring:
   profiles:
     include: infra, security
     active: dev
-
-server:
-  port: 8082
 
 payment:
   toss:
@@ -12,3 +17,8 @@ payment:
     test-secret-api-key: test_sk_tempSecretKey # 노출되면 안됨!! 임시값 넣어놓음
     success-url: https://localhost:8080/api/v1/success
     fail-url: https://localhost:8080/api/v1/fail
+
+jwt:
+  issuer: booking
+  secret-key: EENY5W0eegTf1naQB2eDeyCLl5kRS2b8xa5c4qLdS0hmVjtbvo8tOyhPMcAmtPu
+  expiry-seconds: 420
