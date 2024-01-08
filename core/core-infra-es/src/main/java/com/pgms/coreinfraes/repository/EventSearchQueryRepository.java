@@ -1,37 +1,35 @@
 package com.pgms.coreinfraes.repository;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import co.elastic.clients.elasticsearch._types.FieldValue;
+import co.elastic.clients.elasticsearch._types.aggregations.Aggregation;
+import co.elastic.clients.elasticsearch._types.aggregations.AggregationBuilders;
+import co.elastic.clients.elasticsearch._types.aggregations.StringTermsBucket;
+import co.elastic.clients.elasticsearch._types.query_dsl.*;
+import co.elastic.clients.json.JsonData;
+import com.pgms.coreinfraes.document.AccessLogDocument;
+import com.pgms.coreinfraes.document.EventDocument;
+import com.pgms.coreinfraes.dto.EventKeywordSearchDto;
+import com.pgms.coreinfraes.dto.TopTenSearchResponse;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.elasticsearch.client.elc.ElasticsearchAggregations;
 import org.springframework.data.elasticsearch.client.elc.NativeQuery;
 import org.springframework.data.elasticsearch.client.elc.NativeQueryBuilder;
-import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
-import org.springframework.data.elasticsearch.core.SearchHit;
-import org.springframework.data.elasticsearch.core.SearchHitSupport;
-import org.springframework.data.elasticsearch.core.SearchHits;
+import org.springframework.data.elasticsearch.core.*;
 import org.springframework.data.elasticsearch.core.document.Document;
 import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
-import org.springframework.data.elasticsearch.core.query.Criteria;
-import org.springframework.data.elasticsearch.core.query.CriteriaQuery;
 import org.springframework.data.elasticsearch.core.query.UpdateQuery;
 import org.springframework.stereotype.Repository;
 
-import com.pgms.coreinfraes.document.EventDocument;
-import com.pgms.coreinfraes.dto.EventKeywordSearchDto;
-import com.pgms.coreinfraes.dto.EventSearchDto;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
 
-import co.elastic.clients.elasticsearch._types.FieldValue;
-import co.elastic.clients.elasticsearch._types.query_dsl.FieldValueFactorModifier;
-import co.elastic.clients.elasticsearch._types.query_dsl.FieldValueFactorScoreFunction;
-import co.elastic.clients.elasticsearch._types.query_dsl.FunctionScore;
-import co.elastic.clients.elasticsearch._types.query_dsl.Query;
-import co.elastic.clients.elasticsearch._types.query_dsl.QueryBuilders;
-import co.elastic.clients.elasticsearch._types.query_dsl.TermsQueryField;
-import co.elastic.clients.json.JsonData;
-import lombok.RequiredArgsConstructor;
-
+@Slf4j
 @Repository
 @RequiredArgsConstructor
 public class EventSearchQueryRepository {
@@ -40,24 +38,78 @@ public class EventSearchQueryRepository {
 
 	private final ElasticsearchOperations elasticsearchOperations;
 
-	public Page<EventDocument> findByCondition(EventSearchDto eventSearchDto) {
-		Pageable pageable = eventSearchDto.pageable();
-		CriteriaQuery query = createConditionCriteriaQuery(eventSearchDto, pageable);
-
-		SearchHits<EventDocument> searchHits = elasticsearchOperations.search(query, EventDocument.class);
-
-		return SearchHitSupport.searchPageFor(searchHits, query.getPageable()).map(SearchHit::getContent);
-	}
-
 	public Page<EventDocument> findByKeyword(EventKeywordSearchDto eventKeywordSearchDto) {
 		Pageable pageable = eventKeywordSearchDto.pageable();
 		NativeQuery query = getKeywordSearchNativeQuery(eventKeywordSearchDto).setPageable(pageable);
 
 		SearchHits<EventDocument> searchHits = elasticsearchOperations.search(query, EventDocument.class);
+		log.info("event-keyword-search, {}", eventKeywordSearchDto.keyword());
+
 		return SearchHitSupport.searchPageFor(searchHits, query.getPageable()).map(SearchHit::getContent);
 	}
 
-	private static NativeQuery getKeywordSearchNativeQuery(EventKeywordSearchDto eventKeywordSearchDto) {
+	public List<TopTenSearchResponse> getRecentTop10Keywords(){
+		NativeQuery searchQuery = getRecentTop10KeywordsNativeQuery();
+
+		SearchHits<AccessLogDocument> searchHits = elasticsearchOperations.search(searchQuery, AccessLogDocument.class, IndexCoordinates.of("logstash*"));
+
+		ElasticsearchAggregations aggregations = (ElasticsearchAggregations) searchHits.getAggregations();
+		assert aggregations != null;
+		List<StringTermsBucket> topTenBuckets = aggregations.aggregationsAsMap().get("top_ten").aggregation().getAggregate().sterms().buckets().array();
+
+		List<TopTenSearchResponse> result = new ArrayList<>();
+
+		topTenBuckets.forEach(topTenBucket -> {
+			TopTenSearchResponse topTenSearchResponse = new TopTenSearchResponse(topTenBucket.key().stringValue(), topTenBucket.docCount());
+			result.add(topTenSearchResponse);
+		});
+
+		return result;
+	}
+
+	private NativeQuery getRecentTop10KeywordsNativeQuery() {
+		NativeQueryBuilder queryBuilder = new NativeQueryBuilder();
+
+		Query matchQuery = QueryBuilders.match()
+				.field("message")
+				.query("event-keyword-search")
+				.build()
+				._toQuery();
+
+		Query loggerQuery = QueryBuilders.term()
+				.field("logger_name.keyword")
+				.value("com.pgms.coreinfraes.repository.EventSearchQueryRepository")
+				.build()
+				._toQuery();
+
+		Query rangeQuery = QueryBuilders.range()
+				.field("@timestamp")
+				.gte(JsonData.of(LocalDateTime.now().truncatedTo(ChronoUnit.HOURS).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()))
+				.lte(JsonData.of(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()))
+				.build()
+				._toQuery();
+
+		Aggregation agg = AggregationBuilders.terms()
+				.field("keyword.keyword")
+				.size(10)
+				.build()
+				._toAggregation();
+
+		Query boolQuery = QueryBuilders.bool()
+						.must(matchQuery, loggerQuery, rangeQuery)
+						.build()
+						._toQuery();
+
+		RuntimeField keyword = new RuntimeField("search_keyword", "keyword", "emit (doc['message.keyword'].value);");
+
+		NativeQuery searchQuery = queryBuilder.withQuery(boolQuery)
+				.withAggregation("top_ten", agg)
+				.withRuntimeFields(List.of(keyword))
+				.build();
+		return searchQuery;
+	}
+
+	private NativeQuery getKeywordSearchNativeQuery(EventKeywordSearchDto eventKeywordSearchDto) {
 		NativeQueryBuilder queryBuilder = new NativeQueryBuilder();
 
 		Query multiQuery = QueryBuilders.multiMatch()
@@ -142,18 +194,5 @@ public class EventSearchQueryRepository {
 		} catch (Exception e) {
 			throw e;
 		}
-	}
-
-	private CriteriaQuery createConditionCriteriaQuery(EventSearchDto eventSearchDto, Pageable pageable) {
-		CriteriaQuery query = new CriteriaQuery(new Criteria()).setPageable(pageable);
-
-		if (eventSearchDto == null)
-			return query;
-		if (eventSearchDto.title() != null)
-			return query.addCriteria(Criteria.where("title").is(eventSearchDto.title()));
-
-		if (eventSearchDto.genreType() != null)
-			return query.addCriteria(Criteria.where("genreType").is(eventSearchDto.genreType()));
-		return query;
 	}
 }
