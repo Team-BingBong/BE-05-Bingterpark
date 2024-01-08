@@ -1,15 +1,15 @@
 package com.pgms.apimember.exception;
 
-import com.pgms.coredomain.domain.common.MemberErrorCode;
+import com.pgms.coredomain.domain.common.BaseErrorCode;
 
 import lombok.Getter;
 
 @Getter
 public class CustomException extends RuntimeException {
 
-	protected final MemberErrorCode errorCode;
+	protected final BaseErrorCode errorCode;
 
-	public CustomException(MemberErrorCode errorCode) {
+	public CustomException(BaseErrorCode errorCode) {
 		super(errorCode.getMessage());
 		this.errorCode = errorCode;
 	}
