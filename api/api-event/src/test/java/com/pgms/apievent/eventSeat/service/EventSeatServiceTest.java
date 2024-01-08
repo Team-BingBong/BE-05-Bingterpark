@@ -1,13 +1,12 @@
 package com.pgms.apievent.eventSeat.service;
 
-import com.pgms.apievent.EventTestConfig;
-import com.pgms.apievent.eventSeat.dto.request.EventSeatsCreateRequest;
-import com.pgms.apievent.eventSeat.dto.response.EventSeatResponse;
-import com.pgms.apievent.eventSeat.dto.response.LeftEventSeatResponse;
-import com.pgms.apievent.factory.event.EventFactory;
-import com.pgms.apievent.factory.eventhall.EventHallFactory;
-import com.pgms.coredomain.domain.event.*;
-import com.pgms.coredomain.domain.event.repository.*;
+import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.Matchers.*;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.IntStream;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,97 +14,114 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.IntStream;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import com.pgms.apievent.EventTestConfig;
+import com.pgms.apievent.eventSeat.dto.request.EventSeatsCreateRequest;
+import com.pgms.apievent.eventSeat.dto.response.EventSeatResponse;
+import com.pgms.apievent.eventSeat.dto.response.LeftEventSeatResponse;
+import com.pgms.apievent.factory.event.EventFactory;
+import com.pgms.apievent.factory.eventhall.EventHallFactory;
+import com.pgms.coredomain.domain.event.Event;
+import com.pgms.coredomain.domain.event.EventHall;
+import com.pgms.coredomain.domain.event.EventSeatArea;
+import com.pgms.coredomain.domain.event.EventSeatStatus;
+import com.pgms.coredomain.domain.event.EventTime;
+import com.pgms.coredomain.domain.event.SeatAreaType;
+import com.pgms.coredomain.domain.event.repository.EventHallRepository;
+import com.pgms.coredomain.domain.event.repository.EventRepository;
+import com.pgms.coredomain.domain.event.repository.EventSeatAreaRepository;
+import com.pgms.coredomain.domain.event.repository.EventSeatRepository;
+import com.pgms.coredomain.domain.event.repository.EventTimeRepository;
 
 @Transactional
 @SpringBootTest
 @ContextConfiguration(classes = EventTestConfig.class)
 class EventSeatServiceTest {
 
-    @Autowired
-    private EventSeatService eventSeatService;
-    @Autowired
-    private EventSeatRepository eventSeatRepository;
-    @Autowired
-    private EventRepository eventRepository;
-    @Autowired
-    private EventTimeRepository eventTimeRepository;
-    @Autowired
-    private EventHallRepository eventHallRepository;
-    @Autowired
-    private EventSeatAreaRepository eventSeatAreaRepository;
+	@Autowired
+	private EventSeatService eventSeatService;
 
-    private EventHall eventHall;
-    private Event event;
+	@Autowired
+	private EventSeatRepository eventSeatRepository;
 
-    @BeforeEach
-    void setUp() {
-        eventSeatRepository.deleteAll();
-        eventHall = EventHallFactory.createEventHall();
-        eventHallRepository.save(eventHall);
-        event = eventRepository.save(EventFactory.createEvent(eventHall));
-    }
+	@Autowired
+	private EventRepository eventRepository;
 
-    @Test
-    void 공연_좌석_생성_성공() {
-        // given
-        List<EventTime> eventTimes = IntStream.range(1, 5)
-                .mapToObj(i ->
-                        new EventTime(i, LocalDateTime.now(), LocalDateTime.now(), event))
-                .toList();
-        eventTimeRepository.saveAll(eventTimes);
+	@Autowired
+	private EventTimeRepository eventTimeRepository;
 
-        EventSeatArea eventSeatArea = new EventSeatArea(SeatAreaType.R, 1000, event);
-        eventSeatAreaRepository.save(eventSeatArea);
+	@Autowired
+	private EventHallRepository eventHallRepository;
 
-        List<EventSeatsCreateRequest> eventSeatsCreateRequests = IntStream.range(0, 20)
-                .mapToObj(i ->
-                        new EventSeatsCreateRequest("", EventSeatStatus.AVAILABLE, eventSeatArea))
-                .toList();
+	@Autowired
+	private EventSeatAreaRepository eventSeatAreaRepository;
 
-        // when
-        eventSeatService.createEventSeats(event.getId(), eventSeatsCreateRequests);
+	@BeforeEach
+	void setUp() {
+		eventSeatRepository.deleteAll();
+	}
 
-        // then
-        assertThat(eventSeatRepository.count(), is(80L));
-    }
+	@Test
+	void 공연_좌석_생성_성공() {
+		// given
+		EventHall eventHall = EventHallFactory.createEventHall();
+		eventHallRepository.save(eventHall);
+		Event event = eventRepository.save(EventFactory.createEvent(eventHall));
 
-    @Test
-    void 좌석_생성_수정_후_여석_갯수_조회_성공() {
-        // given
+		List<EventTime> eventTimes = IntStream.range(1, 5)
+			.mapToObj(i ->
+				new EventTime(i, LocalDateTime.now(), LocalDateTime.now(), event))
+			.toList();
+		eventTimeRepository.saveAll(eventTimes);
 
-        // 좌석 생성
-        EventTime eventTime = new EventTime(1, LocalDateTime.now(), LocalDateTime.now(), event);
-        EventTime savedEventTime = eventTimeRepository.save(eventTime);
+		EventSeatArea eventSeatArea = new EventSeatArea(SeatAreaType.R, 1000, event);
+		eventSeatAreaRepository.save(eventSeatArea);
 
-        EventSeatArea eventSeatArea = new EventSeatArea(SeatAreaType.R, 1000, event);
-        eventSeatAreaRepository.save(eventSeatArea);
+		List<EventSeatsCreateRequest> eventSeatsCreateRequests = IntStream.range(0, 20)
+			.mapToObj(i ->
+				new EventSeatsCreateRequest("", EventSeatStatus.AVAILABLE, eventSeatArea))
+			.toList();
 
-        List<EventSeatsCreateRequest> eventSeatsCreateRequests = IntStream.range(0, 20)
-                .mapToObj(i ->
-                        new EventSeatsCreateRequest("", EventSeatStatus.AVAILABLE, eventSeatArea))
-                .toList();
-        eventSeatService.createEventSeats(event.getId(), eventSeatsCreateRequests);
+		// when
+		eventSeatService.createEventSeats(event.getId(), eventSeatsCreateRequests);
 
-        // 좌석 조회
-        List<Long> seatIds = eventSeatService.getEventSeatsByEventTime(savedEventTime.getId())
-                .stream()
-                .map(EventSeatResponse::id)
-                .limit(10)
-                .toList();
+		// then
+		assertThat(eventSeatRepository.count(), is(80L));
+	}
 
-        // 좌석 availability 수정
-        eventSeatService.updateEventSeatsStatus(seatIds, EventSeatStatus.BOOKED);
+	@Test
+	void 좌석_생성_수정_후_여석_갯수_조회_성공() {
+		// given
+		EventHall eventHall = EventHallFactory.createEventHall();
+		eventHallRepository.save(eventHall);
+		Event event = eventRepository.save(EventFactory.createEvent(eventHall));
 
-        // when
-        List<LeftEventSeatResponse> responses = eventSeatService.getLeftEventSeatNumberByEventTime(eventTime.getId());
+		// 좌석 생성
+		EventTime eventTime = new EventTime(1, LocalDateTime.now(), LocalDateTime.now(), event);
+		EventTime savedEventTime = eventTimeRepository.save(eventTime);
 
-        // then
-        assertThat(responses.get(0).leftSeatNumber(), is(10L));
-    }
+		EventSeatArea eventSeatArea = new EventSeatArea(SeatAreaType.R, 1000, event);
+		eventSeatAreaRepository.save(eventSeatArea);
+
+		List<EventSeatsCreateRequest> eventSeatsCreateRequests = IntStream.range(0, 20)
+			.mapToObj(i ->
+				new EventSeatsCreateRequest("", EventSeatStatus.AVAILABLE, eventSeatArea))
+			.toList();
+		eventSeatService.createEventSeats(event.getId(), eventSeatsCreateRequests);
+
+		// 좌석 조회
+		List<Long> seatIds = eventSeatService.getEventSeatsByEventTime(savedEventTime.getId())
+			.stream()
+			.map(EventSeatResponse::id)
+			.limit(10)
+			.toList();
+
+		// 좌석 availability 수정
+		eventSeatService.updateEventSeatsStatus(seatIds, EventSeatStatus.BOOKED);
+
+		// when
+		List<LeftEventSeatResponse> responses = eventSeatService.getLeftEventSeatNumberByEventTime(eventTime.getId());
+
+		// then
+		assertThat(responses.get(0).leftSeatNumber(), is(10L));
+	}
 }

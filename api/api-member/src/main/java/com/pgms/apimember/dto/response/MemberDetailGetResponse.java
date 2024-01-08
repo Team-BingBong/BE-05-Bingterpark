@@ -3,10 +3,10 @@ package com.pgms.apimember.dto.response;
 import java.time.LocalDateTime;
 
 import com.pgms.coredomain.domain.member.Member;
-import com.pgms.coredomain.domain.member.Role;
 import com.pgms.coredomain.domain.member.enums.AccountStatus;
 import com.pgms.coredomain.domain.member.enums.Gender;
 import com.pgms.coredomain.domain.member.enums.Provider;
+import com.pgms.coredomain.domain.member.enums.Role;
 
 public record MemberDetailGetResponse(
 	Long id,

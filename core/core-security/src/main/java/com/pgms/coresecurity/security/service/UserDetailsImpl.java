@@ -25,12 +25,12 @@ public class UserDetailsImpl implements UserDetails {
 	private Collection<? extends GrantedAuthority> authorities;
 
 	public static UserDetails from(Admin admin) {
-		List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(admin.getRole().getName()));
+		List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(admin.getRole().name()));
 		return new UserDetailsImpl(admin.getId(), admin.getEmail(), admin.getPassword(), authorities);
 	}
 
 	public static UserDetails from(Member member) {
-		List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(member.getRole().getName()));
+		List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(member.getRole().name()));
 		return new UserDetailsImpl(member.getId(), member.getEmail(), member.getPassword(), authorities);
 	}
 

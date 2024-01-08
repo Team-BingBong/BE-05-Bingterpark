@@ -7,7 +7,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.pgms.apimember.dto.request.LoginRequest;
-import com.pgms.apimember.dto.response.LoginResponse;
+import com.pgms.apimember.dto.request.RefreshTokenRequest;
+import com.pgms.apimember.dto.response.AuthResponse;
 import com.pgms.apimember.service.AuthService;
 import com.pgms.coredomain.response.ApiResponse;
 
@@ -22,23 +23,27 @@ public class AuthController {
 	private final AuthService authService;
 
 	/**
-	 * 로그인, 토큰 발급
+	 * 로그인
 	 */
 	@PostMapping("/admin/login")
-	public ResponseEntity<ApiResponse<LoginResponse>> adminLogin(@Valid @RequestBody LoginRequest request) {
-		LoginResponse response = authService.login(request, "admin");
+	public ResponseEntity<ApiResponse<AuthResponse>> adminLogin(@Valid @RequestBody LoginRequest request) {
+		AuthResponse response = authService.login(request, "admin");
 		return ResponseEntity.ok(ApiResponse.ok(response));
 	}
 
 	@PostMapping("/members/login")
-	public ResponseEntity<ApiResponse<LoginResponse>> memberLogin(@Valid @RequestBody LoginRequest request) {
+	public ResponseEntity<ApiResponse<AuthResponse>> memberLogin(@Valid @RequestBody LoginRequest request) {
 		// TODO: 나중에 enum으로..?
-		LoginResponse response = authService.login(request, "member");
+		AuthResponse response = authService.login(request, "member");
 		return ResponseEntity.ok(ApiResponse.ok(response));
 	}
 
 	/**
-	 * TODO 토큰 재발급
+	 * 토큰 재발급
 	 */
-
+	@PostMapping("/refresh")
+	public ResponseEntity<ApiResponse<AuthResponse>> refresh(@RequestBody RefreshTokenRequest request) {
+		AuthResponse response = authService.refresh(request);
+		return ResponseEntity.ok(ApiResponse.ok(response));
+	}
 }
