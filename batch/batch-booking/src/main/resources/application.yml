@@ -4,7 +4,7 @@ server:
 spring:
   profiles:
     include: infra
-    active: prod
+    active: dev
   batch:
     jdbc:
       initialize-schema: always
