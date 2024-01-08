@@ -1,3 +1,14 @@
+@token = eyJhbGciOiJIUzI1NiJ9.eyJpZCI6Mywic3ViIjoiZGh4bDUwQG5hdmVyLmNvbSIsImlhdCI6MTcwNDYxNjU4NSwiZXhwIjoyMDY0NjE2NTg1LCJhdXRob3JpdHkiOiJST0xFX1VTRVIifQ.OIiQazdvmv-bsZp0VroiouW5gEqNAj7ROqRTOcLbWXQ
+@adminToken = eyJhbGciOiJIUzI1NiJ9.eyJpZCI6Miwic3ViIjoiYWRtaW5AZXhhbXBsZS5jb20iLCJpYXQiOjE3MDQ2Mzc1NzgsImV4cCI6MjA2NDYzNzU3OCwiYXV0aG9yaXR5IjoiUk9MRV9BRE1JTiJ9.lAXg2NbcVeuSak6IW-AUNKC6zqd_0x_ER8RU3CMxNpk
+
+### 토큰 갱신
+POST http://localhost:8081/api/v1/auth/refresh
+Content-Type: application/json
+
+{
+  "refreshToken": "a718e554-fad4-48c2-a131-d73228937605"
+}
+
 ### 로그인 - 슈퍼 관리자
 POST http://localhost:8081/api/v1/auth/admin/login
 Content-Type: application/json
@@ -6,6 +17,45 @@ Content-Type: application/json
   "email": "superadmin@example.com",
   "password": "user1234"
 }
+
+
+### 관리자 등록 - 슈퍼 관리자
+POST http://localhost:8081/api/v1/admin/management
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwic3ViIjoic3VwZXJhZG1pbkBleGFtcGxlLmNvbSIsImlhdCI6MTcwNDY0MzY2MSwiZXhwIjoxNzA0NjQ1NDYxLCJhdXRob3JpdHkiOiJST0xFX1NVUEVSQURNSU4ifQ.CGgjH4e4FTvz8s-adQBd2S6T5N8Uo9YLfht3LIkE0Js
+
+{
+  "name": "testAdmin",
+  "password": "user1234",
+  "passwordConfirm": "user1234",
+  "phoneNumber": "01012345678",
+  "email": "testAdmin@admin.com",
+  "role": "ROLE_ADMIN"
+}
+
+### 관리자 목록 조회 - 슈퍼 관리자
+GET http://localhost:8081/api/v1/admin/management
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwic3ViIjoic3VwZXJhZG1pbkBleGFtcGxlLmNvbSIsImlhdCI6MTcwNDY0MzY2MSwiZXhwIjoxNzA0NjQ1NDYxLCJhdXRob3JpdHkiOiJST0xFX1NVUEVSQURNSU4ifQ.CGgjH4e4FTvz8s-adQBd2S6T5N8Uo9YLfht3LIkE0Js
+
+### 관리자 수정 - 슈퍼 관리자
+PATCH http://localhost:8081/api/v1/admin/management/1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwic3ViIjoic3VwZXJhZG1pbkBleGFtcGxlLmNvbSIsImlhdCI6MTcwNDY0MzY2MSwiZXhwIjoxNzA0NjQ1NDYxLCJhdXRob3JpdHkiOiJST0xFX1NVUEVSQURNSU4ifQ.CGgjH4e4FTvz8s-adQBd2S6T5N8Uo9YLfht3LIkE0Js
+
+{
+  "name": "",
+  "password": "",
+  "passwordConfirm": "",
+  "phoneNumber": "",
+  "status": "ACTIVE",
+  "role": "ROLE_ADMIN"
+}
+
+### 관리자 삭제 - 슈퍼 관리자
+DELETE http://localhost:8081/api/v1/admin/management?adminIds=1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwic3ViIjoic3VwZXJhZG1pbkBleGFtcGxlLmNvbSIsImlhdCI6MTcwNDY0MzY2MSwiZXhwIjoxNzA0NjQ1NDYxLCJhdXRob3JpdHkiOiJST0xFX1NVUEVSQURNSU4ifQ.CGgjH4e4FTvz8s-adQBd2S6T5N8Uo9YLfht3LIkE0Js
+
+######
 
 ### 로그인 - 관리자
 POST http://localhost:8081/api/v1/auth/admin/login
@@ -16,19 +66,25 @@ Content-Type: application/json
   "password": "user1234"
 }
 
-### 회원 목록 조회
+### 관리자 본인 정보 조회
+GET http://localhost:8081/api/v1/admin/me
+Authorization: Bearer {{adminToken}}
+
+### 관리자 본인 탈퇴
+DELETE http://localhost:8081/api/v1/admin/me
+Authorization: Bearer {{adminToken}}
+
+### 멤버 정보 조회 - 관리자
 GET http://localhost:8081/api/v1/admin/members
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6Miwic3ViIjoiYWRtaW5AZXhhbXBsZS5jb20iLCJpYXQiOjE3MDQ2MDg3MzQsImV4cCI6MTcwNDYxMDUzNCwiYXV0aG9yaXR5IjoiUk9MRV9BRE1JTiJ9.3EHS2VF2XqW4xfE1W0iFMUaK1P3r2wpFgK9imzw3xp4
+Authorization: Bearer {{adminToken}}
 
-### 토큰 갱신
-POST http://localhost:8081/api/v1/auth/refresh
-Content-Type: application/json
+### 멤버 상세 정보 조회 - 관리자
+GET http://localhost:8081/api/v1/admin/members/details?memberIds=1,2
+Authorization: Bearer {{adminToken}}
 
-{
-  "refreshToken": "a718e554-fad4-48c2-a131-d73228937605"
-}
+#######
 
-### 유저 일반 회원가입
+### 멤버 일반 회원가입
 POST http://localhost:8081/api/v1/members/signup
 Content-Type: application/json
 
@@ -45,7 +101,7 @@ Content-Type: application/json
   "zipCode": "12345"
 }
 
-### 유저 로그인
+### 멤버 로그인
 POST http://localhost:8081/api/v1/auth/members/login
 Content-Type: application/json
 
@@ -54,5 +110,53 @@ Content-Type: application/json
   "password": "password"
 }
 
-### 유저 OAuth 로그인 / 회원가입 (직접테스트)
+### 멤버 OAuth 로그인 / 회원가입 (직접테스트)
 http://localhost:8081/login
+
+### 멤버 본인 정보 조회 (토큰 필요)
+GET http://localhost:8081/api/v1/members/me
+Authorization: Bearer {{token}}
+
+### 멤버 본인 정보 수정 (토큰 필요)
+PATCH http://localhost:8081/api/v1/members/me
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "변경된 이름",
+  "phoneNumber": "01099999999",
+  "birthDate": "19990101",
+  "gender": "MALE",
+  "streetAddress": "",
+  "detailAddress": "",
+  "zipCode": "01012"
+}
+
+### 멤버 본인 비밀번호 변경 (토큰 필요, 카카오는 불가능)
+PATCH http://localhost:8081/api/v1/members/me/password
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "originPassword": "",
+  "newPassword": "",
+  "newPasswordConfirm": ""
+}
+
+### 멤버 본인 비밀번호 확인 (토큰 필요, 카카오는 불가능)
+POST http://localhost:8081/api/v1/members/me/verify-password
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "password": ""
+}
+
+### 멤버 본인 탈퇴 (토큰 필요)
+DELETE http://localhost:8081/api/v1/members/me
+Authorization: Bearer {{token}}
+
+### 멤버 계정 복구 (토큰 필요)
+POST http://localhost:8081/api/v1/members/restore
+Content-Type: application/x-www-form-urlencoded
+Authorization: Bearer {{token}}
