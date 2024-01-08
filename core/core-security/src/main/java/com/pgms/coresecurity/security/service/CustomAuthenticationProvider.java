@@ -9,6 +9,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import com.pgms.coredomain.domain.common.MemberErrorCode;
+import com.pgms.coresecurity.security.exception.SecurityCustomException;
+
 @Component
 public class CustomAuthenticationProvider implements AuthenticationProvider {
 
@@ -39,7 +42,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
 		}
 
 		if (!passwordEncoder.matches(password, userDetails.getPassword())) {
-			throw new RuntimeException("비밀번호가 일치하지 않습니다.");
+			throw new SecurityCustomException(MemberErrorCode.PASSWORD_NOT_MATCHED);
 		}
 
 		return new UsernamePasswordAuthenticationToken(userDetails, password, userDetails.getAuthorities());
