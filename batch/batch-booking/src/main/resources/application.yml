@@ -1,0 +1,10 @@
+server:
+  port: 8086
+
+spring:
+  profiles:
+    include: infra
+    active: prod
+  batch:
+    jdbc:
+      initialize-schema: always
