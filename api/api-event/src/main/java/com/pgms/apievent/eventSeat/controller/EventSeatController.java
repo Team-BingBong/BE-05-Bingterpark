@@ -17,7 +17,7 @@ import java.util.List;
 @RequestMapping("/api/v1/event-seats")
 public class EventSeatController {
   
-    private EventSeatService eventSeatService;
+    private final EventSeatService eventSeatService;
 
     @PostMapping("/events/{id}")
     public ResponseEntity<Void> createEventSeats(@PathVariable Long id,

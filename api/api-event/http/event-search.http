@@ -1,3 +1,5 @@
 ### 공연 키워드 검색
-GET http://localhost:8080/api/v1/events/search/keyword?page=1&size=10&keyword=엘라스틱 서치&genreType=CONCERT,MUSICAL&
-    startedAt=2023-01-01T12:00:00
+GET http://localhost:8080/api/v1/events/search/keyword?page=1&size=10&keyword=엘라스틱 서치&startedAt=2023-01-01T12:00:00
+
+### 실시간 인기 검색어
+GET http://localhost:8080/api/v1/events/search/top-ten
