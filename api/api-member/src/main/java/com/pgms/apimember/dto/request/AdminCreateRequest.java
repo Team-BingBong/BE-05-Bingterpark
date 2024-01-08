@@ -5,6 +5,7 @@ import com.pgms.coredomain.domain.member.enums.Role;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
@@ -28,7 +29,7 @@ public record AdminCreateRequest(
 	@Email(message = "이메일 형식에 맞지 않습니다.")
 	String email,
 
-	@NotBlank(message = "역할은 필수 항목입니다.")
+	@NotNull(message = "역할은 필수 항목입니다.")
 	Role role
 ) {
 	public static Admin toEntity(AdminCreateRequest requestDto, String encodedPassword, Role role) {
