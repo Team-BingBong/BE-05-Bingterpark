@@ -13,13 +13,13 @@ import lombok.Getter;
 @Configuration
 public class JwtConfig {
 
-	@Value("${jwt.issuer}")
+	@Value("${booking-jwt.issuer}")
 	private String issuer;
 
-	@Value("${jwt.secret-key}")
+	@Value("${booking-jwt.secret-key}")
 	private String secretKey;
 
-	@Value("${jwt.expiry-seconds}")
+	@Value("${booking-jwt.expiry-seconds}")
 	private Long expirySeconds;
 
 	@Bean

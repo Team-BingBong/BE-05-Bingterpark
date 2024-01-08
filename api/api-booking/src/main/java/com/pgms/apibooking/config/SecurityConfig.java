@@ -34,10 +34,16 @@ public class SecurityConfig {
 	@Bean
 	public SecurityFilterChain bookingFilterChain(HttpSecurity http) throws Exception {
 		List<RequestMatcher> permitAllMatchers = List.of(
+			new AntPathRequestMatcher("/bookings", HttpMethod.GET.toString()),
+			new AntPathRequestMatcher("/payments", HttpMethod.GET.toString()),
 			new AntPathRequestMatcher("/api/*/bookings/issue-session-id", HttpMethod.POST.toString()),
 			new AntPathRequestMatcher("/api/*/bookings/enter-queue", HttpMethod.POST.toString()),
 			new AntPathRequestMatcher("/api/*/bookings/order-in-queue", HttpMethod.GET.toString()),
-			new AntPathRequestMatcher("/api/*/bookings/issue-token", HttpMethod.POST.toString())
+			new AntPathRequestMatcher("/api/*/bookings/exit-queue", HttpMethod.POST.toString()),
+			new AntPathRequestMatcher("/api/*/bookings/issue-token", HttpMethod.POST.toString()),
+			new AntPathRequestMatcher("/api/*/bookings/**/cancel", HttpMethod.POST.toString()),
+			new AntPathRequestMatcher("/api/*/payments/**", HttpMethod.GET.toString()),
+			new AntPathRequestMatcher("/api/*/payments/**", HttpMethod.POST.toString())
 		);
 
 		return http
