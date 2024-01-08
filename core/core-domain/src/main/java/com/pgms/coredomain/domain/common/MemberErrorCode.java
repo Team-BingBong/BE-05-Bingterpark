@@ -1,11 +1,13 @@
-package com.pgms.apimember.exception;
+package com.pgms.coredomain.domain.common;
 
 import org.springframework.http.HttpStatus;
+
+import com.pgms.coredomain.response.ErrorResponse;
 
 import lombok.Getter;
 
 @Getter
-public enum CustomErrorCode {
+public enum MemberErrorCode implements BaseErrorCode {
 	// ADMIN
 	ADMIN_NOT_FOUND("NOT FOUND", HttpStatus.NOT_FOUND, "존재하지 않는 관리자입니다."),
 	DUPLICATED_ADMIN_EMAIL("DUPLICATED ADMIN EMAIL", HttpStatus.BAD_REQUEST, "이미 존재하는 관리자 이메일입니다."),
@@ -34,9 +36,14 @@ public enum CustomErrorCode {
 	private final HttpStatus status;
 	private final String message;
 
-	CustomErrorCode(String errorCode, HttpStatus status, String message) {
+	MemberErrorCode(String errorCode, HttpStatus status, String message) {
 		this.errorCode = errorCode;
 		this.status = status;
 		this.message = message;
+	}
+
+	@Override
+	public ErrorResponse getErrorResponse() {
+		return new ErrorResponse(errorCode, message);
 	}
 }
