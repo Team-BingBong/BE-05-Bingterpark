@@ -1,7 +1,6 @@
 package com.pgms.apimember.dto.request;
 
 import com.pgms.coredomain.domain.member.Member;
-import com.pgms.coredomain.domain.member.Role;
 import com.pgms.coredomain.domain.member.enums.Gender;
 
 import jakarta.validation.constraints.Email;
@@ -42,7 +41,7 @@ public record MemberSignUpRequest(
 	String zipCode
 ) {
 
-	public Member toEntity(String encodedPassword, Role role) {
+	public Member toEntity(String encodedPassword) {
 		return Member.builder()
 			.email(email)
 			.password(encodedPassword)
@@ -53,7 +52,6 @@ public record MemberSignUpRequest(
 			.streetAddress(streetAddress)
 			.detailAddress(detailAddress)
 			.zipCode(zipCode)
-			.role(role)
 			.build();
 	}
 }

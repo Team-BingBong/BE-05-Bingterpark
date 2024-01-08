@@ -18,6 +18,7 @@ public enum BookingErrorCode {
 	UNBOOKABLE_SEAT_INCLUSION(HttpStatus.BAD_REQUEST, "UNBOOKABLE_SEAT_INCLUSION", "예매가 불가능한 좌석이 포함되어 있습니다."),
 	DELIVERY_ADDRESS_REQUIRED(HttpStatus.BAD_REQUEST, "DELIVERY_ADDRESS_REQUIRED", "배송지 정보를 입력해주세요."),
 
+	NOT_SAME_BOOKER(HttpStatus.BAD_REQUEST, "NOT_SAME_BOOKER", "해당 예약의 예약자가 아닙니다."),
 	UNCANCELABLE_BOOKING(HttpStatus.BAD_REQUEST, "UNCANCELABLE_BOOKING", "취소할 수 없는 예매입니다."),
 	REFUND_ACCOUNT_REQUIRED(HttpStatus.BAD_REQUEST, "REFUND_ACCOUNT_REQUIRED", "환불 받을 계좌 정보를 입력해주세요."),
 
