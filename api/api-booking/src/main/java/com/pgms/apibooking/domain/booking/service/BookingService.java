@@ -1,7 +1,6 @@
 package com.pgms.apibooking.domain.booking.service;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -11,7 +10,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.pgms.coredomain.domain.common.BookingErrorCode;
 import com.pgms.apibooking.common.exception.BookingException;
 import com.pgms.apibooking.common.jwt.BookingAuthToken;
 import com.pgms.apibooking.config.TossPaymentConfig;
@@ -31,6 +29,8 @@ import com.pgms.coredomain.domain.booking.ReceiptType;
 import com.pgms.coredomain.domain.booking.Ticket;
 import com.pgms.coredomain.domain.booking.repository.BookingRepository;
 import com.pgms.coredomain.domain.booking.repository.TicketRepository;
+import com.pgms.coredomain.domain.common.BookingErrorCode;
+import com.pgms.coredomain.domain.common.MemberErrorCode;
 import com.pgms.coredomain.domain.event.EventSeat;
 import com.pgms.coredomain.domain.event.EventSeatStatus;
 import com.pgms.coredomain.domain.event.EventTime;
@@ -166,7 +166,7 @@ public class BookingService { //TODO: 테스트 코드 작성
 	private Member getMemberById(Long memberId) {
 		System.out.println("member id get " + memberId);
 		return memberRepository.findById(memberId)
-			.orElseThrow(() -> new NoSuchElementException("Member not found"));
+			.orElseThrow(() -> new BookingException(MemberErrorCode.MEMBER_NOT_FOUND));
 	}
 
 	private String getCurrentSessionId() {
