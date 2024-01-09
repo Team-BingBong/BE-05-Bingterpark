@@ -59,3 +59,11 @@ Content-Type: application/json
 {
   "cancelReason": "변심"
 }
+
+### 내 예매 내역 목록 조회
+GET http://localhost:8082/api/v1/bookings
+#Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwic3ViIjoiam9obi5kb2VAZXhhbXBsZS5jb20iLCJpYXQiOjE3MDQ2OTE0OTEsImV4cCI6MTgwNDY4MzI5MSwiYXV0aG9yaXR5IjoiUk9MRV9VU0VSIn0.wFNSz2uwRa35jP1KihNlTOewVLgMMeg3ADQ5Kztl3QQ
+
+### 내 예매 내역 상세 조회
+GET http://localhost:8082/api/v1/bookings/bookingCreateTestId
+#Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwic3ViIjoiam9obi5kb2VAZXhhbXBsZS5jb20iLCJpYXQiOjE3MDQ2OTE0OTEsImV4cCI6MTgwNDY4MzI5MSwiYXV0aG9yaXR5IjoiUk9MRV9VU0VSIn0.wFNSz2uwRa35jP1KihNlTOewVLgMMeg3ADQ5Kztl3QQ

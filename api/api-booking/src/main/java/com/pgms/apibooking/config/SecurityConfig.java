@@ -43,7 +43,9 @@ public class SecurityConfig {
 			new AntPathRequestMatcher("/api/*/bookings/issue-token", HttpMethod.POST.toString()),
 			new AntPathRequestMatcher("/api/*/bookings/**/cancel", HttpMethod.POST.toString()),
 			new AntPathRequestMatcher("/api/*/payments/**", HttpMethod.GET.toString()),
-			new AntPathRequestMatcher("/api/*/payments/**", HttpMethod.POST.toString())
+			new AntPathRequestMatcher("/api/*/payments/**", HttpMethod.POST.toString()),
+			new AntPathRequestMatcher("/api/*/bookings", HttpMethod.GET.toString()),
+			new AntPathRequestMatcher("/api/*/bookings/**", HttpMethod.GET.toString())
 		);
 
 		return http

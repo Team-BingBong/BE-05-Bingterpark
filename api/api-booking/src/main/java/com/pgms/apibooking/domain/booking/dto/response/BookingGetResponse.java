@@ -1,11 +1,11 @@
 package com.pgms.apibooking.domain.booking.dto.response;
 
-import java.time.LocalDateTime;
-
 import com.pgms.apibooking.domain.booking.dto.request.DeliveryAddress;
 import com.pgms.apibooking.domain.payment.dto.response.PaymentCardResponse;
 import com.pgms.apibooking.domain.payment.dto.response.PaymentVirtualResponse;
 import com.pgms.coredomain.domain.booking.Booking;
+import com.pgms.coredomain.domain.booking.PaymentMethod;
+import com.pgms.coredomain.domain.booking.ReceiptType;
 
 public record BookingGetResponse(
 	String id,
@@ -17,15 +17,15 @@ public record BookingGetResponse(
 	String eventThumbnail,
 	String eventName,
 	Integer eventTime,
-	LocalDateTime eventTimeStartedAt,
-	LocalDateTime eventTimeEndedAt,
+	String eventTimeStartedAt,
+	String eventTimeEndedAt,
 	String receiptType,
 	DeliveryAddress deliveryAddress,
-	LocalDateTime createdAt,
+	String createdAt,
 	String paymentMethod,
 	PaymentCardResponse paymentCard,
 	PaymentVirtualResponse paymentVirtual,
-	LocalDateTime paymentApprovedAt
+	String paymentApprovedAt
 ) {
 
 	public static BookingGetResponse from(Booking booking) {
@@ -39,21 +39,24 @@ public record BookingGetResponse(
 			booking.getTime().getEvent().getThumbnail(),
 			booking.getTime().getEvent().getTitle(),
 			booking.getTime().getRound(),
-			booking.getTime().getStartedAt(),
-			booking.getTime().getEndedAt(),
+			booking.getTime().getStartedAt().toString(),
+			booking.getTime().getEndedAt().toString(),
 			booking.getReceiptType().getDescription(),
-			DeliveryAddress.of(
-				booking.getRecipientName(),
-				booking.getRecipientPhoneNumber(),
-				booking.getStreetAddress(),
-				booking.getDetailAddress(),
-				booking.getZipCode()
-			),
-			booking.getCreatedAt(),
+			booking.getReceiptType() == ReceiptType.PICK_UP ? null :
+				DeliveryAddress.of(
+					booking.getRecipientName(),
+					booking.getRecipientPhoneNumber(),
+					booking.getStreetAddress(),
+					booking.getDetailAddress(),
+					booking.getZipCode()
+				),
+			booking.getCreatedAt().toString(),
 			booking.getPayment().getMethod().getDescription(),
-			PaymentCardResponse.from(booking.getPayment()),
-			PaymentVirtualResponse.from(booking.getPayment()),
-			booking.getPayment().getApprovedAt()
+			booking.getPayment().getMethod() == PaymentMethod.VIRTUAL_ACCOUNT ? null :
+				PaymentCardResponse.from(booking.getPayment()),
+			booking.getPayment().getMethod() == PaymentMethod.CARD ? null :
+				PaymentVirtualResponse.from(booking.getPayment()),
+			booking.getPayment().getApprovedAt().toString()
 		);
 	}
 }

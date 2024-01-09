@@ -2,7 +2,6 @@ package com.pgms.apibooking.domain.booking.service;
 
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Objects;
 import java.util.Optional;
 
 import org.springframework.data.domain.PageRequest;
@@ -102,7 +101,7 @@ public class BookingService { //TODO: 테스트 코드 작성
 		Booking booking = bookingRepository.findBookingInfoById(id)
 			.orElseThrow(() -> new BookingException(BookingErrorCode.BOOKING_NOT_FOUND));
 
-		if (!Objects.equals(member, booking.getMember())) {
+		if (!booking.isSameBooker(memberId)) {
 			throw new BookingException(BookingErrorCode.FORBIDDEN);
 		}
 
@@ -138,8 +137,10 @@ public class BookingService { //TODO: 테스트 코드 작성
 		BookingSearchCondition searchCondition,
 		Long memberId
 	) {
+		Member member = getMemberById(memberId);
+
 		Pageable pageable = PageRequest.of(pageCondition.getPage() - 1, pageCondition.getSize());
-		searchCondition.updateMemberId(memberId);
+		searchCondition.updateMemberId(member.getId());
 
 		List<BookingsGetResponse> bookings = bookingQuerydslRepository.findAll(searchCondition, pageable)
 			.stream()
@@ -152,10 +153,12 @@ public class BookingService { //TODO: 테스트 코드 작성
 	}
 
 	public BookingGetResponse getBooking(String id, Long memberId) {
+		Member member = getMemberById(memberId);
+
 		Booking booking = bookingRepository.findBookingInfoById(id)
 			.orElseThrow(() -> new BookingException(BookingErrorCode.BOOKING_NOT_FOUND));
 
-		if (!booking.isSameBooker(memberId)) {
+		if (!booking.isSameBooker(member.getId())) {
 			throw new BookingException(BookingErrorCode.FORBIDDEN);
 		}
 
