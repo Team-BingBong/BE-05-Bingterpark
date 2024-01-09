@@ -1,33 +1,23 @@
 package com.pgms.apievent.eventSeat.controller;
 
-import java.util.List;
-
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.pgms.apievent.eventSeat.dto.request.EventSeatsCreateRequest;
 import com.pgms.apievent.eventSeat.dto.response.EventSeatResponse;
 import com.pgms.apievent.eventSeat.dto.response.LeftEventSeatResponse;
 import com.pgms.apievent.eventSeat.service.EventSeatService;
 import com.pgms.coredomain.domain.event.EventSeatStatus;
 import com.pgms.coredomain.response.ApiResponse;
-
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/event-seats")
 public class EventSeatController {
   
-    private EventSeatService eventSeatService;
+    private final EventSeatService eventSeatService;
 
     @PostMapping("/events/{id}")
     public ResponseEntity<Void> createEventSeats(@PathVariable Long id,
@@ -62,7 +52,7 @@ public class EventSeatController {
         return ResponseEntity.ok(ApiResponse.ok(responses));
     }
 
-    @GetMapping("/event-time/{id}/availabe-numbers")
+    @GetMapping("/event-time/{id}/available-numbers")
     public ResponseEntity<ApiResponse> getLeftEventSeatNumberByEventTime(@PathVariable Long id){
         List<LeftEventSeatResponse> responses = eventSeatService.getLeftEventSeatNumberByEventTime(id);
         return ResponseEntity.ok(ApiResponse.ok(responses));
