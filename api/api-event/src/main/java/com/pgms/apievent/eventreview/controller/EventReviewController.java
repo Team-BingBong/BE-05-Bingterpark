@@ -39,6 +39,7 @@ public class EventReviewController {
 			.path("/{id}")
 			.buildAndExpand(response.id())
 			.toUri();
+
 		return ResponseEntity.created(location).body(ApiResponse.ok(response));
 	}
 

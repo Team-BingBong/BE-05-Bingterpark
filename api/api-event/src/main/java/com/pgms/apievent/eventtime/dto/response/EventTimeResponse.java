@@ -9,8 +9,8 @@ public record EventTimeResponse(
 	Long eventId,
 	int round,
 	LocalDateTime startTime,
-	LocalDateTime endTime
-) {
+	LocalDateTime endTime) {
+	
 	public static EventTimeResponse of(EventTime eventTime) {
 		return new EventTimeResponse(
 			eventTime.getId(),

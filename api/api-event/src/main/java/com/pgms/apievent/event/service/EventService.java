@@ -12,7 +12,7 @@ import com.pgms.apievent.event.dto.request.EventPageRequest;
 import com.pgms.apievent.event.dto.request.EventUpdateRequest;
 import com.pgms.apievent.event.dto.response.EventResponse;
 import com.pgms.apievent.event.repository.EventCustomRepository;
-import com.pgms.apievent.exception.CustomException;
+import com.pgms.apievent.exception.EventException;
 import com.pgms.coredomain.domain.event.Event;
 import com.pgms.coredomain.domain.event.EventEdit;
 import com.pgms.coredomain.domain.event.EventHall;
@@ -86,7 +86,7 @@ public class EventService {
 
 	private void validateDuplicateEvent(String title) {
 		if (Boolean.TRUE.equals((eventRepository.existsEventByTitle(title)))) {
-			throw new CustomException(ALREADY_EXIST_EVENT);
+			throw new EventException(ALREADY_EXIST_EVENT);
 		}
 	}
 
@@ -109,11 +109,11 @@ public class EventService {
 
 	private Event getEvent(Long eventId) {
 		return eventRepository.findById(eventId)
-			.orElseThrow(() -> new CustomException(EVENT_NOT_FOUND));
+			.orElseThrow(() -> new EventException(EVENT_NOT_FOUND));
 	}
 
 	private EventHall getEventHall(Long eventHallId) {
 		return eventHallRepository.findById(eventHallId)
-			.orElseThrow(() -> new CustomException(EVENT_HALL_NOT_FOUND));
+			.orElseThrow(() -> new EventException(EVENT_HALL_NOT_FOUND));
 	}
 }

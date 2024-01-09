@@ -5,7 +5,7 @@ import static com.pgms.apievent.exception.EventErrorCode.*;
 import java.util.Arrays;
 import java.util.UUID;
 
-import com.pgms.apievent.exception.CustomException;
+import com.pgms.apievent.exception.EventException;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 public class ImageUtil {
 
 	private static final int EXTENSION_START_INDEX = 1;
-	private static final String[] EXTENSION = {"jpg", "jpeg", "png"};
+	private static final String[] EXTENSION = {"jpg", "jpeg", "png", "gif"};
 
 	public static String extractExtAndGenerateUniqueName(String originName) {
 		return UUID.randomUUID() + "." + getExtension(originName);
@@ -25,7 +25,7 @@ public class ImageUtil {
 		if (supportFormat(extension)) {
 			return extension;
 		}
-		throw new CustomException(UNSUPPORTED_FILE_EXTENSION);
+		throw new EventException(UNSUPPORTED_FILE_EXTENSION);
 	}
 
 	private static boolean supportFormat(String ext) {

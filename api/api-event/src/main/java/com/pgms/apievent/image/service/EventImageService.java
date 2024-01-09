@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.pgms.apievent.exception.CustomException;
+import com.pgms.apievent.exception.EventException;
 import com.pgms.apievent.image.dto.request.EventImageCreateRequest;
 import com.pgms.apievent.image.dto.request.ThumbnailUpdateRequest;
 import com.pgms.apievent.util.ImageUtil;
@@ -68,7 +68,7 @@ public class EventImageService {
 
 	private Event getEvent(Long eventId) {
 		return eventRepository.findById(eventId)
-			.orElseThrow(() -> new CustomException(EVENT_NOT_FOUND));
+			.orElseThrow(() -> new EventException(EVENT_NOT_FOUND));
 	}
 
 	private URL uploadThumbnailImageToServer(MultipartFile file, String storedFileName) {

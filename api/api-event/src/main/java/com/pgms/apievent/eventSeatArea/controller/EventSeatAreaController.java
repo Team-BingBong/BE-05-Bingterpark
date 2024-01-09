@@ -28,7 +28,8 @@ public class EventSeatAreaController {
 	private final EventSeatAreaService eventSeatAreaService;
 
 	@PostMapping("/{id}/seat-area")
-	public ResponseEntity<ApiResponse> createEventSeatArea(@PathVariable Long id,
+	public ResponseEntity<ApiResponse> createEventSeatArea(
+		@PathVariable Long id,
 		@RequestBody EventSeatAreaCreateRequest request) {
 		List<EventSeatAreaResponse> response = eventSeatAreaService.createEventSeatArea(id, request);
 		return ResponseEntity.ok(ApiResponse.ok(response));
@@ -47,7 +48,8 @@ public class EventSeatAreaController {
 	}
 
 	@PutMapping("/seat-area/{areaId}")
-	public ResponseEntity<Void> updateEventSeatArea(@PathVariable Long areaId,
+	public ResponseEntity<Void> updateEventSeatArea(
+		@PathVariable Long areaId,
 		@RequestBody EventSeatAreaUpdateRequest request) {
 		eventSeatAreaService.updateEventSeatArea(areaId, request);
 		return ResponseEntity.noContent().build();

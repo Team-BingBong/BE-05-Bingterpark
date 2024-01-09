@@ -34,8 +34,8 @@ public record EventCreateRequest(
 	GenreType genreType,
 
 	@NotNull(message = "이벤트 홀 ID는 필수 입력값 입니다.")
-	Long eventHallId
-) {
+	Long eventHallId) {
+	
 	public Event toEntity(EventHall eventHall) {
 		return Event.builder()
 			.title(title)

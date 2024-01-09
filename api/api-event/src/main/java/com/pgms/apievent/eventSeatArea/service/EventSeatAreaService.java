@@ -10,10 +10,10 @@ import org.springframework.transaction.annotation.Transactional;
 import com.pgms.apievent.eventSeatArea.dto.request.EventSeatAreaCreateRequest;
 import com.pgms.apievent.eventSeatArea.dto.request.EventSeatAreaUpdateRequest;
 import com.pgms.apievent.eventSeatArea.dto.response.EventSeatAreaResponse;
-import com.pgms.apievent.exception.CustomException;
-import com.pgms.apievent.exception.EventSeatAreaNotFoundException;
+import com.pgms.apievent.exception.EventException;
 import com.pgms.coredomain.domain.event.Event;
 import com.pgms.coredomain.domain.event.EventSeatArea;
+import com.pgms.coredomain.domain.event.SeatAreaType;
 import com.pgms.coredomain.domain.event.repository.EventRepository;
 import com.pgms.coredomain.domain.event.repository.EventSeatAreaRepository;
 
@@ -31,7 +31,9 @@ public class EventSeatAreaService {
 		Event event = getEvent(id);
 
 		List<EventSeatArea> eventSeatAreas = request.requests().stream()
-			.map(areaRequest -> new EventSeatArea(areaRequest.seatAreaType(), areaRequest.price(), event))
+			.map(areaRequest -> new EventSeatArea(
+				SeatAreaType.valueOf(areaRequest.seatAreaType()),
+				areaRequest.price(), event))
 			.toList();
 
 		List<EventSeatArea> savedEventSeatAreas = eventSeatAreaRepository.saveAll(eventSeatAreas);
@@ -63,11 +65,11 @@ public class EventSeatAreaService {
 
 	private Event getEvent(Long eventId) {
 		return eventRepository.findById(eventId)
-			.orElseThrow(() -> new CustomException(EVENT_NOT_FOUND));
+			.orElseThrow(() -> new EventException(EVENT_NOT_FOUND));
 	}
 
 	private EventSeatArea getEventSeatArea(Long areaId) {
 		return eventSeatAreaRepository.findById(areaId)
-			.orElseThrow(EventSeatAreaNotFoundException::new);
+			.orElseThrow(() -> new EventException(EVENT_SEAT_AREA_NOT_FOUND));
 	}
 }
