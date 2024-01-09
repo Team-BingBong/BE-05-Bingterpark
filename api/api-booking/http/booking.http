@@ -43,7 +43,7 @@ GET http://localhost:8082/api/v1/seats?eventTimeId=1
 #Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwic3ViIjoiam9obi5kb2VAZXhhbXBsZS5jb20iLCJpYXQiOjE3MDQ2OTE0OTEsImV4cCI6MTgwNDY4MzI5MSwiYXV0aG9yaXR5IjoiUk9MRV9VU0VSIn0.wFNSz2uwRa35jP1KihNlTOewVLgMMeg3ADQ5Kztl3QQ
 Booking-Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJpc3MiOiJib29raW5nIiwiaWF0IjoxNzA0NzA0NTY0LCJleHAiOjQyMDAxNzA0NzA0NTY0LCJzZXNzaW9uSWQiOiJ7Pz8_Pz99In0.iKZaud5vfvsMzXmQzl1WaCweL9GL00U0iGzCg4_p3Zzei8Y7z19Ff_TTpxh9gLeB
 
-### 예매 ~ 결제 (브라우저에서 진행해 주세요)
+### 예매 ~ 결제 승인 (브라우저에서 진행해 주세요)
 GET http://localhost:8082/bookings
 
 ### [Optional] 예매 이탈
@@ -51,10 +51,19 @@ POST http://localhost:8082/api/v1/bookings/bookingCreateTestId/exit
 #Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwic3ViIjoiam9obi5kb2VAZXhhbXBsZS5jb20iLCJpYXQiOjE3MDQ2OTE0OTEsImV4cCI6MTgwNDY4MzI5MSwiYXV0aG9yaXR5IjoiUk9MRV9VU0VSIn0.wFNSz2uwRa35jP1KihNlTOewVLgMMeg3ADQ5Kztl3QQ
 Booking-Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJpc3MiOiJib29raW5nIiwiaWF0IjoxNzA0NzA0NTY0LCJleHAiOjQyMDAxNzA0NzA0NTY0LCJzZXNzaW9uSWQiOiJ7Pz8_Pz99In0.iKZaud5vfvsMzXmQzl1WaCweL9GL00U0iGzCg4_p3Zzei8Y7z19Ff_TTpxh9gLeB
 
-### 예매 취소 (브라우저에서 생성된 예매번호로 진행해 주세요)
-POST http://localhost:8082/api/v1/bookings/1704704631741/cancel
+### 예매 취소 (브라우저에서 생성된 예매 번호로 진행해 주세요)
+POST http://localhost:8082/api/v1/bookings/{bookingId}/cancel
+#Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwic3ViIjoiam9obi5kb2VAZXhhbXBsZS5jb20iLCJpYXQiOjE3MDQ2OTE0OTEsImV4cCI6MTgwNDY4MzI5MSwiYXV0aG9yaXR5IjoiUk9MRV9VU0VSIn0.wFNSz2uwRa35jP1KihNlTOewVLgMMeg3ADQ5Kztl3QQ
 Content-Type: application/json
 
 {
   "cancelReason": "변심"
 }
+
+### 예매 내역 목록 조회
+GET http://localhost:8082/api/v1/bookings
+#Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwic3ViIjoiam9obi5kb2VAZXhhbXBsZS5jb20iLCJpYXQiOjE3MDQ2OTE0OTEsImV4cCI6MTgwNDY4MzI5MSwiYXV0aG9yaXR5IjoiUk9MRV9VU0VSIn0.wFNSz2uwRa35jP1KihNlTOewVLgMMeg3ADQ5Kztl3QQ
+
+### 예매 내역 상세 조회
+GET http://localhost:8082/api/v1/bookings/{bookingId}
+#Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwic3ViIjoiam9obi5kb2VAZXhhbXBsZS5jb20iLCJpYXQiOjE3MDQ2OTE0OTEsImV4cCI6MTgwNDY4MzI5MSwiYXV0aG9yaXR5IjoiUk9MRV9VU0VSIn0.wFNSz2uwRa35jP1KihNlTOewVLgMMeg3ADQ5Kztl3QQ
