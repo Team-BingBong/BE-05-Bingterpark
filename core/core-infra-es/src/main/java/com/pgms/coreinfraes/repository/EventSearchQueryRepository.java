@@ -1,9 +1,12 @@
 package com.pgms.coreinfraes.repository;
 
 import co.elastic.clients.elasticsearch._types.FieldValue;
+import co.elastic.clients.elasticsearch._types.Script;
+import co.elastic.clients.elasticsearch._types.ScriptLanguage;
 import co.elastic.clients.elasticsearch._types.aggregations.Aggregation;
 import co.elastic.clients.elasticsearch._types.aggregations.AggregationBuilders;
 import co.elastic.clients.elasticsearch._types.aggregations.StringTermsBucket;
+import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import co.elastic.clients.elasticsearch._types.query_dsl.*;
 import co.elastic.clients.json.JsonData;
 import com.pgms.coreinfraes.document.AccessLogDocument;
@@ -20,13 +23,14 @@ import org.springframework.data.elasticsearch.client.elc.NativeQueryBuilder;
 import org.springframework.data.elasticsearch.core.*;
 import org.springframework.data.elasticsearch.core.document.Document;
 import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
-import org.springframework.data.elasticsearch.core.query.UpdateQuery;
+import org.springframework.data.elasticsearch.core.query.*;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Slf4j
@@ -89,24 +93,39 @@ public class EventSearchQueryRepository {
 				.build()
 				._toQuery();
 
+		Script script = Script.of(scriptBuilder -> scriptBuilder.inline(inlineScriptBuilder ->
+			inlineScriptBuilder.lang(ScriptLanguage.Painless)
+				.source("doc['message.keyword'].value.substring(22);")
+				.params(Collections.emptyMap())
+		));
+
 		Aggregation agg = AggregationBuilders.terms()
-				.field("keyword.keyword")
+				.script(script)
 				.size(10)
 				.build()
 				._toAggregation();
+
 
 		Query boolQuery = QueryBuilders.bool()
 						.must(matchQuery, loggerQuery, rangeQuery)
 						.build()
 						._toQuery();
 
-		RuntimeField keyword = new RuntimeField("search_keyword", "keyword", "emit (doc['message.keyword'].value);");
+		ScriptedField scriptedField = new ScriptedField("search_keyword", new ScriptData(
+				ScriptType.INLINE,
+				"painless",
+				"return doc['message.keyword'].value.substring(22);",
+				"keyword_script",
+				Collections.emptyMap()
+		));
 
-		NativeQuery searchQuery = queryBuilder.withQuery(boolQuery)
+		SourceFilter sourceFilter = new FetchSourceFilter(new String[] {"*"}, new String[] {});
+
+		return queryBuilder.withQuery(boolQuery)
+				.withSourceFilter(sourceFilter)
+				.withScriptedField(scriptedField)
 				.withAggregation("top_ten", agg)
-				.withRuntimeFields(List.of(keyword))
 				.build();
-		return searchQuery;
 	}
 
 	private NativeQuery getKeywordSearchNativeQuery(EventKeywordSearchDto eventKeywordSearchDto) {
