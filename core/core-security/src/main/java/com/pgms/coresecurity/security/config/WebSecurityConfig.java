@@ -1,6 +1,5 @@
 package com.pgms.coresecurity.security.config;
 
-import static org.springframework.http.HttpMethod.*;
 import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.*;
 
 import java.util.List;
@@ -106,12 +105,7 @@ public class WebSecurityConfig {
 
 	private RequestMatcher[] requestHasRoleUser() {
 		List<RequestMatcher> requestMatchers = List.of(
-			antMatcher("/api/v1/members/**"),
-			// 예매
-			antMatcher(GET, "/api/*/payments/**"),
-			antMatcher(POST, "/api/*/payments/**"),
-			antMatcher(GET, "/api/*/bookings/**"),
-			antMatcher(GET, "/api/*/payments/**"));
+			antMatcher("/api/v1/members/**"));
 		return requestMatchers.toArray(RequestMatcher[]::new);
 	}
 
