@@ -57,8 +57,8 @@ public class BookingQuerydslRepositoryImpl implements BookingQuerydslRepository 
 			booking.payment.status.ne(PaymentStatus.READY),
 			condition.getId() == null ? null : booking.id.eq(condition.getId()),
 			condition.getStatus() == null ? null : booking.status.eq(BookingStatus.fromDescription(condition.getStatus())),
-			createdAtGoe(condition.getMaxCreatedAt() == null ? null : condition.getMaxCreatedAt()),
-			createdAtLoe(condition.getMinCreatedAt() == null ? null : condition.getMinCreatedAt())
+			createdAtGoe(condition.getMinCreatedAt() == null ? null : condition.getMinCreatedAt()),
+			createdAtLoe(condition.getMaxCreatedAt() == null ? null : condition.getMaxCreatedAt()),
 		};
 	}
 
@@ -67,7 +67,7 @@ public class BookingQuerydslRepositoryImpl implements BookingQuerydslRepository 
 	}
 
 	private BooleanExpression createdAtLoe(LocalDate date) {
-		return date == null ? null : booking.createdAt.loe(date.atStartOfDay());
+		return date == null ? null : booking.createdAt.loe(date.atTime(23, 59, 59));
 	}
 
 	private OrderSpecifier<?> createSortCondition(BookingSortType sortType) {
