@@ -1,15 +1,24 @@
 package com.pgms.coreinfraes.document;
 
-import com.pgms.coredomain.domain.event.Event;
-import com.pgms.coredomain.domain.event.GenreType;
-import jakarta.persistence.Id;
-import lombok.*;
-import org.springframework.data.elasticsearch.annotations.*;
+import static org.springframework.data.elasticsearch.annotations.DateFormat.*;
 
 import java.time.LocalDateTime;
 
-import static org.springframework.data.elasticsearch.annotations.DateFormat.date_hour_minute_second;
-import static org.springframework.data.elasticsearch.annotations.DateFormat.epoch_second;
+import org.springframework.data.elasticsearch.annotations.Document;
+import org.springframework.data.elasticsearch.annotations.Field;
+import org.springframework.data.elasticsearch.annotations.FieldType;
+import org.springframework.data.elasticsearch.annotations.Mapping;
+import org.springframework.data.elasticsearch.annotations.Setting;
+
+import com.pgms.coredomain.domain.event.Event;
+import com.pgms.coredomain.domain.event.GenreType;
+
+import jakarta.persistence.Id;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @AllArgsConstructor
