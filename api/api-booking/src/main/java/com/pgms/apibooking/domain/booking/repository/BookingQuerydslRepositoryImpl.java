@@ -33,6 +33,7 @@ public class BookingQuerydslRepositoryImpl implements BookingQuerydslRepository 
 			.selectFrom(booking)
 			.join(booking.payment, payment).fetchJoin()
 			.join(booking.time, eventTime).fetchJoin()
+			.leftJoin(booking.cancel).fetchJoin()
 			.where(createFilterCondition(condition))
 			.orderBy(createSortCondition(condition.getSortType()))
 			.offset(pageable.getOffset())

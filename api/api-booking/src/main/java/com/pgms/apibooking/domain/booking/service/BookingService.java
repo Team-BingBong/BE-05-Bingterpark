@@ -132,6 +132,7 @@ public class BookingService { //TODO: 테스트 코드 작성
 		ticketsWithSeat.forEach(ticket -> ticket.getSeat().updateStatus(EventSeatStatus.AVAILABLE));
 	}
 
+	@Transactional(readOnly = true)
 	public PageResponse<BookingsGetResponse> getBookings(
 		PageCondition pageCondition,
 		BookingSearchCondition searchCondition,
@@ -152,6 +153,7 @@ public class BookingService { //TODO: 테스트 코드 작성
 		);
 	}
 
+	@Transactional(readOnly = true)
 	public BookingGetResponse getBooking(String id, Long memberId) {
 		Member member = getMemberById(memberId);
 
