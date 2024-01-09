@@ -23,8 +23,10 @@ EventUpdateRequest(
 	@Positive(message = "공연 러닝 타임은 0보다 큰 값 이어야 합니다.")
 	int runningTime,
 
+	@Nullable
 	LocalDateTime startedAt,
 
+	@Nullable
 	LocalDateTime endedAt,
 
 	@NotBlank(message = "관람 등급은 필수 입력값 입니다.")

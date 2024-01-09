@@ -33,9 +33,13 @@ public record EventCreateRequest(
 	@NotNull(message = "공연 장르 타입은 필수 입력값 입니다.")
 	GenreType genreType,
 
+	LocalDateTime bookingStartedAt,
+
+	LocalDateTime bookingEndedAt,
+
 	@NotNull(message = "이벤트 홀 ID는 필수 입력값 입니다.")
 	Long eventHallId) {
-	
+
 	public Event toEntity(EventHall eventHall) {
 		return Event.builder()
 			.title(title)
@@ -46,6 +50,8 @@ public record EventCreateRequest(
 			.viewRating(viewRating)
 			.genreType(genreType)
 			.thumbnail("defaultThumbnail.jpg")
+			.bookingStartedAt(bookingStartedAt)
+			.bookingEndedAt(bookingEndedAt)
 			.eventHall(eventHall)
 			.build();
 	}
