@@ -39,11 +39,11 @@ public class EventCustomRepositoryImpl implements EventCustomRepository {
 			.with(LocalTime.MIN);
 
 		List<EventResponse> content = jpaQueryFactory.selectFrom(event)
-			.join(eventTime)
+			.leftJoin(eventTime)
 			.on(eventTime.event.eq(event))
 			.leftJoin(booking)
 			.on(booking.time.eq(eventTime))
-			.where(event.genreType.eq(genre), booking.createdAt.goe(cmpDate))
+			.where(event.genreType.eq(genre), booking.createdAt.coalesce(cmpDate).goe(cmpDate))
 			.groupBy(event.id)
 			.orderBy(booking.count().desc())
 			.offset(offset)
