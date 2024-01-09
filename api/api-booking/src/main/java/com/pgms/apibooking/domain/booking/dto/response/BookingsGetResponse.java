@@ -5,6 +5,7 @@ import com.pgms.coredomain.domain.booking.Booking;
 public record BookingsGetResponse(
 	String id,
 	String bookingName,
+	Integer amount,
 	String status,
 	String eventTimeStartedAt,
 	String eventTimeEndedAt,
@@ -15,6 +16,7 @@ public record BookingsGetResponse(
 		return new BookingsGetResponse(
 			booking.getId(),
 			booking.getBookingName(),
+			booking.getAmount(),
 			booking.getStatus().getDescription(),
 			booking.getTime().getStartedAt().toString(),
 			booking.getTime().getEndedAt().toString(),

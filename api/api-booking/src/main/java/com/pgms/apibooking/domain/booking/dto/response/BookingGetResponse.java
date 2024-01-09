@@ -1,5 +1,7 @@
 package com.pgms.apibooking.domain.booking.dto.response;
 
+import java.util.List;
+
 import com.pgms.apibooking.domain.booking.dto.request.DeliveryAddress;
 import com.pgms.apibooking.domain.payment.dto.response.PaymentCardResponse;
 import com.pgms.apibooking.domain.payment.dto.response.PaymentVirtualResponse;
@@ -25,14 +27,15 @@ public record BookingGetResponse(
 	String paymentMethod,
 	PaymentCardResponse paymentCard,
 	PaymentVirtualResponse paymentVirtual,
-	String paymentApprovedAt
+	String paymentApprovedAt,
+	List<BookedSeatResponse> seats
 ) {
 
 	public static BookingGetResponse from(Booking booking) {
 		return new BookingGetResponse(
 			booking.getId(),
 			booking.getAmount(),
-			booking.getStatus().name(),
+			booking.getStatus().getDescription(),
 			booking.getBuyerName(),
 			booking.getBuyerPhoneNumber(),
 			booking.getTime().getEvent().getId(),
@@ -56,7 +59,8 @@ public record BookingGetResponse(
 				PaymentCardResponse.from(booking.getPayment()),
 			booking.getPayment().getMethod() == PaymentMethod.CARD ? null :
 				PaymentVirtualResponse.from(booking.getPayment()),
-			booking.getPayment().getApprovedAt().toString()
+			booking.getPayment().getApprovedAt().toString(),
+			booking.getTickets().stream().map(ticket -> BookedSeatResponse.of(ticket.getSeat())).toList()
 		);
 	}
 }

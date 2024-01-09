@@ -1,7 +1,8 @@
 package com.pgms.apibooking.domain.booking.repository;
 
 import static com.pgms.coredomain.domain.booking.QBooking.*;
-import static com.pgms.coredomain.domain.member.QMember.*;
+import static com.pgms.coredomain.domain.booking.QPayment.*;
+import static com.pgms.coredomain.domain.event.QEventTime.*;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -13,6 +14,7 @@ import com.pgms.apibooking.domain.booking.dto.request.BookingSearchCondition;
 import com.pgms.apibooking.domain.booking.dto.request.BookingSortType;
 import com.pgms.coredomain.domain.booking.Booking;
 import com.pgms.coredomain.domain.booking.BookingStatus;
+import com.pgms.coredomain.domain.booking.PaymentStatus;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -29,7 +31,8 @@ public class BookingQuerydslRepositoryImpl implements BookingQuerydslRepository 
 	public List<Booking> findAll(BookingSearchCondition condition, Pageable pageable) {
 		return queryFactory
 			.selectFrom(booking)
-			.join(booking.member, member)
+			.join(booking.payment, payment).fetchJoin()
+			.join(booking.time, eventTime).fetchJoin()
 			.where(createFilterCondition(condition))
 			.orderBy(createSortCondition(condition.getSortType()))
 			.offset(pageable.getOffset())
@@ -41,7 +44,7 @@ public class BookingQuerydslRepositoryImpl implements BookingQuerydslRepository 
 	public Long count(BookingSearchCondition condition) {
 		return queryFactory
 			.select(booking.count())
-			.join(booking.member, member)
+			.join(booking.payment, payment).fetchJoin()
 			.from(booking)
 			.where(createFilterCondition(condition))
 			.fetchOne();
@@ -50,6 +53,7 @@ public class BookingQuerydslRepositoryImpl implements BookingQuerydslRepository 
 	private BooleanExpression[] createFilterCondition(BookingSearchCondition condition) {
 		return new BooleanExpression[] {
 			booking.member.id.eq(condition.getMemberId()),
+			booking.payment.status.ne(PaymentStatus.READY),
 			condition.getId() == null ? null : booking.id.eq(condition.getId()),
 			condition.getStatus() == null ? null : booking.status.eq(BookingStatus.fromDescription(condition.getStatus())),
 			createdAtGoe(condition.getMaxCreatedAt() == null ? null : condition.getMaxCreatedAt()),
