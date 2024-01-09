@@ -22,9 +22,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class MemberService {
 
-	// TODO: role의 기본값을 어떻게 할 지 논의해봐야함
-	private static final String DEFAULT_ROLE_NAME = "ROLE_USER";
-
 	private final MemberRepository memberRepository;
 	private final PasswordEncoder passwordEncoder;
 

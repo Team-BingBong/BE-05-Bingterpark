@@ -1,13 +1,7 @@
 @token = eyJhbGciOiJIUzI1NiJ9.eyJpZCI6Mywic3ViIjoiZGh4bDUwQG5hdmVyLmNvbSIsImlhdCI6MTcwNDYxNjU4NSwiZXhwIjoyMDY0NjE2NTg1LCJhdXRob3JpdHkiOiJST0xFX1VTRVIifQ.OIiQazdvmv-bsZp0VroiouW5gEqNAj7ROqRTOcLbWXQ
 @adminToken = eyJhbGciOiJIUzI1NiJ9.eyJpZCI6Miwic3ViIjoiYWRtaW5AZXhhbXBsZS5jb20iLCJpYXQiOjE3MDQ2Mzc1NzgsImV4cCI6MjA2NDYzNzU3OCwiYXV0aG9yaXR5IjoiUk9MRV9BRE1JTiJ9.lAXg2NbcVeuSak6IW-AUNKC6zqd_0x_ER8RU3CMxNpk
 
-### 토큰 갱신
-POST http://localhost:8081/api/v1/auth/refresh
-Content-Type: application/json
-
-{
-  "refreshToken": "a718e554-fad4-48c2-a131-d73228937605"
-}
+## AUTH
 
 ### 로그인 - 슈퍼 관리자
 POST http://localhost:8081/api/v1/auth/admin/login
@@ -18,11 +12,40 @@ Content-Type: application/json
   "password": "user1234"
 }
 
+### 로그인 - 관리자
+POST http://localhost:8081/api/v1/auth/admin/login
+Content-Type: application/json
+
+{
+  "email": "admin@example.com",
+  "password": "user1234"
+}
+
+### 멤버 로그인
+POST http://localhost:8081/api/v1/auth/members/login
+Content-Type: application/json
+
+{
+  "email": "member1@example.com",
+  "password": "user1234"
+}
+
+### 토큰 갱신
+POST http://localhost:8081/api/v1/auth/refresh
+Content-Type: application/json
+
+{
+  "refreshToken": "{{refreshToken}}"
+}
+
+===
+
+## ADMIN MANAGEMENT
 
 ### 관리자 등록 - 슈퍼 관리자
 POST http://localhost:8081/api/v1/admin/management
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwic3ViIjoic3VwZXJhZG1pbkBleGFtcGxlLmNvbSIsImlhdCI6MTcwNDY0MzY2MSwiZXhwIjoxNzA0NjQ1NDYxLCJhdXRob3JpdHkiOiJST0xFX1NVUEVSQURNSU4ifQ.CGgjH4e4FTvz8s-adQBd2S6T5N8Uo9YLfht3LIkE0Js
+Authorization: Bearer {{superAdminToken}}
 
 {
   "name": "testAdmin",
@@ -35,12 +58,12 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwic3ViIjoic3VwZXJhZG1pbkBle
 
 ### 관리자 목록 조회 - 슈퍼 관리자
 GET http://localhost:8081/api/v1/admin/management
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwic3ViIjoic3VwZXJhZG1pbkBleGFtcGxlLmNvbSIsImlhdCI6MTcwNDY0MzY2MSwiZXhwIjoxNzA0NjQ1NDYxLCJhdXRob3JpdHkiOiJST0xFX1NVUEVSQURNSU4ifQ.CGgjH4e4FTvz8s-adQBd2S6T5N8Uo9YLfht3LIkE0Js
+Authorization: Bearer {{superAdminToken}}
 
 ### 관리자 수정 - 슈퍼 관리자
 PATCH http://localhost:8081/api/v1/admin/management/1
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwic3ViIjoic3VwZXJhZG1pbkBleGFtcGxlLmNvbSIsImlhdCI6MTcwNDY0MzY2MSwiZXhwIjoxNzA0NjQ1NDYxLCJhdXRob3JpdHkiOiJST0xFX1NVUEVSQURNSU4ifQ.CGgjH4e4FTvz8s-adQBd2S6T5N8Uo9YLfht3LIkE0Js
+Authorization: Bearer {{superAdminToken}}
 
 {
   "name": "",
@@ -53,9 +76,11 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwic3ViIjoic3VwZXJhZG1pbkBle
 
 ### 관리자 삭제 - 슈퍼 관리자
 DELETE http://localhost:8081/api/v1/admin/management?adminIds=1
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwic3ViIjoic3VwZXJhZG1pbkBleGFtcGxlLmNvbSIsImlhdCI6MTcwNDY0MzY2MSwiZXhwIjoxNzA0NjQ1NDYxLCJhdXRob3JpdHkiOiJST0xFX1NVUEVSQURNSU4ifQ.CGgjH4e4FTvz8s-adQBd2S6T5N8Uo9YLfht3LIkE0Js
+Authorization: Bearer {{superAdminToken}}
 
-######
+===
+
+## ADMIN
 
 ### 로그인 - 관리자
 POST http://localhost:8081/api/v1/auth/admin/login
@@ -82,7 +107,9 @@ Authorization: Bearer {{adminToken}}
 GET http://localhost:8081/api/v1/admin/members/details?memberIds=1,2
 Authorization: Bearer {{adminToken}}
 
-#######
+===
+
+## MEMBER
 
 ### 멤버 일반 회원가입
 POST http://localhost:8081/api/v1/members/signup
