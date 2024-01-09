@@ -5,6 +5,9 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -17,8 +20,14 @@ import com.pgms.apibooking.common.jwt.BookingAuthToken;
 import com.pgms.apibooking.config.TossPaymentConfig;
 import com.pgms.apibooking.domain.booking.dto.request.BookingCancelRequest;
 import com.pgms.apibooking.domain.booking.dto.request.BookingCreateRequest;
+import com.pgms.apibooking.domain.booking.dto.request.BookingSearchCondition;
 import com.pgms.apibooking.domain.booking.dto.request.DeliveryAddress;
+import com.pgms.apibooking.domain.booking.dto.request.PageCondition;
 import com.pgms.apibooking.domain.booking.dto.response.BookingCreateResponse;
+import com.pgms.apibooking.domain.booking.dto.response.BookingGetResponse;
+import com.pgms.apibooking.domain.booking.dto.response.BookingsGetResponse;
+import com.pgms.apibooking.domain.booking.dto.response.PageResponse;
+import com.pgms.apibooking.domain.booking.repository.BookingQuerydslRepository;
 import com.pgms.apibooking.domain.bookingqueue.repository.BookingQueueRepository;
 import com.pgms.apibooking.domain.payment.dto.request.PaymentCancelRequest;
 import com.pgms.apibooking.domain.payment.dto.request.RefundAccountRequest;
@@ -51,6 +60,7 @@ public class BookingService { //TODO: 테스트 코드 작성
 	private final BookingRepository bookingRepository;
 	private final TicketRepository ticketRepository;
 	private final MemberRepository memberRepository;
+	private final BookingQuerydslRepository bookingQuerydslRepository;
 	private final BookingQueueRepository bookingQueueRepository;
 	private final TossPaymentConfig tossPaymentConfig;
 	private final PaymentService paymentService;
@@ -93,7 +103,7 @@ public class BookingService { //TODO: 테스트 코드 작성
 			.orElseThrow(() -> new BookingException(BookingErrorCode.BOOKING_NOT_FOUND));
 
 		if (!Objects.equals(member, booking.getMember())) {
-			throw new BookingException(BookingErrorCode.NOT_SAME_BOOKER);
+			throw new BookingException(BookingErrorCode.FORBIDDEN);
 		}
 
 		if (!booking.isCancelable()) {
@@ -121,6 +131,40 @@ public class BookingService { //TODO: 테스트 코드 작성
 	public void exitBooking(String id) {
 		List<Ticket> ticketsWithSeat = ticketRepository.findAllByBookingId(id);
 		ticketsWithSeat.forEach(ticket -> ticket.getSeat().updateStatus(EventSeatStatus.AVAILABLE));
+	}
+
+	public PageResponse<BookingsGetResponse> getBookings(
+		PageCondition pageCondition,
+		BookingSearchCondition searchCondition,
+		Long memberId
+	) {
+		Pageable pageable = PageRequest.of(pageCondition.getPage() - 1, pageCondition.getSize());
+		searchCondition.updateMemberId(memberId);
+
+		List<BookingsGetResponse> bookings = bookingQuerydslRepository.findAll(searchCondition, pageable)
+			.stream()
+			.map(BookingsGetResponse::from)
+			.toList();
+
+		return PageResponse.of(
+			PageableExecutionUtils.getPage(bookings, pageable, () -> bookingQuerydslRepository.count(searchCondition))
+		);
+	}
+
+	public BookingGetResponse getBooking(String id, Long memberId) {
+		Booking booking = bookingRepository.findBookingInfoById(id)
+			.orElseThrow(() -> new BookingException(BookingErrorCode.BOOKING_NOT_FOUND));
+
+		if (!booking.isSameBooker(memberId)) {
+			throw new BookingException(BookingErrorCode.FORBIDDEN);
+		}
+
+		return BookingGetResponse.from(booking);
+	}
+
+	@Async
+	protected void removeSessionIdInBookingQueue(Long eventId) {
+		bookingQueueRepository.remove(eventId, getCurrentSessionId());
 	}
 
 	private EventTime getBookableTimeWithEvent(Long timeId) {
@@ -175,10 +219,5 @@ public class BookingService { //TODO: 테스트 코드 작성
 			return authentication.getPrincipal().toString();
 		}
 		return null;
-	}
-
-	@Async
-	protected void removeSessionIdInBookingQueue(Long eventId) {
-		bookingQueueRepository.remove(eventId, getCurrentSessionId());
 	}
 }

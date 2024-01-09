@@ -1,18 +1,26 @@
 package com.pgms.apibooking.domain.booking.controller;
 
 import java.net.URI;
+import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import com.pgms.apibooking.domain.booking.dto.request.BookingSearchCondition;
+import com.pgms.apibooking.domain.booking.dto.request.PageCondition;
+import com.pgms.apibooking.domain.booking.dto.response.BookingGetResponse;
 import com.pgms.apibooking.domain.booking.dto.request.BookingCancelRequest;
 import com.pgms.apibooking.domain.booking.dto.request.BookingCreateRequest;
 import com.pgms.apibooking.domain.booking.dto.response.BookingCreateResponse;
+import com.pgms.apibooking.domain.booking.dto.response.BookingsGetResponse;
+import com.pgms.apibooking.domain.booking.dto.response.PageResponse;
 import com.pgms.apibooking.domain.booking.service.BookingService;
 import com.pgms.coredomain.response.ApiResponse;
 import com.pgms.coresecurity.security.resolver.CurrentAccount;
@@ -56,5 +64,26 @@ public class BookingController { //TODO: 인증된 멤버 연동
 	public ResponseEntity<Void> exitBooking(@PathVariable String id) {
 		bookingService.exitBooking(id);
 		return ResponseEntity.ok().build();
+	}
+
+	@GetMapping
+	public ResponseEntity<ApiResponse<PageResponse<BookingsGetResponse>>> getBookings(
+		@CurrentAccount Long memberId,
+		@ModelAttribute @Valid PageCondition pageCondition,
+		@ModelAttribute @Valid BookingSearchCondition searchCondition
+	) {
+		PageResponse<BookingsGetResponse> bookings = bookingService.getBookings(pageCondition, searchCondition, memberId);
+		ApiResponse<PageResponse<BookingsGetResponse>> response = ApiResponse.ok(bookings);
+		return ResponseEntity.ok().body(response);
+	}
+
+	@GetMapping("/{id}")
+	public ResponseEntity<ApiResponse<BookingGetResponse>> getBooking(
+		@CurrentAccount Long memberId,
+		@PathVariable String id
+	) {
+		BookingGetResponse booking = bookingService.getBooking(id, memberId);
+		ApiResponse<BookingGetResponse> response = ApiResponse.ok(booking);
+		return ResponseEntity.ok().body(response);
 	}
 }
