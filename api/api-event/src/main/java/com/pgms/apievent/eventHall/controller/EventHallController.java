@@ -16,7 +16,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/backoffice/event-halls")
+@RequestMapping("/api/v1/event-halls")
 public class EventHallController {
 
     private final EventHallService eventHallService;

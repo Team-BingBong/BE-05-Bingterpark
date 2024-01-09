@@ -12,7 +12,7 @@ import com.pgms.apibooking.domain.payment.dto.request.RefundAccountRequest;
 import com.pgms.apibooking.domain.payment.dto.response.PaymentCardResponse;
 import com.pgms.apibooking.domain.payment.dto.response.PaymentFailResponse;
 import com.pgms.apibooking.domain.payment.dto.response.PaymentVirtualResponse;
-import com.pgms.apibooking.common.exception.BookingErrorCode;
+import com.pgms.coredomain.domain.common.BookingErrorCode;
 import com.pgms.apibooking.common.exception.BookingException;
 import com.pgms.apibooking.common.util.DateTimeUtil;
 import com.pgms.coredomain.domain.booking.Booking;
