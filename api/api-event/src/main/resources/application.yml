@@ -27,3 +27,7 @@ logging:
           elasticsearch:
             client:
               WIRE: TRACE
+
+logstash:
+  host: localhost
+  port: 5001
