@@ -10,16 +10,105 @@ Content-Type: application/json
 }
 
 ### 공연장 등록
+POST http://localhost:8080/api/v1/event-halls
+Content-Type: application/json
+
+{
+  "name" : "잠실 종합운동장",
+  "address" : "서울특별시 송파구",
+  "eventHallSeatCreateRequests" : [
+    {
+      "name": "1A"
+    },
+    {
+      "name": "2A"
+    },
+    {
+      "name": "1B"
+    },
+    {
+      "name": "1Z"
+    }
+  ]
+}
 
 ### 공연 등록
+POST http://localhost:8080/api/v1/events
+Content-Type: application/json
+
+{
+  "title": "드라큘라",
+  "description": "test",
+  "runningTime": 100,
+  "startedAt": "2024-01-05T12:00:00",
+  "endedAt": "2024-01-06T12:00:00",
+  "viewRating": "12",
+  "genreType": "CONCERT",
+  "eventHallId": 2
+}
 
 ### 공연 회차 생성
+POST http://localhost:8080/api/v1/event-times/2
+Content-Type: application/json
+
+{
+  "round": 1,
+  "startTime": "2024-01-05T12:00:00",
+  "endTime": "2024-01-05T12:00:00"
+}
 
 ### 공연 좌석 구역 생성
+POST http://localhost:8080/api/v1/events/2/seat-area
+Content-Type: application/json
+
+{
+  "requests" :
+  [
+    {
+      "seatAreaType" : "R",
+      "price" : 1000
+    },
+    {
+      "seatAreaType" : "S",
+      "price" : 2000
+    }
+  ]
+}
 
 ### 공연 좌석 생성
+POST http://localhost:8080/api/v1/event-seats/events/2
+Content-Type: application/json
+
+[
+  {
+    "name" : "1A",
+    "status": "AVAILABLE",
+    "eventSeatAreaId" : 3
+  },
+  {
+    "name" : "1B",
+    "status": "AVAILABLE",
+    "eventSeatAreaId" : 3
+  },
+  {
+    "name": "2A",
+    "status": "AVAILABLE",
+    "eventSeatAreaId": 3
+  },
+  {
+    "name" : "1A",
+    "status": "AVAILABLE",
+    "eventSeatAreaId" : 4
+  },
+  {
+    "name" : "1B",
+    "status": "AVAILABLE",
+    "eventSeatAreaId" : 4
+  }
+]
 
 ### 공연 회차 좌석 목록 조회
+GET http://localhost:8080/api/v1/event-seats/event-times/2
 
 ===
 
@@ -58,11 +147,17 @@ http://localhost:8081/login
 GET http://localhost:8081/api/v1/members/me
 Authorization: Bearer {{accessToken}}
 
-### 공연 목록 - 랭킹
+### 공연 목록 - 리뷰순
+GET http://localhost:8080/api/v1/events/sort/ranking?page=1&size=10&genreType=CONCERT&dateOffset=7
 
-### 공연 id로 조회
+### 키워드 검색
+GET http://localhost:8080/api/v1/events/search/keyword?page=1&size=10&keyword=드라큘라&startedAt=2023-01-01T12:00:00
+
+### 실시간 인기 검색어
+GET http://localhost:8080/api/v1/events/search/top-ten
 
 ### 공연 회차의 등급별 남은 좌석수 조회
+GET http://localhost:8080/api/v1/event-seats/event-times/2/available-numbers
 
 ### 예매 플로우 복붙
 
