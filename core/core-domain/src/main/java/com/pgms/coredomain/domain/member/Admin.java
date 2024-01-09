@@ -61,11 +61,11 @@ public class Admin extends AccountBaseEntity {
 	}
 
 	public void update(String name, String password, String phoneNumber, AccountStatus status, Role role) {
-		this.name = name;
-		this.password = password;
-		this.phoneNumber = phoneNumber;
-		this.status = status;
-		this.role = role;
+		this.name = name != null ? name : this.name;
+		this.password = password != null ? password : this.password;
+		this.phoneNumber = phoneNumber != null ? phoneNumber : this.phoneNumber;
+		this.status = status != null ? status : this.status;
+		this.role = role != null ? role : this.role;
 		super.updateLastPasswordUpdatedAt();
 	}
 
