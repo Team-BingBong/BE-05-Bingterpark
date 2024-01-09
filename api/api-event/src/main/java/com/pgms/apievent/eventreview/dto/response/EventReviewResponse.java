@@ -6,8 +6,8 @@ public record EventReviewResponse(
 	Long id,
 	int score,
 	String content,
-	Long eventId
-) {
+	Long eventId) {
+	
 	public static EventReviewResponse of(EventReview eventReview) {
 		return new EventReviewResponse(
 			eventReview.getId(),

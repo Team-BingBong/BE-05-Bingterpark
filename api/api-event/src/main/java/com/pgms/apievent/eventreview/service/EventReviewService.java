@@ -1,5 +1,7 @@
 package com.pgms.apievent.eventreview.service;
 
+import static com.pgms.apievent.exception.EventErrorCode.*;
+
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -8,8 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.pgms.apievent.eventreview.dto.request.EventReviewCreateRequest;
 import com.pgms.apievent.eventreview.dto.request.EventReviewUpdateRequest;
 import com.pgms.apievent.eventreview.dto.response.EventReviewResponse;
-import com.pgms.apievent.exception.CustomException;
-import com.pgms.apievent.exception.EventErrorCode;
+import com.pgms.apievent.exception.EventException;
 import com.pgms.coredomain.domain.event.Event;
 import com.pgms.coredomain.domain.event.EventReview;
 import com.pgms.coredomain.domain.event.repository.EventRepository;
@@ -27,17 +28,18 @@ public class EventReviewService {
 
 	public EventReviewResponse createEventReview(Long eventId, EventReviewCreateRequest request) {
 		Event event = eventRepository.findById(eventId).
-			orElseThrow(() -> new CustomException(EventErrorCode.EVENT_NOT_FOUND));
+			orElseThrow(() -> new EventException(EVENT_NOT_FOUND));
 		EventReview eventReview = eventReviewRepository.save(request.toEntity(event));
-		// TODO : 동시성 고려 생각해보기
+
 		Double averageScore = eventReviewRepository.findAverageScoreByEvent(event.getId());
 		event.updateAverageScore(averageScore);
+
 		return EventReviewResponse.of(eventReview);
 	}
 
 	public EventReviewResponse updateEventReview(Long reviewId, EventReviewUpdateRequest request) {
 		EventReview eventReview = eventReviewRepository.findById(reviewId)
-			.orElseThrow(() -> new CustomException(EventErrorCode.EVENT_REVIEW_NOT_FOUND));
+			.orElseThrow(() -> new EventException(EVENT_REVIEW_NOT_FOUND));
 		eventReview.updateEventReview(request.content());
 		return EventReviewResponse.of(eventReview);
 	}
@@ -45,19 +47,21 @@ public class EventReviewService {
 	@Transactional(readOnly = true)
 	public EventReviewResponse getEventReviewById(Long reviewId) {
 		EventReview eventReview = eventReviewRepository.findById(reviewId)
-			.orElseThrow(() -> new CustomException(EventErrorCode.EVENT_REVIEW_NOT_FOUND));
+			.orElseThrow(() -> new EventException(EVENT_REVIEW_NOT_FOUND));
 		return EventReviewResponse.of(eventReview);
 	}
 
 	@Transactional(readOnly = true)
 	public List<EventReviewResponse> getEventReviewsForEventByEventId(Long eventId) {
 		List<EventReview> eventReviews = eventReviewRepository.findEventReviewsByEventId(eventId);
-		return eventReviews.stream().map(EventReviewResponse::of).toList();
+		return eventReviews.stream()
+			.map(EventReviewResponse::of)
+			.toList();
 	}
 
 	public void deleteEventReviewById(Long reviewId) {
 		EventReview eventReview = eventReviewRepository.findById(reviewId)
-			.orElseThrow(() -> new CustomException(EventErrorCode.EVENT_REVIEW_NOT_FOUND));
+			.orElseThrow(() -> new EventException(EVENT_REVIEW_NOT_FOUND));
 		eventReviewRepository.delete(eventReview);
 	}
 }

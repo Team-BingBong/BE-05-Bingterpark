@@ -35,12 +35,12 @@ VALUES (5, 'Great event!', 1);
 -- Member
 INSERT INTO member (name, password, phone_number, email, birth_date, gender, street_address, detail_address, zip_code,
                     status, provider, role, last_login_at, last_password_updated_at)
-VALUES ('김빙봉', '$2a$10$tfdM.PjviEH0zMEXVYjH.ODJPSviQRrYpb17rdMjvJtbWbSnC8nTa', '01012345678', 'john.doe@example.com',
-        '1990-01-01', 'MALE', '123 Main St', 'Apt 101',
+VALUES ('김빙봉', '$2a$10$tfdM.PjviEH0zMEXVYjH.ODJPSviQRrYpb17rdMjvJtbWbSnC8nTa', '01012345678', 'member1@example.com',
+        '1990-01-01', 'MALE', '경기도 성남시 분당구', '정든마을 101호',
         '12345', 'ACTIVE', 'KAKAO', 'ROLE_USER', '2024-01-01T10:00:00', '2024-01-01T10:00:00'),
-       ('이행복', '$2a$10$tfdM.PjviEH0zMEXVYjH.ODJPSviQRrYpb17rdMjvJtbWbSnC8nTa', '01087654321', 'jane.smith@example.com',
-        '1992-02-02', 'FEMALE', '456 Elm St',
-        'Suite 202', '54321', 'ACTIVE', 'KAKAO', 'ROLE_USER', '2024-01-01T10:00:00', '2024-01-01T10:00:00');
+       ('이행복', '$2a$10$tfdM.PjviEH0zMEXVYjH.ODJPSviQRrYpb17rdMjvJtbWbSnC8nTa', '01087654321', 'member2@example.com',
+        '1992-02-02', 'FEMALE', '광주광역시 광산로 67',
+        '103동 202호', '54321', 'ACTIVE', 'KAKAO', 'ROLE_USER', '2024-01-01T10:00:00', '2024-01-01T10:00:00');
 
 -- Admin
 INSERT INTO admin (name, email, password, phone_number, status, role, last_login_at, last_password_updated_at)

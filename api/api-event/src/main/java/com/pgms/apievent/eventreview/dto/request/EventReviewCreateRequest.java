@@ -11,8 +11,8 @@ public record EventReviewCreateRequest(
 	int score,
 
 	@Size(max = 1000, message = "공연 리뷰 내용은 최대 1,000자까지 입력 가능 합니다.")
-	String content
-) {
+	String content) {
+	
 	public EventReview toEntity(Event event) {
 		return new EventReview(
 			score,

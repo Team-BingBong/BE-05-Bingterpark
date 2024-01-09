@@ -11,8 +11,7 @@ import com.pgms.apievent.eventSeat.dto.request.EventSeatsCreateRequest;
 import com.pgms.apievent.eventSeat.dto.response.EventSeatResponse;
 import com.pgms.apievent.eventSeat.dto.response.LeftEventSeatResponse;
 import com.pgms.apievent.eventSeat.repository.EventSeatCustomRepository;
-import com.pgms.apievent.exception.CustomException;
-import com.pgms.apievent.exception.EventSeatAreaNotFoundException;
+import com.pgms.apievent.exception.EventException;
 import com.pgms.coredomain.domain.event.Event;
 import com.pgms.coredomain.domain.event.EventSeat;
 import com.pgms.coredomain.domain.event.EventSeatArea;
@@ -29,69 +28,74 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class EventSeatService {
 
-    private final EventRepository eventRepository;
-    private final EventTimeRepository eventTimeRepository;
-    private final EventSeatRepository eventSeatRepository;
-    private final EventSeatAreaRepository eventSeatAreaRepository;
-    private final EventSeatCustomRepository eventSeatCustomRepository;
+	private final EventRepository eventRepository;
+	private final EventTimeRepository eventTimeRepository;
+	private final EventSeatRepository eventSeatRepository;
+	private final EventSeatAreaRepository eventSeatAreaRepository;
+	private final EventSeatCustomRepository eventSeatCustomRepository;
 
-    public void createEventSeats(Long id, List<EventSeatsCreateRequest> eventSeatsCreateRequests) {
-        Event event = eventRepository.findById(id)
-                .orElseThrow(() -> new CustomException(EVENT_NOT_FOUND));
-        List<EventTime> eventTimes = eventTimeRepository.findEventTimesByEvent(event);
+	public void createEventSeats(Long id, List<EventSeatsCreateRequest> eventSeatsCreateRequests) {
+		Event event = eventRepository.findById(id)
+			.orElseThrow(() -> new EventException(EVENT_NOT_FOUND));
+		List<EventTime> eventTimes = eventTimeRepository.findEventTimesByEvent(event);
 
-        List<List<EventSeat>> eventSeatsByEventTimes = eventTimes.stream()
-                .map(eventTime ->
-                        eventSeatsCreateRequests
-                                .stream()
-                                .map(request -> EventSeat.builder()
-                                        .eventTime(eventTime)
-                                        .status(request.status())
-                                        .eventSeatArea(request.eventSeatArea())
-                                        .name(request.name())
-                                        .build())
-                                .toList())
-                .toList();
+		List<List<EventSeat>> eventSeatsByEventTimes = eventTimes.stream()
+			.map(eventTime ->
+				eventSeatsCreateRequests
+					.stream()
+					.map(request -> {
+						EventSeatArea eventSeatArea = eventSeatAreaRepository
+							.findById(request.eventSeatAreaId())
+							.orElseThrow(() -> new EventException(EVENT_SEAT_AREA_NOT_FOUND));
 
-        eventSeatsByEventTimes
-                .forEach(eventSeatRepository::saveAll);
-    }
+						return EventSeat.builder()
+							.eventTime(eventTime)
+							.status(EventSeatStatus.valueOf(request.status()))
+							.eventSeatArea(eventSeatArea)
+							.name(request.name())
+							.build();
+					})
+					.toList())
+			.toList();
 
-    public void updateEventSeatsSeatArea(List<Long> ids, Long seatAreaId) {
-        EventSeatArea eventSeatArea = eventSeatAreaRepository.findById(seatAreaId)
-                .orElseThrow(EventSeatAreaNotFoundException::new);
+		eventSeatsByEventTimes
+			.forEach(eventSeatRepository::saveAll);
+	}
 
-        eventSeatCustomRepository.updateEventSeatsSeatArea(ids.toArray(new Long[0]), eventSeatArea);
-    }
+	public void updateEventSeatsSeatArea(List<Long> ids, Long seatAreaId) {
+		EventSeatArea eventSeatArea = eventSeatAreaRepository.findById(seatAreaId)
+			.orElseThrow(() -> new EventException(EVENT_SEAT_AREA_NOT_FOUND));
 
-    public void updateEventSeatsStatus(List<Long> ids, EventSeatStatus eventSeatStatus) {
-        eventSeatCustomRepository.updateEventSeatsStatus(ids.toArray(new Long[0]), eventSeatStatus);
-    }
+		eventSeatCustomRepository.updateEventSeatsSeatArea(ids.toArray(new Long[0]), eventSeatArea);
+	}
 
-    public void deleteEventSeats(List<Long> ids) {
-        eventSeatCustomRepository.deleteEventSeats(ids.toArray(new Long[0]));
-    }
+	public void updateEventSeatsStatus(List<Long> ids, EventSeatStatus eventSeatStatus) {
+		eventSeatCustomRepository.updateEventSeatsStatus(ids.toArray(new Long[0]), eventSeatStatus);
+	}
 
-    @Transactional(readOnly = true)
-    public List<EventSeatResponse> getEventSeatsByEventTime(Long id) {
-        List<EventSeat> eventSeats = eventSeatRepository.findAllWithAreaByTimeId(id);
+	public void deleteEventSeats(List<Long> ids) {
+		eventSeatCustomRepository.deleteEventSeats(ids.toArray(new Long[0]));
+	}
 
-        List<EventSeatResponse> eventSeatResponses = eventSeats.stream()
-                .map(EventSeatResponse::of)
-                .toList();
+	@Transactional(readOnly = true)
+	public List<EventSeatResponse> getEventSeatsByEventTime(Long id) {
+		List<EventSeat> eventSeats = eventSeatRepository.findAllWithAreaByTimeId(id);
 
-        return eventSeatResponses;
-    }
+		return eventSeats.stream()
+			.map(EventSeatResponse::of)
+			.toList();
+	}
 
-    @Transactional(readOnly = true)
-    public List<LeftEventSeatResponse> getLeftEventSeatNumberByEventTime(Long id) {
-        EventTime eventTime = eventTimeRepository.findById(id)
-                .orElseThrow(() -> new CustomException(EVENT_TIME_NOT_FOUND));
+	@Transactional(readOnly = true)
+	public List<LeftEventSeatResponse> getLeftEventSeatNumberByEventTime(Long id) {
+		EventTime eventTime = eventTimeRepository.findById(id)
+			.orElseThrow(() -> new EventException(EVENT_TIME_NOT_FOUND));
 
-        return eventSeatCustomRepository.getLeftEventSeatNumberByEventTime(eventTime)
-                .stream()
-                .map(leftEventSeatNumDto ->
-                        new LeftEventSeatResponse(leftEventSeatNumDto.getEventSeatArea().getSeatAreaType(), leftEventSeatNumDto.getLeftSeatNumber()))
-                .toList();
-    }
+		return eventSeatCustomRepository.getLeftEventSeatNumberByEventTime(eventTime)
+			.stream()
+			.map(leftEventSeatNumDto ->
+				new LeftEventSeatResponse(leftEventSeatNumDto.getEventSeatArea().getSeatAreaType(),
+					leftEventSeatNumDto.getLeftSeatNumber()))
+			.toList();
+	}
 }

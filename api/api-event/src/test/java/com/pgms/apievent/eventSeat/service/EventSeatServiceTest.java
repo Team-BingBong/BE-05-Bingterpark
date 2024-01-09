@@ -78,7 +78,7 @@ class EventSeatServiceTest {
 
 		List<EventSeatsCreateRequest> eventSeatsCreateRequests = IntStream.range(0, 20)
 			.mapToObj(i ->
-				new EventSeatsCreateRequest("", EventSeatStatus.AVAILABLE, eventSeatArea))
+				new EventSeatsCreateRequest("", "AVAILABLE", eventSeatArea.getId()))
 			.toList();
 
 		// when
@@ -104,7 +104,7 @@ class EventSeatServiceTest {
 
 		List<EventSeatsCreateRequest> eventSeatsCreateRequests = IntStream.range(0, 20)
 			.mapToObj(i ->
-				new EventSeatsCreateRequest("", EventSeatStatus.AVAILABLE, eventSeatArea))
+				new EventSeatsCreateRequest("", "AVAILABLE", eventSeatArea.getId()))
 			.toList();
 		eventSeatService.createEventSeats(event.getId(), eventSeatsCreateRequests);
 

@@ -19,9 +19,9 @@ public enum GenreType {
 
 	public static GenreType of(String input) {
 		try {
-			return GenreType.valueOf(input);
+			return GenreType.valueOf(input.toUpperCase());
 		} catch (Exception e) {
-			throw e;
+			throw new IllegalArgumentException("존재하지 않는 장르입니다. : " + input);
 		}
 	}
 }
