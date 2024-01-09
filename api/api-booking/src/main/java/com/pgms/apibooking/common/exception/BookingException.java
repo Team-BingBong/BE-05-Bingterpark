@@ -1,5 +1,7 @@
 package com.pgms.apibooking.common.exception;
 
+import com.pgms.coredomain.domain.common.BookingErrorCode;
+
 import lombok.Getter;
 
 @Getter

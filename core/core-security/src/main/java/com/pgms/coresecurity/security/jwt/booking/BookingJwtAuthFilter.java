@@ -1,4 +1,4 @@
-package com.pgms.apibooking.common.jwt;
+package com.pgms.coresecurity.security.jwt.booking;
 
 import java.io.IOException;
 
@@ -6,8 +6,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.pgms.apibooking.common.exception.BookingErrorCode;
-import com.pgms.apibooking.common.exception.BookingException;
+import com.pgms.coredomain.domain.common.BookingErrorCode;
+import com.pgms.coresecurity.security.exception.SecurityCustomException;
 
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
@@ -32,11 +32,11 @@ public class BookingJwtAuthFilter extends OncePerRequestFilter {
 		if (token != null) {
 			try {
 				BookingJwtPayload authentication = bookingJwtProvider.validateAndParsePayload(token);
-				BookingAuthToken bookingAuthToken = new BookingAuthToken(authentication.getSessionId());
+				BookingAuthToken bookingAuthToken = new BookingAuthToken(authentication.sessionId());
 				SecurityContextHolder.getContext().setAuthentication(bookingAuthToken);
-			} catch (JwtException | BookingException e) {
+			} catch (JwtException | SecurityCustomException e) {
 				log.warn(e.getMessage(), e);
-				throw new BookingException(BookingErrorCode.INVALID_BOOKING_TOKEN);
+				throw new SecurityCustomException(BookingErrorCode.INVALID_BOOKING_TOKEN);
 			}
 		}
 

@@ -1,13 +1,15 @@
-package com.pgms.apibooking.common.exception;
+package com.pgms.coredomain.domain.common;
 
 import org.springframework.http.HttpStatus;
+
+import com.pgms.coredomain.response.ErrorResponse;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum BookingErrorCode {
+public enum BookingErrorCode implements BaseErrorCode{
 	SEAT_NOT_FOUND(HttpStatus.BAD_REQUEST, "SEAT_NOT_FOUND", "존재하지 않는 좌석입니다."),
 	SEAT_BEING_BOOKED(HttpStatus.BAD_REQUEST, "SEAT_BEING_BOOKED", "예매중인 좌석입니다."),
 	SEAT_ALREADY_BOOKED(HttpStatus.BAD_REQUEST, "SEAT_ALREADY_BOOKED", "예매된 좌석입니다."),
@@ -41,4 +43,9 @@ public enum BookingErrorCode {
 	private final HttpStatus status;
 	private final String code;
 	private final String message;
+
+	@Override
+	public ErrorResponse getErrorResponse() {
+		return new ErrorResponse(code, message);
+	}
 }

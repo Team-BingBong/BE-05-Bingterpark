@@ -1,17 +1,17 @@
-package com.pgms.apibooking.config;
+package com.pgms.coresecurity.security.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.pgms.apibooking.common.jwt.BookingJwtProvider;
+import com.pgms.coresecurity.security.jwt.booking.BookingJwtProvider;
 
 import io.jsonwebtoken.security.Keys;
 import lombok.Getter;
 
 @Getter
 @Configuration
-public class JwtConfig {
+public class BookingJwtConfig {
 
 	@Value("${booking-jwt.issuer}")
 	private String issuer;

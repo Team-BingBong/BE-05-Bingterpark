@@ -1,12 +1,13 @@
 package com.pgms.coresecurity.security.jwt;
 
-import java.security.Key;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
+import javax.crypto.SecretKey;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +24,6 @@ import com.pgms.coresecurity.security.service.UserDetailsImpl;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -48,24 +48,24 @@ public class JwtTokenProvider {
 
 		return Jwts.builder()
 			.claim("id", userDetails.getId())
-			.setSubject((userDetails.getUsername()))
-			.setIssuedAt(Date.from(now))
-			.setExpiration(Date.from(expirationTime))
+			.subject((userDetails.getUsername()))
+			.issuedAt(Date.from(now))
+			.expiration(Date.from(expirationTime))
 			.claim("authority", authorities)
-			.signWith(key(), SignatureAlgorithm.HS256)
+			.signWith(key())
 			.compact();
 	}
 
-	private Key key() {
+	private SecretKey key() {
 		return Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey));
 	}
 
 	public Authentication getAuthentication(String accessToken) {
-		Claims claims = Jwts.parserBuilder()
-			.setSigningKey(key())
+		Claims claims = Jwts.parser()
+			.verifyWith(key())
 			.build()
-			.parseClaimsJws(accessToken)
-			.getBody();
+			.parseSignedClaims(accessToken)
+			.getPayload();
 
 		Collection<? extends GrantedAuthority> authorities =
 			Arrays.stream(claims.get("authority").toString().split(","))
@@ -79,7 +79,7 @@ public class JwtTokenProvider {
 
 	public boolean validateAccessToken(String authToken) {
 		try {
-			Jwts.parserBuilder().setSigningKey(key()).build().parse(authToken);
+			Jwts.parser().verifyWith(key()).build().parse(authToken);
 			return true;
 		} catch (MalformedJwtException e) {
 			logger.error("Invalid JWT token: {}", e.getMessage());
