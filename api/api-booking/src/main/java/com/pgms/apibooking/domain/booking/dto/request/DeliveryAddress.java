@@ -19,4 +19,20 @@ public record DeliveryAddress(
 	@NotBlank(message = "[우편 번호] 입력은 필수입니다.")
 	String zipCode
 ) {
+
+	public static DeliveryAddress of(
+		String recipientName,
+		String recipientPhoneNumber,
+		String streetAddress,
+		String detailAddress,
+		String zipCode
+	) {
+		return new DeliveryAddress(
+			recipientName,
+			recipientPhoneNumber,
+			streetAddress,
+			detailAddress,
+			zipCode
+		);
+	}
 }

@@ -61,7 +61,8 @@ INSERT INTO booking (id,
                      status,
                      receipt_type,
                      member_id,
-                     time_id)
+                     time_id,
+                     created_at)
 VALUES ('bookingCreateTestId',
         180000,
         '빙봉의 주문',
@@ -70,7 +71,8 @@ VALUES ('bookingCreateTestId',
         'WAITING_FOR_PAYMENT',
         'PICK_UP',
         1,
-        1),
+        1,
+        CURRENT_TIMESTAMP),
        ('bookingCancelTestId',
         180000,
         '주영의 주문',
@@ -79,7 +81,8 @@ VALUES ('bookingCreateTestId',
         'PAYMENT_COMPLETED',
         'PICK_UP',
         1,
-        1);
+        1,
+        CURRENT_TIMESTAMP);
 
 
 -- Ticket
