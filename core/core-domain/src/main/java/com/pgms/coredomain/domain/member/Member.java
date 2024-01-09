@@ -123,10 +123,12 @@ public class Member extends AccountBaseEntity {
 	}
 
 	public void updateToDeleted() {
+		this.role = null;
 		this.status = DELETED;
 	}
 
 	public void updateToActive() {
+		this.role = Role.ROLE_USER;
 		this.status = ACTIVE;
 	}
 

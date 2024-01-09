@@ -11,6 +11,7 @@ public enum MemberErrorCode implements BaseErrorCode {
 	// ADMIN
 	ADMIN_NOT_FOUND("NOT FOUND", HttpStatus.NOT_FOUND, "존재하지 않는 관리자입니다."),
 	DUPLICATED_ADMIN_EMAIL("DUPLICATED ADMIN EMAIL", HttpStatus.BAD_REQUEST, "이미 존재하는 관리자 이메일입니다."),
+	NOT_ACTIVE_ADMIN("NOT ACTIVE ADMIN", HttpStatus.BAD_REQUEST, "활성화되지 않은 관리자입니다. 슈퍼 관리자에게 문의해주세요."),
 
 	// MEMBER
 	MEMBER_NOT_FOUND("NOT FOUND", HttpStatus.NOT_FOUND, "존재하지 않는 회원입니다."),

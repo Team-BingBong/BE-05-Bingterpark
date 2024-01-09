@@ -73,11 +73,17 @@ public class Admin extends AccountBaseEntity {
 		return this.status == AccountStatus.DELETED;
 	}
 
+	public boolean isNotActive() {
+		return this.status != AccountStatus.ACTIVE;
+	}
+
 	public void updateToDeleted() {
+		this.role = null;
 		this.status = AccountStatus.DELETED;
 	}
 
 	public void updateToLocked() {
 		this.status = AccountStatus.LOCKED;
 	}
+
 }
