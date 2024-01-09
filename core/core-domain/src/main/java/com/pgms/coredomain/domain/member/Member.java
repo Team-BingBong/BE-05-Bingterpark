@@ -118,6 +118,10 @@ public class Member extends AccountBaseEntity {
 		return this.status == DELETED;
 	}
 
+	public boolean isLoginByProvider() {
+		return this.provider != null;
+	}
+
 	public void updateToDeleted() {
 		this.status = DELETED;
 	}

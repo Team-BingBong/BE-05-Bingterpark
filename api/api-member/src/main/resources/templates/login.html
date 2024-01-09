@@ -90,7 +90,7 @@
         })
             .then(response => response.json())
             .then(data => {
-                alert("로그인 성공. 토큰은 콘솔창에서 확인하세요.")
+                alert(JSON.stringify(data, null, 2))
                 console.log('Success:', data);
             })
             .catch((error) => {
