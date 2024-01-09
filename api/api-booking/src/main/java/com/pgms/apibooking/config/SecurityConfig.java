@@ -16,9 +16,9 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
-import com.pgms.apibooking.common.exception.BookingExceptionHandlerFilter;
-import com.pgms.apibooking.common.exception.BookingAuthEntryPoint;
-import com.pgms.apibooking.common.jwt.BookingJwtAuthFilter;
+import com.pgms.coresecurity.security.jwt.booking.BookingExceptionHandlerFilter;
+import com.pgms.coresecurity.security.jwt.booking.BookingAuthEntryPoint;
+import com.pgms.coresecurity.security.jwt.booking.BookingJwtAuthFilter;
 
 import lombok.RequiredArgsConstructor;
 

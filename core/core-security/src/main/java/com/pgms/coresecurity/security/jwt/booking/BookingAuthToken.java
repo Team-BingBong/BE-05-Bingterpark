@@ -1,4 +1,4 @@
-package com.pgms.apibooking.common.jwt;
+package com.pgms.coresecurity.security.jwt.booking;
 
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 
