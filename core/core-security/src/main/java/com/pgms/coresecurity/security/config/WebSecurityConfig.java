@@ -1,5 +1,6 @@
 package com.pgms.coresecurity.security.config;
 
+import static org.springframework.http.HttpMethod.*;
 import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.*;
 
 import java.util.List;
@@ -18,11 +19,14 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import com.pgms.coresecurity.security.jwt.JwtAccessDeniedHandler;
 import com.pgms.coresecurity.security.jwt.JwtAuthenticationEntryPoint;
 import com.pgms.coresecurity.security.jwt.JwtAuthenticationFilter;
+import com.pgms.coresecurity.security.jwt.booking.BookingExceptionHandlerFilter;
+import com.pgms.coresecurity.security.jwt.booking.BookingJwtAuthFilter;
 import com.pgms.coresecurity.security.service.OAuth2UserService;
 
 import lombok.RequiredArgsConstructor;
@@ -37,6 +41,8 @@ public class WebSecurityConfig {
 	private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
 	private final OAuth2UserService oAuth2UserService;
 	private final AuthenticationSuccessHandler oauthSuccessHandler;
+	private final BookingJwtAuthFilter bookingJwtAuthFilter;
+	private final BookingExceptionHandlerFilter bookingExceptionHandlerFilter;
 
 	@Bean
 	public PasswordEncoder passwordEncoder() {
@@ -100,7 +106,30 @@ public class WebSecurityConfig {
 
 	private RequestMatcher[] requestHasRoleUser() {
 		List<RequestMatcher> requestMatchers = List.of(
-			antMatcher("/api/v1/members/**"));
+			antMatcher("/api/v1/members/**"),
+			// 예매
+			antMatcher(GET, "/api/*/payments/**"),
+			antMatcher(POST, "/api/*/payments/**"),
+			antMatcher(GET, "/api/*/bookings/**"),
+			antMatcher(GET, "/api/*/payments/**"));
+		return requestMatchers.toArray(RequestMatcher[]::new);
+	}
+
+	@Bean
+	public SecurityFilterChain bookingFilterChain(HttpSecurity http) throws Exception {
+		http
+			.authorizeHttpRequests(auth -> auth.requestMatchers(requestBookingFilterChain()).permitAll())
+			.addFilterBefore(bookingJwtAuthFilter, BasicAuthenticationFilter.class)
+			.addFilterBefore(bookingExceptionHandlerFilter, BookingJwtAuthFilter.class);
+		return http.build();
+	}
+
+	private RequestMatcher[] requestBookingFilterChain() {
+		List<RequestMatcher> requestMatchers = List.of(
+			antMatcher("/api/*/seats"),
+			antMatcher("/api/*/seats/**/select"),
+			antMatcher("/api/*/seats/**/deselect"),
+			antMatcher("/api/*/bookings/**"));
 		return requestMatchers.toArray(RequestMatcher[]::new);
 	}
 }
