@@ -14,7 +14,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.pgms.apibooking.common.exception.BookingErrorCode;
+import com.pgms.coredomain.domain.common.BookingErrorCode;
 import com.pgms.apibooking.common.exception.BookingException;
 import com.pgms.apibooking.config.TestConfig;
 import com.pgms.apibooking.domain.booking.dto.request.BookingCancelRequest;

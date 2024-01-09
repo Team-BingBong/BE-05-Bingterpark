@@ -81,6 +81,7 @@ public class WebSecurityConfig {
 
 	private RequestMatcher[] requestPermitAll() {
 		List<RequestMatcher> requestMatchers = List.of(
+			antMatcher("/login"),
 			antMatcher("/api/v1/auth/**"),
 			antMatcher("/api/v1/members/signup"));
 		return requestMatchers.toArray(RequestMatcher[]::new);
