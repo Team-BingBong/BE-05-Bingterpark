@@ -43,12 +43,18 @@ public class EventSeatService {
 			.map(eventTime ->
 				eventSeatsCreateRequests
 					.stream()
-					.map(request -> EventSeat.builder()
-						.eventTime(eventTime)
-						.status(EventSeatStatus.valueOf(request.status()))
-						.eventSeatArea(request.eventSeatArea())
-						.name(request.name())
-						.build())
+					.map(request -> {
+						EventSeatArea eventSeatArea = eventSeatAreaRepository
+							.findById(request.eventSeatAreaId())
+							.orElseThrow(() -> new EventException(EVENT_SEAT_AREA_NOT_FOUND));
+
+						return EventSeat.builder()
+							.eventTime(eventTime)
+							.status(EventSeatStatus.valueOf(request.status()))
+							.eventSeatArea(eventSeatArea)
+							.name(request.name())
+							.build();
+					})
 					.toList())
 			.toList();
 

@@ -1,7 +1,5 @@
 package com.pgms.apievent.eventSeat.dto.request;
 
-import com.pgms.coredomain.domain.event.EventSeatArea;
-
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
@@ -10,5 +8,5 @@ public record EventSeatsCreateRequest(
 	@Size(max = 10, message = "공연장 좌석은 10자 이내로 입력해주세요.")
 	String name,
 	String status,
-	EventSeatArea eventSeatArea) {
+	Long eventSeatAreaId) {
 }

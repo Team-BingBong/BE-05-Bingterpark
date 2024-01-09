@@ -13,11 +13,7 @@ public record EventHallResponse(
 	String address,
 	List<EventHallSeatResponse> eventHallSeatResponses) {
 
-	public static EventHallResponse of(EventHall eventHall) {
-		List<EventHallSeatResponse> eventHallSeatResponses = eventHall.getEventHallSeats().stream()
-			.map(EventHallSeatResponse::of)
-			.toList();
-
+	public static EventHallResponse of(EventHall eventHall, List<EventHallSeatResponse> eventHallSeatResponses) {
 		return EventHallResponse.builder()
 			.id(eventHall.getId())
 			.name(eventHall.getName())

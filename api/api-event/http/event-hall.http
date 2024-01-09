@@ -1,0 +1,28 @@
+### 공연장 생성
+POST http://localhost:8080/api/v1/event-halls
+Content-Type: application/json
+
+{
+  "name" : "잠실 종합운동장",
+  "address" : "서울특별시 송파구",
+  "eventHallSeatCreateRequests" : [
+    {
+      "name": "1A"
+    },
+    {
+      "name": "2A"
+    },
+    {
+      "name": "1B"
+    },
+    {
+      "name": "1Z"
+    }
+  ]
+}
+
+### 공연장 일괄 조회
+GET http://localhost:8080/api/v1/event-halls
+
+### 공연장 단일 조회
+GET http://localhost:8080/api/v1/event-halls/2

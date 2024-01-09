@@ -11,7 +11,7 @@ import com.pgms.apibooking.domain.payment.dto.response.PaymentCardResponse;
 import com.pgms.apibooking.domain.payment.dto.response.PaymentSuccessResponse;
 import com.pgms.apibooking.domain.payment.dto.response.PaymentVirtualResponse;
 import com.pgms.apibooking.domain.payment.dto.response.RefundAccountResponse;
-import com.pgms.apibooking.common.exception.BookingErrorCode;
+import com.pgms.coredomain.domain.common.BookingErrorCode;
 import com.pgms.apibooking.common.exception.BookingException;
 import com.pgms.apibooking.domain.payment.service.TossPaymentService;
 import com.pgms.coredomain.domain.booking.Booking;

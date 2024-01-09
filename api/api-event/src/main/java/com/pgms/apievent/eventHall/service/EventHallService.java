@@ -11,6 +11,7 @@ import com.pgms.apievent.eventHall.dto.request.EventHallCreateRequest;
 import com.pgms.apievent.eventHall.dto.request.EventHallSeatCreateRequest;
 import com.pgms.apievent.eventHall.dto.request.EventHallUpdateRequest;
 import com.pgms.apievent.eventHall.dto.response.EventHallResponse;
+import com.pgms.apievent.eventHall.dto.response.EventHallSeatResponse;
 import com.pgms.apievent.exception.EventException;
 import com.pgms.coredomain.domain.event.EventHall;
 import com.pgms.coredomain.domain.event.EventHallEdit;
@@ -39,7 +40,14 @@ public class EventHallService {
 			.eventHallSeats(eventHallSeats)
 			.build();
 
-		return EventHallResponse.of(eventHallRepository.save(eventHall));
+		EventHall savedEventHall = eventHallRepository.save(eventHall);
+
+		List<EventHallSeatResponse> eventHallSeatResponses = savedEventHall.getEventHallSeats()
+			.stream()
+			.map(EventHallSeatResponse::of)
+			.toList();
+
+		return EventHallResponse.of(savedEventHall, eventHallSeatResponses);
 	}
 
 	public void deleteEventHall(Long id) {
@@ -67,7 +75,12 @@ public class EventHallService {
 
 		eventHall.updateEventHall(eventHallEdit);
 
-		return EventHallResponse.of(eventHall);
+		List<EventHallSeatResponse> eventHallSeatResponses = eventHall.getEventHallSeats()
+			.stream()
+			.map(EventHallSeatResponse::of)
+			.toList();
+
+		return EventHallResponse.of(eventHall, eventHallSeatResponses);
 	}
 
 	@Transactional(readOnly = true)
@@ -75,15 +88,20 @@ public class EventHallService {
 		EventHall eventHall = eventHallRepository.findById(id)
 			.orElseThrow(() -> new EventException(EVENT_HALL_NOT_FOUND));
 
-		return EventHallResponse.of(eventHall);
+		// TODO 못 읽어옴
+		List<EventHallSeatResponse> eventHallSeatResponses = eventHall.getEventHallSeats()
+			.stream()
+			.map(EventHallSeatResponse::of)
+			.toList();
+
+		return EventHallResponse.of(eventHall, eventHallSeatResponses);
 	}
 
 	@Transactional(readOnly = true)
 	public List<EventHallResponse> getEventHalls() {
 		List<EventHall> eventHalls = eventHallRepository.findAll();
-
 		return eventHalls.stream()
-			.map(EventHallResponse::of)
+			.map(eventHall -> EventHallResponse.of(eventHall, null))
 			.toList();
 	}
 
