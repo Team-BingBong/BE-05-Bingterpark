@@ -43,6 +43,7 @@ public class MemberService {
 	@Transactional(readOnly = true)
 	public void verifyPassword(Long memberId, String password) {
 		final Member member = getAvailableMember(memberId);
+		validateStandardMember(member);
 		validatePassword(password, member.getPassword());
 	}
 
@@ -61,6 +62,7 @@ public class MemberService {
 
 	public void updatePassword(Long memberId, MemberPasswordUpdateRequest requestDto) {
 		final Member member = getAvailableMember(memberId);
+		validateStandardMember(member);
 		validatePassword(requestDto.originPassword(), member.getPassword());
 		validateNewPassword(requestDto.newPassword(), requestDto.newPasswordConfirm());
 		member.updatePassword(passwordEncoder.encode(requestDto.newPassword()));
@@ -87,6 +89,12 @@ public class MemberService {
 	private void validateNewPassword(String password, String passwordConfirm) {
 		if (!password.equals(passwordConfirm)) {
 			throw new MemberException(PASSWORD_CONFIRM_NOT_MATCHED);
+		}
+	}
+
+	private void validateStandardMember(Member member) {
+		if (member.isLoginByProvider()) {
+			throw new MemberException(NOT_ALLOWED_BY_PROVIDER);
 		}
 	}
 
