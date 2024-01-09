@@ -1,6 +1,13 @@
 ## 어드민
 
 ### 어드민 로그인
+POST http://localhost:8081/api/v1/auth/admin/login
+Content-Type: application/json
+
+{
+  "email": "admin@example.com",
+  "password": "user1234"
+}
 
 ### 공연장 등록
 
@@ -19,10 +26,37 @@
 ## 멤버
 
 ### 회원가입
+POST http://localhost:8081/api/v1/members/signup
+Content-Type: application/json
+
+{
+  "email": "test@test.com",
+  "password": "password",
+  "passwordConfirm": "password",
+  "name": "name",
+  "phoneNumber": "01012345678",
+  "birthDate": "20000101",
+  "gender": "MALE",
+  "streetAddress": "서울특별시 광진구 능동로",
+  "detailAddress": "A동 101호",
+  "zipCode": "12345"
+}
 
 ### 로그인
+POST http://localhost:8081/api/v1/auth/members/login
+Content-Type: application/json
+
+{
+  "email": "test@test.com",
+  "password": "password"
+}
+
+### oauth 회원가입/로그인 (Optional)
+http://localhost:8081/login
 
 ### 내 정보 확인
+GET http://localhost:8081/api/v1/members/me
+Authorization: Bearer {{accessToken}}
 
 ### 공연 목록 - 랭킹
 
