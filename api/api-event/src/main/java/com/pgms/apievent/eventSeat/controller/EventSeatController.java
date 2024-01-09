@@ -46,13 +46,13 @@ public class EventSeatController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/event-time/{id}/seats")
+    @GetMapping("/event-times/{id}")
     public ResponseEntity<ApiResponse> getEventSeatsByEventTime(@PathVariable Long id){
         List<EventSeatResponse> responses = eventSeatService.getEventSeatsByEventTime(id);
         return ResponseEntity.ok(ApiResponse.ok(responses));
     }
 
-    @GetMapping("/event-time/{id}/available-numbers")
+    @GetMapping("/event-times/{id}/available-numbers")
     public ResponseEntity<ApiResponse> getLeftEventSeatNumberByEventTime(@PathVariable Long id){
         List<LeftEventSeatResponse> responses = eventSeatService.getLeftEventSeatNumberByEventTime(id);
         return ResponseEntity.ok(ApiResponse.ok(responses));
