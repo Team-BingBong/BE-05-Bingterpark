@@ -11,9 +11,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.pgms.apibooking.common.exception.BookingErrorCode;
+import com.pgms.coredomain.domain.common.BookingErrorCode;
 import com.pgms.apibooking.common.exception.BookingException;
-import com.pgms.apibooking.common.jwt.BookingAuthToken;
+import com.pgms.coresecurity.security.jwt.booking.BookingAuthToken;
 import com.pgms.apibooking.config.TossPaymentConfig;
 import com.pgms.apibooking.domain.booking.dto.request.BookingCancelRequest;
 import com.pgms.apibooking.domain.booking.dto.request.BookingCreateRequest;
