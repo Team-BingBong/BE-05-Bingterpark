@@ -6,8 +6,8 @@ import org.springframework.stereotype.Service;
 
 import com.pgms.coredomain.domain.common.BookingErrorCode;
 import com.pgms.apibooking.common.exception.BookingException;
-import com.pgms.coresecurity.security.jwt.booking.BookingJwtPayload;
-import com.pgms.coresecurity.security.jwt.booking.BookingJwtProvider;
+import com.pgms.apibooking.common.jwt.BookingJwtPayload;
+import com.pgms.apibooking.common.jwt.BookingJwtProvider;
 import com.pgms.apibooking.domain.bookingqueue.dto.request.BookingQueueEnterRequest;
 import com.pgms.apibooking.domain.bookingqueue.dto.request.BookingQueueExitRequest;
 import com.pgms.apibooking.domain.bookingqueue.dto.request.TokenIssueRequest;

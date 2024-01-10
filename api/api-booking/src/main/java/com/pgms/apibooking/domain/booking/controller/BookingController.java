@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -38,8 +39,9 @@ public class BookingController {
 	public ResponseEntity<ApiResponse<BookingCreateResponse>> createBooking(
 		//@CurrentAccount Long memberId,
 		@RequestBody @Valid BookingCreateRequest request,
+		@RequestAttribute("tokenSessionId") String tokenSessionId,
 		HttpServletRequest httpRequest) {
-		BookingCreateResponse createdBooking = bookingService.createBooking(request, 1L); //TODO: 인증된 memberId 지정
+		BookingCreateResponse createdBooking = bookingService.createBooking(request, 1L, tokenSessionId); //TODO: 인증된 memberId 지정
 		ApiResponse<BookingCreateResponse> response = ApiResponse.ok(createdBooking);
 		URI location = UriComponentsBuilder
 			.fromHttpUrl(httpRequest.getRequestURL().toString())
