@@ -5,10 +5,19 @@
     },
     "title": {
       "type": "text",
-      "analyzer": "korean",
       "copy_to": [
         "title_chosung"
-      ]
+      ],
+      "fields" : {
+        "kor" : {
+          "type": "text",
+          "analyzer": "korean"
+        },
+        "ngram" : {
+          "type": "text",
+          "analyzer": "ngram_analyzer"
+        }
+      }
     },
     "title_chosung": {
       "type": "text",
