@@ -29,3 +29,4 @@ spring security 설정 파일
 6. api-booking, api-event, api-member 각 모듈에서 스프링 어플리케이션 실행
 ## 테스트 방법
 - 통합 http 테스트는 /http/bingterpark.http에 있습니다.
+- 어드민 플로우, 유저 플로우 http 코드를 위에서부터 하나씩 실행하시면 됩니다. 
