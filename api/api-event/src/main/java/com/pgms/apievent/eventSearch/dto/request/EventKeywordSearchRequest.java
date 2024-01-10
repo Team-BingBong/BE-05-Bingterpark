@@ -1,14 +1,15 @@
 package com.pgms.apievent.eventSearch.dto.request;
 
-import java.util.List;
-
 import com.pgms.apievent.common.dto.request.PageRequestDto;
 import com.pgms.coreinfraes.dto.EventKeywordSearchDto;
-
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
+
+import java.util.List;
 
 @Getter
 public class EventKeywordSearchRequest extends PageRequestDto {
+	@Size(min= 2,message = "검색어를 2글자 이상 입력해주세요.")
 	private String keyword;
 	private List<String> genreType;
 	private String startedAt;
