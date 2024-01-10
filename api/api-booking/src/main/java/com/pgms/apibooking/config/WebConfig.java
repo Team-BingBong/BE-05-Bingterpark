@@ -26,7 +26,7 @@ public class WebConfig implements WebMvcConfigurer {
 			.addPathPatterns("/api/*/bookings/issue-token")
 			.addPathPatterns("/api/*/bookings/exit-queue");
 		registry.addInterceptor(bookingTokenInterceptor)
-			.addPathPatterns("/api/*/bookings")
+			.addPathPatterns("/api/*/bookings/create")
 			.addPathPatterns("/api/*/exit")
 			.addPathPatterns("/api/*/seats")
 			.addPathPatterns("/api/*/*/select")
