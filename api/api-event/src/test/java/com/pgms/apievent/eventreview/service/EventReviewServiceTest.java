@@ -18,6 +18,7 @@ import com.pgms.apievent.eventreview.dto.response.EventReviewResponse;
 import com.pgms.apievent.factory.event.EventFactory;
 import com.pgms.apievent.factory.eventhall.EventHallFactory;
 import com.pgms.apievent.factory.eventreview.EventReviewFactory;
+import com.pgms.apievent.factory.member.MemberFactory;
 import com.pgms.coredomain.domain.event.Event;
 import com.pgms.coredomain.domain.event.EventHall;
 import com.pgms.coredomain.domain.event.EventReview;
@@ -25,7 +26,6 @@ import com.pgms.coredomain.domain.event.repository.EventHallRepository;
 import com.pgms.coredomain.domain.event.repository.EventRepository;
 import com.pgms.coredomain.domain.event.repository.EventReviewRepository;
 import com.pgms.coredomain.domain.member.Member;
-import com.pgms.coredomain.domain.member.enums.Gender;
 import com.pgms.coredomain.domain.member.repository.MemberRepository;
 
 @SpringBootTest
@@ -60,17 +60,7 @@ class EventReviewServiceTest {
 		// Given
 		EventHall eventHall = eventHallRepository.save(EventHallFactory.createEventHall());
 		Event event = eventRepository.save(EventFactory.createEvent(eventHall));
-		Member member = memberRepository.save(Member.builder()
-			.email("test@naver.com")
-			.password("encodedPassword")
-			.name("tester")
-			.phoneNumber("01011112222")
-			.birthDate("19990926")
-			.gender(Gender.MALE)
-			.streetAddress("서울특별시 송파구 올림픽로 300")
-			.detailAddress("롯데월드타워앤드롯데월드몰")
-			.zipCode("05551")
-			.build());
+		Member member = memberRepository.save(MemberFactory.createMember());
 
 		EventReviewCreateRequest request = new EventReviewCreateRequest(5, "공연이 너무 재밌어요 !");
 
@@ -88,17 +78,7 @@ class EventReviewServiceTest {
 		// Given
 		EventHall eventHall = eventHallRepository.save(EventHallFactory.createEventHall());
 		Event event = eventRepository.save(EventFactory.createEvent(eventHall));
-		Member member = memberRepository.save(Member.builder()
-			.email("test@naver.com")
-			.password("encodedPassword")
-			.name("tester")
-			.phoneNumber("01011112222")
-			.birthDate("19990926")
-			.gender(Gender.MALE)
-			.streetAddress("서울특별시 송파구 올림픽로 300")
-			.detailAddress("롯데월드타워앤드롯데월드몰")
-			.zipCode("05551")
-			.build());
+		Member member = memberRepository.save(MemberFactory.createMember());
 
 		List<EventReviewCreateRequest> requestList = IntStream.range(0, REQUEST_NUMBER)
 			.mapToObj(i -> new EventReviewCreateRequest(i, "리뷰 내용 " + i))
@@ -118,17 +98,7 @@ class EventReviewServiceTest {
 		// Given
 		EventHall eventHall = eventHallRepository.save(EventHallFactory.createEventHall());
 		Event event = eventRepository.save(EventFactory.createEvent(eventHall));
-		Member member = memberRepository.save(Member.builder()
-			.email("test@naver.com")
-			.password("encodedPassword")
-			.name("tester")
-			.phoneNumber("01011112222")
-			.birthDate("19990926")
-			.gender(Gender.MALE)
-			.streetAddress("서울특별시 송파구 올림픽로 300")
-			.detailAddress("롯데월드타워앤드롯데월드몰")
-			.zipCode("05551")
-			.build());
+		Member member = memberRepository.save(MemberFactory.createMember());
 
 		EventReview eventReview = eventReviewRepository.save(EventReviewFactory.createEventReview(event, member));
 
@@ -147,17 +117,7 @@ class EventReviewServiceTest {
 		// Given
 		EventHall eventHall = eventHallRepository.save(EventHallFactory.createEventHall());
 		Event event = eventRepository.save(EventFactory.createEvent(eventHall));
-		Member member = memberRepository.save(Member.builder()
-			.email("test@naver.com")
-			.password("encodedPassword")
-			.name("tester")
-			.phoneNumber("01011112222")
-			.birthDate("19990926")
-			.gender(Gender.MALE)
-			.streetAddress("서울특별시 송파구 올림픽로 300")
-			.detailAddress("롯데월드타워앤드롯데월드몰")
-			.zipCode("05551")
-			.build());
+		Member member = memberRepository.save(MemberFactory.createMember());
 
 		EventReview eventReview = eventReviewRepository.save(EventReviewFactory.createEventReview(event, member));
 		Long eventReviewId = eventReview.getId();
@@ -176,17 +136,7 @@ class EventReviewServiceTest {
 		// Given
 		EventHall eventHall = eventHallRepository.save(EventHallFactory.createEventHall());
 		Event event = eventRepository.save(EventFactory.createEvent(eventHall));
-		Member member = memberRepository.save(Member.builder()
-			.email("test@naver.com")
-			.password("encodedPassword")
-			.name("tester")
-			.phoneNumber("01011112222")
-			.birthDate("19990926")
-			.gender(Gender.MALE)
-			.streetAddress("서울특별시 송파구 올림픽로 300")
-			.detailAddress("롯데월드타워앤드롯데월드몰")
-			.zipCode("05551")
-			.build());
+		Member member = memberRepository.save(MemberFactory.createMember());
 
 		IntStream.range(0, REQUEST_NUMBER)
 			.forEach(i -> eventReviewRepository.save(new EventReview(i, "리뷰 내용 " + i, event, member)));
@@ -203,17 +153,7 @@ class EventReviewServiceTest {
 		// Given
 		EventHall eventHall = eventHallRepository.save(EventHallFactory.createEventHall());
 		Event event = eventRepository.save(EventFactory.createEvent(eventHall));
-		Member member = memberRepository.save(Member.builder()
-			.email("test@naver.com")
-			.password("encodedPassword")
-			.name("tester")
-			.phoneNumber("01011112222")
-			.birthDate("19990926")
-			.gender(Gender.MALE)
-			.streetAddress("서울특별시 송파구 올림픽로 300")
-			.detailAddress("롯데월드타워앤드롯데월드몰")
-			.zipCode("05551")
-			.build());
+		Member member = memberRepository.save(MemberFactory.createMember());
 
 		EventReview eventReview = eventReviewRepository.save(EventReviewFactory.createEventReview(event, member));
 
