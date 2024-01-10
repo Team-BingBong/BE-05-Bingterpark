@@ -4,10 +4,9 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
-import com.pgms.coredomain.domain.common.BookingErrorCode;
 import com.pgms.apibooking.common.exception.BookingException;
-import com.pgms.coresecurity.security.jwt.booking.BookingJwtPayload;
-import com.pgms.coresecurity.security.jwt.booking.BookingJwtProvider;
+import com.pgms.apibooking.common.jwt.BookingJwtPayload;
+import com.pgms.apibooking.common.jwt.BookingJwtProvider;
 import com.pgms.apibooking.domain.bookingqueue.dto.request.BookingQueueEnterRequest;
 import com.pgms.apibooking.domain.bookingqueue.dto.request.BookingQueueExitRequest;
 import com.pgms.apibooking.domain.bookingqueue.dto.request.TokenIssueRequest;
@@ -15,6 +14,7 @@ import com.pgms.apibooking.domain.bookingqueue.dto.response.OrderInQueueGetRespo
 import com.pgms.apibooking.domain.bookingqueue.dto.response.SessionIdIssueResponse;
 import com.pgms.apibooking.domain.bookingqueue.dto.response.TokenIssueResponse;
 import com.pgms.apibooking.domain.bookingqueue.repository.BookingQueueRepository;
+import com.pgms.coredomain.domain.common.BookingErrorCode;
 
 import lombok.RequiredArgsConstructor;
 
@@ -31,7 +31,7 @@ public class BookingQueueService {
 	}
 
 	public OrderInQueueGetResponse getOrderInQueue(Long eventId, String sessionId) {
-		Long myOrder = bookingQueueRepository.getRank(eventId, sessionId);
+		Long myOrder = getMyOrder(eventId, sessionId);
 		Boolean isMyTurn = isMyTurn(eventId, sessionId);
 
 		double currentTimeSeconds = System.currentTimeMillis() / 1000.0;
@@ -53,7 +53,7 @@ public class BookingQueueService {
 	}
 
 	private Boolean isMyTurn(Long eventId, String sessionId) {
-		Long myOrder = bookingQueueRepository.getRank(eventId, sessionId);
+		Long myOrder = getMyOrder(eventId, sessionId);
 		Long entryLimit = bookingQueueRepository.getEntryLimit();
 		return myOrder <= entryLimit;
 	}
@@ -65,5 +65,10 @@ public class BookingQueueService {
 	public SessionIdIssueResponse issueSessionId() {
 		UUID sessionId = UUID.randomUUID();
 		return SessionIdIssueResponse.from(sessionId.toString());
+	}
+
+	private Long getMyOrder(Long eventId, String sessionId) {
+		return bookingQueueRepository.getRank(eventId, sessionId)
+			.orElseThrow(() -> new BookingException(BookingErrorCode.NOT_IN_QUEUE));
 	}
 }
