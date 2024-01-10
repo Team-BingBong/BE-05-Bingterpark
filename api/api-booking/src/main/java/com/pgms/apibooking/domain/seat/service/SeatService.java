@@ -2,6 +2,7 @@ package com.pgms.apibooking.domain.seat.service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -37,9 +38,7 @@ public class SeatService { //TODO: 테스트 코드 작성
 			.toList();
 	}
 
-	public void selectSeat(Long seatId) {
-		Long memberId = 0L; //TODO: 인증된 memberId 지정
-
+	public void selectSeat(Long seatId, Long memberId) {
 		if (seatLockService.isSeatLocked(seatId)) {
 			throw new BookingException(BookingErrorCode.SEAT_BEING_BOOKED);
 		}
@@ -54,19 +53,29 @@ public class SeatService { //TODO: 테스트 코드 작성
 		seatLockService.lockSeat(seatId, memberId);
 	}
 
-	public void deselectSeat(Long seatId) {
-		Long memberId = 0L; //TODO: 인증된 memberId 지정
+	public void deselectSeat(Long seatId, Long memberId) {
+		Optional<Long> selectorIdOpt = seatLockService.getSelectorId(seatId);
 
-		//TODO: lock 걸어둔 멤버에게 요청이 들어왔는지 검증 후, 아래 로직을 수행한다
+		if(selectorIdOpt.isEmpty()) {
+			updateSeatStatusToAvailable(seatId);
+			throw new BookingException(BookingErrorCode.SEAT_SELECTION_EXPIRED);
+		}
+		
+		if (!selectorIdOpt.get().equals(memberId)) {
+			throw new BookingException(BookingErrorCode.SEAT_SELECTED_BY_ANOTHER_MEMBER);
+		}
 
-		EventSeat seat = getSeat(seatId);
-
-		seat.updateStatus(EventSeatStatus.AVAILABLE);
+		updateSeatStatusToAvailable(seatId);
 		seatLockService.unlockSeat(seatId);
 	}
 
 	private EventSeat getSeat(Long seatId) {
 		return eventSeatRepository.findById(seatId)
 			.orElseThrow(() -> new BookingException(BookingErrorCode.SEAT_NOT_FOUND));
+	}
+
+	private void updateSeatStatusToAvailable(Long seatId) {
+		EventSeat seat = getSeat(seatId);
+		seat.updateStatus(EventSeatStatus.AVAILABLE);
 	}
 }

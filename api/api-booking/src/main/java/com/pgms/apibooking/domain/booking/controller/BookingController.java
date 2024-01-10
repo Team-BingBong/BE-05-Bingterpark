@@ -38,7 +38,8 @@ public class BookingController {
 	public ResponseEntity<ApiResponse<BookingCreateResponse>> createBooking(
 		//@CurrentAccount Long memberId,
 		@RequestBody @Valid BookingCreateRequest request,
-		HttpServletRequest httpRequest) {
+		HttpServletRequest httpRequest
+	) {
 		BookingCreateResponse createdBooking = bookingService.createBooking(request, 1L); //TODO: 인증된 memberId 지정
 		ApiResponse<BookingCreateResponse> response = ApiResponse.ok(createdBooking);
 		URI location = UriComponentsBuilder
@@ -53,7 +54,8 @@ public class BookingController {
 	public ResponseEntity<Void> cancelBooking(
 		//@CurrentAccount Long memberId,
 		@PathVariable String id,
-		@RequestBody @Valid BookingCancelRequest request) {
+		@RequestBody @Valid BookingCancelRequest request
+	) {
 		bookingService.cancelBooking(id, request, 1L); //TODO: 인증된 memberId 지정
 		return ResponseEntity.ok().build();
 	}
