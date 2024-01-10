@@ -13,13 +13,18 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.pgms.apibooking.common.exception.BookingException;
+import com.pgms.apibooking.common.exception.TossPaymentException;
 import com.pgms.apibooking.config.TossPaymentConfig;
 import com.pgms.apibooking.domain.payment.dto.request.PaymentCancelRequest;
 import com.pgms.apibooking.domain.payment.dto.request.PaymentConfirmRequest;
 import com.pgms.apibooking.domain.payment.dto.response.PaymentCancelResponse;
 import com.pgms.apibooking.domain.payment.dto.response.PaymentSuccessResponse;
 import com.pgms.coredomain.domain.common.BookingErrorCode;
-import com.pgms.apibooking.common.exception.BookingException;
+import com.pgms.coredomain.response.ErrorResponse;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -41,7 +46,9 @@ public class TossPaymentServiceImpl implements TossPaymentService {
 				TossPaymentConfig.TOSS_CONFIRM_URL, new HttpEntity<>(request, headers), PaymentSuccessResponse.class);
 		} catch (HttpClientErrorException e) {
 			log.warn("HttpClientErrorException: {}", e.getMessage());
-			throw new BookingException(BookingErrorCode.TOSS_PAYMENTS_ERROR);
+			log.warn("body : {}", e.getResponseBodyAsString());
+			ErrorResponse errorResponse = handleHttpClientErrorException(e.getResponseBodyAsString());
+			throw new TossPaymentException(errorResponse);
 		} catch (Exception e) {
 			log.error("Exception: {}", e.getMessage(), e);
 			throw new BookingException(BookingErrorCode.INTERNAL_SERVER_ERROR);
@@ -55,6 +62,9 @@ public class TossPaymentServiceImpl implements TossPaymentService {
 		try {
 			return restTemplate.postForObject(
 				uri, new HttpEntity<>(request, headers), PaymentCancelResponse.class);
+		} catch (HttpClientErrorException e) {
+			ErrorResponse errorResponse = handleHttpClientErrorException(e.getResponseBodyAsString());
+			throw new TossPaymentException(errorResponse);
 		} catch (Exception e) {
 			log.error("Exception: {}", e.getMessage(), e);
 			throw new BookingException(BookingErrorCode.INTERNAL_SERVER_ERROR);
@@ -70,5 +80,20 @@ public class TossPaymentServiceImpl implements TossPaymentService {
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
 		return headers;
+	}
+
+	private ErrorResponse handleHttpClientErrorException(String body) {
+		if (body == null | body.isBlank()) {
+			throw new BookingException(BookingErrorCode.INTERNAL_SERVER_ERROR);
+		}
+		try {
+			ObjectMapper objectMapper = new ObjectMapper();
+			JsonNode jsonNode = objectMapper.readTree(body);
+			String code = jsonNode.get("code").asText();
+			String message = jsonNode.get("message").asText();
+			return new ErrorResponse(code, message);
+		} catch (JsonProcessingException e) {
+			throw new BookingException(BookingErrorCode.INTERNAL_SERVER_ERROR);
+		}
 	}
 }
