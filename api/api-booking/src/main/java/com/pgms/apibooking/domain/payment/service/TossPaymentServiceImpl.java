@@ -7,6 +7,7 @@ import java.util.Collections;
 
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,7 +48,8 @@ public class TossPaymentServiceImpl implements TossPaymentService {
 		} catch (HttpClientErrorException e) {
 			log.warn("HttpClientErrorException: {}", e.getMessage());
 			ErrorResponse errorResponse = handleHttpClientErrorException(e.getResponseBodyAsString());
-			throw new TossPaymentException(errorResponse);
+			HttpStatus status = (HttpStatus)e.getStatusCode();
+			throw new TossPaymentException(errorResponse, status);
 		} catch (Exception e) {
 			log.error("Exception: {}", e.getMessage(), e);
 			throw new BookingException(BookingErrorCode.INTERNAL_SERVER_ERROR);
@@ -63,7 +65,8 @@ public class TossPaymentServiceImpl implements TossPaymentService {
 				uri, new HttpEntity<>(request, headers), PaymentCancelResponse.class);
 		} catch (HttpClientErrorException e) {
 			ErrorResponse errorResponse = handleHttpClientErrorException(e.getResponseBodyAsString());
-			throw new TossPaymentException(errorResponse);
+			HttpStatus status = (HttpStatus)e.getStatusCode();
+			throw new TossPaymentException(errorResponse, status);
 		} catch (Exception e) {
 			log.error("Exception: {}", e.getMessage(), e);
 			throw new BookingException(BookingErrorCode.INTERNAL_SERVER_ERROR);

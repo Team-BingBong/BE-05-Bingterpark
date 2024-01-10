@@ -67,7 +67,7 @@ public class BookingExceptionHandler extends ResponseEntityExceptionHandler {
 	protected ResponseEntity<ErrorResponse> handleTossPaymentException(TossPaymentException ex) {
 		ErrorResponse response = new ErrorResponse(ex.getCode(), ex.getMessage());
 		log.warn("TossPaymentException Occurred : {}", response.getErrorMessage());
-		return ResponseEntity.internalServerError().body(response);
+		return ResponseEntity.status(ex.getStatus()).body(response);
 	}
 
 	@ExceptionHandler(BookingException.class)
