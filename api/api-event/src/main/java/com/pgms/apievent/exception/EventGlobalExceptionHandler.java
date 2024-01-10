@@ -1,8 +1,10 @@
 package com.pgms.apievent.exception;
 
-import com.pgms.coredomain.domain.common.BaseErrorCode;
-import com.pgms.coredomain.response.ErrorResponse;
-import lombok.extern.slf4j.Slf4j;
+import static com.pgms.apievent.exception.EventErrorCode.*;
+
+import java.util.List;
+import java.util.Objects;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -14,10 +16,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import com.pgms.coredomain.domain.common.BaseErrorCode;
 import com.pgms.coredomain.response.ErrorResponse;
 import com.pgms.coresecurity.security.exception.SecurityCustomException;
-import java.util.List;
-import java.util.Objects;
 
-import static com.pgms.apievent.exception.EventErrorCode.VALIDATION_FAILED;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RestControllerAdvice
@@ -48,8 +48,9 @@ public class EventGlobalExceptionHandler {
 		log.warn(">>>>> SecurityCustomException : {}", ex);
 		BaseErrorCode errorCode = ex.getErrorCode();
 		return ResponseEntity.status(errorCode.getStatus()).body(errorCode.getErrorResponse());
+	}
 
-    @ExceptionHandler(Exception.class)
+	@ExceptionHandler(Exception.class)
 	protected ResponseEntity<ErrorResponse> handleGlobalException(Exception ex) {
 		log.error(">>>>> Internal Server Error : {}", ex);
 		ErrorResponse errorResponse = new ErrorResponse("INTERNAL SERVER ERROR", ex.getMessage());
