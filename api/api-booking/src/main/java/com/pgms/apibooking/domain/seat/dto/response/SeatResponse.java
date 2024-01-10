@@ -3,14 +3,16 @@ package com.pgms.apibooking.domain.seat.dto.response;
 import com.pgms.coredomain.domain.event.EventSeat;
 
 public record SeatResponse(
+	Long id,
 	String name,
-	boolean isAvailable
+	boolean isSelectable
 ) {
 
 	public static SeatResponse from(EventSeat seat) {
 		return new SeatResponse(
+			seat.getId(),
 			seat.getName(),
-			seat.isAvailable()
+			!seat.isBooked()
 		);
 	}
 }
