@@ -37,9 +37,9 @@ public class CurrentAccountArgumentResolver implements HandlerMethodArgumentReso
 	public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
 		NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		UserDetailsImpl userDetails = (UserDetailsImpl)authentication.getPrincipal();
 		checkAuthenticated(authentication);
 		checkBlockedToken(authentication);
-		UserDetailsImpl userDetails = (UserDetailsImpl)authentication.getPrincipal();
 		return userDetails.getId();
 	}
 

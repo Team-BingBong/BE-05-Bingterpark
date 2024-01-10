@@ -83,7 +83,8 @@ public class WebSecurityConfig {
 		List<RequestMatcher> requestMatchers = List.of(
 			antMatcher("/login"),
 			antMatcher("/api/v1/auth/**"),
-			antMatcher("/api/v1/members/signup"));
+			antMatcher("/api/v1/members/signup"),
+			antMatcher("/api/v1/members/restore"));
 		return requestMatchers.toArray(RequestMatcher[]::new);
 	}
 

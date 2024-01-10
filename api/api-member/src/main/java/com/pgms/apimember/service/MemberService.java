@@ -84,7 +84,6 @@ public class MemberService {
 		Member member = memberRepository.findByIdAndIsDeletedTrue(memberId)
 			.orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
 		member.updateToActive();
-		blockedTokenRepository.deleteById(getCurrentAccessToken());
 		return member.getId();
 	}
 

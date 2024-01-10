@@ -1,7 +1,6 @@
 package com.pgms.coresecurity.security.service;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import org.springframework.security.core.GrantedAuthority;
@@ -28,14 +27,14 @@ public class UserDetailsImpl implements UserDetails {
 	public static UserDetails from(Admin admin) {
 		List<GrantedAuthority> authorities = admin.getRole() != null ?
 			List.of(new SimpleGrantedAuthority(admin.getRole().name()))
-			: Collections.emptyList();
+			: null;
 		return new UserDetailsImpl(admin.getId(), admin.getEmail(), admin.getPassword(), authorities);
 	}
 
 	public static UserDetails from(Member member) {
 		List<GrantedAuthority> authorities = member.getRole() != null ?
 			List.of(new SimpleGrantedAuthority(member.getRole().name()))
-			: Collections.emptyList();
+			: null;
 		return new UserDetailsImpl(member.getId(), member.getEmail(), member.getPassword(), authorities);
 	}
 
