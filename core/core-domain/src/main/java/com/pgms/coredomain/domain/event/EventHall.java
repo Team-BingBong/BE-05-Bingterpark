@@ -33,6 +33,12 @@ public class EventHall extends BaseEntity {
         this.name = name;
         this.address = address;
         this.eventHallSeats = eventHallSeats;
+        setEventHallSeatsEventHall();
+    }
+
+    public void setEventHallSeatsEventHall(){
+        if(this.eventHallSeats == null) return;
+        this.eventHallSeats.forEach(eventHallSeat -> eventHallSeat.setEventHall(this));
     }
 
     public void updateEventHall(EventHallEdit eventHallEdit){
