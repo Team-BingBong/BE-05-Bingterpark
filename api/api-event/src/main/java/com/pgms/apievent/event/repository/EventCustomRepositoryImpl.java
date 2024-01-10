@@ -1,26 +1,24 @@
 package com.pgms.apievent.event.repository;
 
-import static com.pgms.coredomain.domain.booking.QBooking.*;
-import static com.pgms.coredomain.domain.event.QEvent.*;
-import static com.pgms.coredomain.domain.event.QEventReview.*;
-import static com.pgms.coredomain.domain.event.QEventTime.*;
-
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.List;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.support.PageableExecutionUtils;
-import org.springframework.stereotype.Repository;
-
 import com.pgms.apievent.event.dto.request.EventPageRequest;
 import com.pgms.apievent.event.dto.response.EventResponse;
 import com.pgms.coredomain.domain.event.GenreType;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.support.PageableExecutionUtils;
+import org.springframework.stereotype.Repository;
+
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.List;
+
+import static com.pgms.coredomain.domain.booking.QBooking.booking;
+import static com.pgms.coredomain.domain.event.QEvent.event;
+import static com.pgms.coredomain.domain.event.QEventReview.eventReview;
+import static com.pgms.coredomain.domain.event.QEventTime.eventTime;
 
 @Repository
 @RequiredArgsConstructor
@@ -55,7 +53,7 @@ public class EventCustomRepositoryImpl implements EventCustomRepository {
 
 		JPAQuery<Long> countQuery = jpaQueryFactory.select(event.count())
 			.from(event)
-			.join(eventTime).fetchJoin()
+			.leftJoin(eventTime).fetchJoin()
 			.on(eventTime.event.eq(event))
 			.leftJoin(booking).fetchJoin()
 			.on(eventTime.id.eq(booking.time.id))

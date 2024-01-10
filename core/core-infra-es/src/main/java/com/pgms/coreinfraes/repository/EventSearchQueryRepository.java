@@ -1,12 +1,21 @@
 package com.pgms.coreinfraes.repository;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
+import co.elastic.clients.elasticsearch._types.FieldValue;
+import co.elastic.clients.elasticsearch._types.Script;
+import co.elastic.clients.elasticsearch._types.ScriptLanguage;
+import co.elastic.clients.elasticsearch._types.aggregations.Aggregation;
+import co.elastic.clients.elasticsearch._types.aggregations.AggregationBuilders;
+import co.elastic.clients.elasticsearch._types.aggregations.StringTermsBucket;
+import co.elastic.clients.elasticsearch._types.query_dsl.Query;
+import co.elastic.clients.elasticsearch._types.query_dsl.*;
+import co.elastic.clients.json.JsonData;
+import com.pgms.coreinfraes.document.AccessLogDocument;
+import com.pgms.coreinfraes.document.EventDocument;
+import com.pgms.coreinfraes.dto.EventDocumentResponse;
+import com.pgms.coreinfraes.dto.EventKeywordSearchDto;
+import com.pgms.coreinfraes.dto.TopTenSearchResponse;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.client.elc.ElasticsearchAggregations;
@@ -18,34 +27,15 @@ import org.springframework.data.elasticsearch.core.SearchHitSupport;
 import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.data.elasticsearch.core.document.Document;
 import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
-import org.springframework.data.elasticsearch.core.query.FetchSourceFilter;
-import org.springframework.data.elasticsearch.core.query.ScriptData;
-import org.springframework.data.elasticsearch.core.query.ScriptedField;
-import org.springframework.data.elasticsearch.core.query.SourceFilter;
-import org.springframework.data.elasticsearch.core.query.UpdateQuery;
+import org.springframework.data.elasticsearch.core.query.*;
 import org.springframework.stereotype.Repository;
 
-import com.pgms.coreinfraes.document.AccessLogDocument;
-import com.pgms.coreinfraes.document.EventDocument;
-import com.pgms.coreinfraes.dto.EventDocumentResponse;
-import com.pgms.coreinfraes.dto.EventKeywordSearchDto;
-import com.pgms.coreinfraes.dto.TopTenSearchResponse;
-
-import co.elastic.clients.elasticsearch._types.FieldValue;
-import co.elastic.clients.elasticsearch._types.Script;
-import co.elastic.clients.elasticsearch._types.ScriptLanguage;
-import co.elastic.clients.elasticsearch._types.aggregations.Aggregation;
-import co.elastic.clients.elasticsearch._types.aggregations.AggregationBuilders;
-import co.elastic.clients.elasticsearch._types.aggregations.StringTermsBucket;
-import co.elastic.clients.elasticsearch._types.query_dsl.FieldValueFactorModifier;
-import co.elastic.clients.elasticsearch._types.query_dsl.FieldValueFactorScoreFunction;
-import co.elastic.clients.elasticsearch._types.query_dsl.FunctionScore;
-import co.elastic.clients.elasticsearch._types.query_dsl.Query;
-import co.elastic.clients.elasticsearch._types.query_dsl.QueryBuilders;
-import co.elastic.clients.elasticsearch._types.query_dsl.TermsQueryField;
-import co.elastic.clients.json.JsonData;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 @Slf4j
 @Repository
@@ -161,7 +151,7 @@ public class EventSearchQueryRepository {
 
 		Query multiQuery = QueryBuilders.multiMatch()
 			.query(eventKeywordSearchDto.keyword())
-			.fields("title^1", "title_chosung^1", "description^1", "genreType^1")
+			.fields("title.ngram^1", "title_chosung^1", "description^1", "genreType^1")
 			.minimumShouldMatch(MINIMUM_SHOULD_MATCH_PERCENTAGE)
 			.build()._toQuery();
 
