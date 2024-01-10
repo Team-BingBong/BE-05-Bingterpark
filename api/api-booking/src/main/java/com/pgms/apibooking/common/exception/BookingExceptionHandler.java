@@ -15,8 +15,10 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import com.pgms.coredomain.domain.common.BaseErrorCode;
 import com.pgms.coredomain.domain.common.BookingErrorCode;
 import com.pgms.coredomain.response.ErrorResponse;
+import com.pgms.coresecurity.security.exception.SecurityCustomException;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -75,5 +77,12 @@ public class BookingExceptionHandler extends ResponseEntityExceptionHandler {
 		ErrorResponse response = ex.getErrorCode().getErrorResponse();
 		log.warn("Booking Exception Occurred : {}", response.getErrorMessage());
 		return ResponseEntity.status(ex.getErrorCode().getStatus()).body(response);
+	}
+
+	@ExceptionHandler(SecurityCustomException.class)
+	protected ResponseEntity<ErrorResponse> handleSecurityCustomException(SecurityCustomException ex) {
+		log.warn("SecurityCustomException Occurred: {}", ex);
+		BaseErrorCode errorCode = ex.getErrorCode();
+		return ResponseEntity.status(errorCode.getStatus()).body(errorCode.getErrorResponse());
 	}
 }
