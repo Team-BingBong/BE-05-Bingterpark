@@ -156,4 +156,8 @@ public class Booking extends BaseEntity {
 		this.cancel = cancel;
 		cancel.updateBooking(this);
 	}
+
+	public boolean isSameBooker(Long memberId) {
+		return this.member.getId().equals(memberId);
+	}
 }
