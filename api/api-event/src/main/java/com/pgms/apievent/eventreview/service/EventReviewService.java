@@ -42,9 +42,9 @@ public class EventReviewService {
 	}
 
 	public EventReviewResponse updateEventReview(Long memberId, Long reviewId, EventReviewUpdateRequest request) {
-		// TODO : 작성자와 현재 로그인한 사람이 일치하는지 검증 로직 필요
 		Member member = getMember(memberId);
 		EventReview eventReview = getEventReview(reviewId);
+		validateReviewer(eventReview, member);
 		eventReview.updateEventReview(request.content());
 		return EventReviewResponse.of(eventReview);
 	}
@@ -64,9 +64,9 @@ public class EventReviewService {
 	}
 
 	public void deleteEventReviewById(Long memberId, Long reviewId) {
-		// TODO : 작성자와 현재 로그인한 사람이 일치하는지 검증 로직 필요
 		Member member = getMember(memberId);
 		EventReview eventReview = getEventReview(reviewId);
+		validateReviewer(eventReview, member);
 		eventReviewRepository.delete(eventReview);
 	}
 
@@ -78,5 +78,11 @@ public class EventReviewService {
 	private Member getMember(Long memberId) {
 		return memberRepository.findById(memberId)
 			.get();
+	}
+
+	private void validateReviewer(EventReview eventReview, Member member) {
+		if (!eventReview.isSameReviewer(member)) {
+			throw new EventException(REVIEWER_MISMATCH_EXCEPTION);
+		}
 	}
 }

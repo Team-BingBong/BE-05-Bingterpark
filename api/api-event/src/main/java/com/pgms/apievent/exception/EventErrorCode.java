@@ -17,6 +17,7 @@ public enum EventErrorCode implements BaseErrorCode {
 	EVENT_TIME_NOT_FOUND("EVENT TIME NOT FOUND", HttpStatus.NOT_FOUND, "존재하지 않는 회차입니다."),
 	ALREADY_EXIST_EVENT_TIME("EVENT TIME ALREADY EXISTS", HttpStatus.CONFLICT, "공연에 대한 회차가 이미 존재합니다."),
 	VALIDATION_FAILED("VALIDATION FAILED", HttpStatus.BAD_REQUEST, "입력값에 대한 검증에 실패했습니다."),
+	REVIEWER_MISMATCH_EXCEPTION("REVIEWER MISMATCH", HttpStatus.BAD_REQUEST, "리뷰 작성자가 일치하지 않습니다."),
 	EVENT_REVIEW_NOT_FOUND("EVENT REVIEW NOT FOUND", HttpStatus.NOT_FOUND, "존재하지 않는 공연 리뷰입니다."),
 	UNSUPPORTED_FILE_EXTENSION("UNSUPPORTED FILE EXTENSION", HttpStatus.BAD_REQUEST, "지원되지 않는 파일 확장자입니다."),
 	S3_UPLOAD_FAILED_EXCEPTION("S3 UPLOAD FAILED", HttpStatus.INTERNAL_SERVER_ERROR, "S3에 파일 업로드를 실패했습니다.");
