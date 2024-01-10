@@ -11,6 +11,7 @@ import co.elastic.clients.elasticsearch._types.query_dsl.*;
 import co.elastic.clients.json.JsonData;
 import com.pgms.coreinfraes.document.AccessLogDocument;
 import com.pgms.coreinfraes.document.EventDocument;
+import com.pgms.coreinfraes.dto.EventDocumentResponse;
 import com.pgms.coreinfraes.dto.EventKeywordSearchDto;
 import com.pgms.coreinfraes.dto.TopTenSearchResponse;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +21,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.client.elc.ElasticsearchAggregations;
 import org.springframework.data.elasticsearch.client.elc.NativeQuery;
 import org.springframework.data.elasticsearch.client.elc.NativeQueryBuilder;
-import org.springframework.data.elasticsearch.core.*;
+import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
+import org.springframework.data.elasticsearch.core.ScriptType;
+import org.springframework.data.elasticsearch.core.SearchHitSupport;
+import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.data.elasticsearch.core.document.Document;
 import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
 import org.springframework.data.elasticsearch.core.query.*;
@@ -42,29 +46,40 @@ public class EventSearchQueryRepository {
 
 	private final ElasticsearchOperations elasticsearchOperations;
 
-	public Page<EventDocument> findByKeyword(EventKeywordSearchDto eventKeywordSearchDto) {
+	public Page<EventDocumentResponse> findByKeyword(EventKeywordSearchDto eventKeywordSearchDto) {
 		Pageable pageable = eventKeywordSearchDto.pageable();
 		NativeQuery query = getKeywordSearchNativeQuery(eventKeywordSearchDto).setPageable(pageable);
 
 		SearchHits<EventDocument> searchHits = elasticsearchOperations.search(query, EventDocument.class);
 		log.info("event-keyword-search, {}", eventKeywordSearchDto.keyword());
 
-		return SearchHitSupport.searchPageFor(searchHits, query.getPageable()).map(SearchHit::getContent);
+		return SearchHitSupport.searchPageFor(searchHits, query.getPageable()).map(s -> {
+			EventDocument eventDocument = s.getContent();
+			return EventDocumentResponse.of(eventDocument);
+		});
 	}
 
-	public List<TopTenSearchResponse> getRecentTop10Keywords(){
+	public List<TopTenSearchResponse> getRecentTop10Keywords() {
 		NativeQuery searchQuery = getRecentTop10KeywordsNativeQuery();
 
-		SearchHits<AccessLogDocument> searchHits = elasticsearchOperations.search(searchQuery, AccessLogDocument.class, IndexCoordinates.of("logstash*"));
+		SearchHits<AccessLogDocument> searchHits = elasticsearchOperations.search(searchQuery, AccessLogDocument.class,
+			IndexCoordinates.of("logstash*"));
 
-		ElasticsearchAggregations aggregations = (ElasticsearchAggregations) searchHits.getAggregations();
+		ElasticsearchAggregations aggregations = (ElasticsearchAggregations)searchHits.getAggregations();
 		assert aggregations != null;
-		List<StringTermsBucket> topTenBuckets = aggregations.aggregationsAsMap().get("top_ten").aggregation().getAggregate().sterms().buckets().array();
+		List<StringTermsBucket> topTenBuckets = aggregations.aggregationsAsMap()
+			.get("top_ten")
+			.aggregation()
+			.getAggregate()
+			.sterms()
+			.buckets()
+			.array();
 
 		List<TopTenSearchResponse> result = new ArrayList<>();
 
 		topTenBuckets.forEach(topTenBucket -> {
-			TopTenSearchResponse topTenSearchResponse = new TopTenSearchResponse(topTenBucket.key().stringValue(), topTenBucket.docCount());
+			TopTenSearchResponse topTenSearchResponse = new TopTenSearchResponse(topTenBucket.key().stringValue(),
+				topTenBucket.docCount());
 			result.add(topTenSearchResponse);
 		});
 
@@ -75,23 +90,27 @@ public class EventSearchQueryRepository {
 		NativeQueryBuilder queryBuilder = new NativeQueryBuilder();
 
 		Query matchQuery = QueryBuilders.match()
-				.field("message")
-				.query("event-keyword-search")
-				.build()
-				._toQuery();
+			.field("message")
+			.query("event-keyword-search")
+			.build()
+			._toQuery();
 
 		Query loggerQuery = QueryBuilders.term()
-				.field("logger_name.keyword")
-				.value("com.pgms.coreinfraes.repository.EventSearchQueryRepository")
-				.build()
-				._toQuery();
+			.field("logger_name.keyword")
+			.value("com.pgms.coreinfraes.repository.EventSearchQueryRepository")
+			.build()
+			._toQuery();
 
 		Query rangeQuery = QueryBuilders.range()
-				.field("@timestamp")
-				.gte(JsonData.of(LocalDateTime.now().truncatedTo(ChronoUnit.HOURS).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()))
-				.lte(JsonData.of(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()))
-				.build()
-				._toQuery();
+			.field("@timestamp")
+			.gte(JsonData.of(LocalDateTime.now()
+				.truncatedTo(ChronoUnit.HOURS)
+				.atZone(ZoneId.systemDefault())
+				.toInstant()
+				.toEpochMilli()))
+			.lte(JsonData.of(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()))
+			.build()
+			._toQuery();
 
 		Script script = Script.of(scriptBuilder -> scriptBuilder.inline(inlineScriptBuilder ->
 			inlineScriptBuilder.lang(ScriptLanguage.Painless)
@@ -100,32 +119,31 @@ public class EventSearchQueryRepository {
 		));
 
 		Aggregation agg = AggregationBuilders.terms()
-				.script(script)
-				.size(10)
-				.build()
-				._toAggregation();
-
+			.script(script)
+			.size(10)
+			.build()
+			._toAggregation();
 
 		Query boolQuery = QueryBuilders.bool()
-						.must(matchQuery, loggerQuery, rangeQuery)
-						.build()
-						._toQuery();
+			.must(matchQuery, loggerQuery, rangeQuery)
+			.build()
+			._toQuery();
 
 		ScriptedField scriptedField = new ScriptedField("search_keyword", new ScriptData(
-				ScriptType.INLINE,
-				"painless",
-				"return doc['message.keyword'].value.substring(22);",
-				"keyword_script",
-				Collections.emptyMap()
+			ScriptType.INLINE,
+			"painless",
+			"return doc['message.keyword'].value.substring(22);",
+			"keyword_script",
+			Collections.emptyMap()
 		));
 
 		SourceFilter sourceFilter = new FetchSourceFilter(new String[] {"*"}, new String[] {});
 
 		return queryBuilder.withQuery(boolQuery)
-				.withSourceFilter(sourceFilter)
-				.withScriptedField(scriptedField)
-				.withAggregation("top_ten", agg)
-				.build();
+			.withSourceFilter(sourceFilter)
+			.withScriptedField(scriptedField)
+			.withAggregation("top_ten", agg)
+			.build();
 	}
 
 	private NativeQuery getKeywordSearchNativeQuery(EventKeywordSearchDto eventKeywordSearchDto) {
@@ -133,7 +151,7 @@ public class EventSearchQueryRepository {
 
 		Query multiQuery = QueryBuilders.multiMatch()
 			.query(eventKeywordSearchDto.keyword())
-			.fields("title^1", "title_chosung^1", "description^1", "genreType^1")
+			.fields("title.ngram^1", "title_chosung^1", "description^1", "genreType^1")
 			.minimumShouldMatch(MINIMUM_SHOULD_MATCH_PERCENTAGE)
 			.build()._toQuery();
 

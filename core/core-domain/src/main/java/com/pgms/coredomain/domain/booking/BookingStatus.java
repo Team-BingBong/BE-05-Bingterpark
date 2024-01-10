@@ -12,4 +12,13 @@ public enum BookingStatus {
 	CANCELED("취소");
 
 	private final String description;
+
+	public static BookingStatus fromDescription(String description) {
+		for (BookingStatus bookingStatus : BookingStatus.values()) {
+			if (bookingStatus.description.equals(description)) {
+				return bookingStatus;
+			}
+		}
+		throw new IllegalArgumentException("다음 예매 상태를 찾을 수 없습니다 : " + description);
+	}
 }

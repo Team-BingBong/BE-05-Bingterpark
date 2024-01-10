@@ -14,6 +14,7 @@ import com.pgms.apibooking.domain.seat.dto.request.SeatsGetRequest;
 import com.pgms.apibooking.domain.seat.dto.response.AreaResponse;
 import com.pgms.apibooking.domain.seat.service.SeatService;
 import com.pgms.coredomain.response.ApiResponse;
+import com.pgms.coresecurity.security.resolver.CurrentAccount;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -32,14 +33,14 @@ public class SeatController {
 	}
 
 	@PostMapping("/{seatId}/select")
-	public ResponseEntity<Void> selectSeat(@PathVariable Long seatId) {
-		seatService.selectSeat(seatId);
+	public ResponseEntity<Void> selectSeat(@PathVariable Long seatId, @CurrentAccount Long memberId) {
+		seatService.selectSeat(seatId, memberId);
 		return ResponseEntity.ok().build();
 	}
 
 	@PostMapping("/{seatId}/deselect")
-	public ResponseEntity<Void> deselectSeat(@PathVariable Long seatId) {
-		seatService.deselectSeat(seatId);
+	public ResponseEntity<Void> deselectSeat(@PathVariable Long seatId, @CurrentAccount Long memberId) {
+		seatService.deselectSeat(seatId, memberId);
 		return ResponseEntity.ok().build();
 	}
 }

@@ -1,12 +1,12 @@
 ### 세션 아이디 발급
 POST http://localhost:8082/api/v1/bookings/issue-session-id
-#Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwic3ViIjoiam9obi5kb2VAZXhhbXBsZS5jb20iLCJpYXQiOjE3MDQ2OTE0OTEsImV4cCI6MTgwNDY4MzI5MSwiYXV0aG9yaXR5IjoiUk9MRV9VU0VSIn0.wFNSz2uwRa35jP1KihNlTOewVLgMMeg3ADQ5Kztl3QQ
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwic3ViIjoiam9obi5kb2VAZXhhbXBsZS5jb20iLCJpYXQiOjE3MDQ2OTE0OTEsImV4cCI6MTgwNDY4MzI5MSwiYXV0aG9yaXR5IjoiUk9MRV9VU0VSIn0.wFNSz2uwRa35jP1KihNlTOewVLgMMeg3ADQ5Kztl3QQ
 
 ### 대기열 진입
 POST http://localhost:8082/api/v1/bookings/enter-queue
 Content-Type: application/json
-#Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwic3ViIjoiam9obi5kb2VAZXhhbXBsZS5jb20iLCJpYXQiOjE3MDQ2OTE0OTEsImV4cCI6MTgwNDY4MzI5MSwiYXV0aG9yaXR5IjoiUk9MRV9VU0VSIn0.wFNSz2uwRa35jP1KihNlTOewVLgMMeg3ADQ5Kztl3QQ
-Booking-Session-Id: {세션아이디}
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwic3ViIjoiam9obi5kb2VAZXhhbXBsZS5jb20iLCJpYXQiOjE3MDQ2OTE0OTEsImV4cCI6MTgwNDY4MzI5MSwiYXV0aG9yaXR5IjoiUk9MRV9VU0VSIn0.wFNSz2uwRa35jP1KihNlTOewVLgMMeg3ADQ5Kztl3QQ
+Booking-Session-Id: {sessionId}
 
 {
   "eventId": 1
@@ -14,15 +14,15 @@ Booking-Session-Id: {세션아이디}
 
 ### 대기열 조회
 GET http://localhost:8082/api/v1/bookings/order-in-queue?eventId=1
-#Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwic3ViIjoiam9obi5kb2VAZXhhbXBsZS5jb20iLCJpYXQiOjE3MDQ2OTE0OTEsImV4cCI6MTgwNDY4MzI5MSwiYXV0aG9yaXR5IjoiUk9MRV9VU0VSIn0.wFNSz2uwRa35jP1KihNlTOewVLgMMeg3ADQ5Kztl3QQ
-Booking-Session-Id: {세션아이디}
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwic3ViIjoiam9obi5kb2VAZXhhbXBsZS5jb20iLCJpYXQiOjE3MDQ2OTE0OTEsImV4cCI6MTgwNDY4MzI5MSwiYXV0aG9yaXR5IjoiUk9MRV9VU0VSIn0.wFNSz2uwRa35jP1KihNlTOewVLgMMeg3ADQ5Kztl3QQ
+Booking-Session-Id: {sessionId}
 
 
 ### 예매 토큰 발급
 POST http://localhost:8082/api/v1/bookings/issue-token
 Content-Type: application/json
-#Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwic3ViIjoiam9obi5kb2VAZXhhbXBsZS5jb20iLCJpYXQiOjE3MDQ2OTE0OTEsImV4cCI6MTgwNDY4MzI5MSwiYXV0aG9yaXR5IjoiUk9MRV9VU0VSIn0.wFNSz2uwRa35jP1KihNlTOewVLgMMeg3ADQ5Kztl3QQ
-Booking-Session-Id: {세션아이디}
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwic3ViIjoiam9obi5kb2VAZXhhbXBsZS5jb20iLCJpYXQiOjE3MDQ2OTE0OTEsImV4cCI6MTgwNDY4MzI5MSwiYXV0aG9yaXR5IjoiUk9MRV9VU0VSIn0.wFNSz2uwRa35jP1KihNlTOewVLgMMeg3ADQ5Kztl3QQ
+Booking-Session-Id: {sessionId}
 
 {
   "eventId": 1
@@ -31,8 +31,8 @@ Booking-Session-Id: {세션아이디}
 ### [Optional] 대기열 이탈
 POST http://localhost:8082/api/v1/bookings/exit-queue
 Content-Type: application/json
-#Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwic3ViIjoiam9obi5kb2VAZXhhbXBsZS5jb20iLCJpYXQiOjE3MDQ2OTE0OTEsImV4cCI6MTgwNDY4MzI5MSwiYXV0aG9yaXR5IjoiUk9MRV9VU0VSIn0.wFNSz2uwRa35jP1KihNlTOewVLgMMeg3ADQ5Kztl3QQ
-Booking-Session-Id: {세션아이디}
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwic3ViIjoiam9obi5kb2VAZXhhbXBsZS5jb20iLCJpYXQiOjE3MDQ2OTE0OTEsImV4cCI6MTgwNDY4MzI5MSwiYXV0aG9yaXR5IjoiUk9MRV9VU0VSIn0.wFNSz2uwRa35jP1KihNlTOewVLgMMeg3ADQ5Kztl3QQ
+Booking-Session-Id: {sessionId}
 
 {
   "eventId": 1
@@ -40,21 +40,50 @@ Booking-Session-Id: {세션아이디}
 
 ### 좌석 목록 조회
 GET http://localhost:8082/api/v1/seats?eventTimeId=1
-#Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwic3ViIjoiam9obi5kb2VAZXhhbXBsZS5jb20iLCJpYXQiOjE3MDQ2OTE0OTEsImV4cCI6MTgwNDY4MzI5MSwiYXV0aG9yaXR5IjoiUk9MRV9VU0VSIn0.wFNSz2uwRa35jP1KihNlTOewVLgMMeg3ADQ5Kztl3QQ
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwic3ViIjoiam9obi5kb2VAZXhhbXBsZS5jb20iLCJpYXQiOjE3MDQ2OTE0OTEsImV4cCI6MTgwNDY4MzI5MSwiYXV0aG9yaXR5IjoiUk9MRV9VU0VSIn0.wFNSz2uwRa35jP1KihNlTOewVLgMMeg3ADQ5Kztl3QQ
 Booking-Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJpc3MiOiJib29raW5nIiwiaWF0IjoxNzA0NzA0NTY0LCJleHAiOjQyMDAxNzA0NzA0NTY0LCJzZXNzaW9uSWQiOiJ7Pz8_Pz99In0.iKZaud5vfvsMzXmQzl1WaCweL9GL00U0iGzCg4_p3Zzei8Y7z19Ff_TTpxh9gLeB
+
+### 좌석 선택
+POST http://localhost:8082/api/v1/seats/1/select
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwic3ViIjoiam9obi5kb2VAZXhhbXBsZS5jb20iLCJpYXQiOjE3MDQ2OTE0OTEsImV4cCI6MTgwNDY4MzI5MSwiYXV0aG9yaXR5IjoiUk9MRV9VU0VSIn0.wFNSz2uwRa35jP1KihNlTOewVLgMMeg3ADQ5Kztl3QQ
+Booking-Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJpc3MiOiJib29raW5nIiwiaWF0IjoxNzA0NzA0NTY0LCJleHAiOjQyMDAxNzA0NzA0NTY0LCJzZXNzaW9uSWQiOiJ7Pz8_Pz99In0.iKZaud5vfvsMzXmQzl1WaCweL9GL00U0iGzCg4_p3Zzei8Y7z19Ff_TTpxh9gLeB
+
+{
+    "seatId": 1
+}
+
+### 좌석 선택 해제
+POST http://localhost:8082/api/v1/seats/1/deselect
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwic3ViIjoiam9obi5kb2VAZXhhbXBsZS5jb20iLCJpYXQiOjE3MDQ2OTE0OTEsImV4cCI6MTgwNDY4MzI5MSwiYXV0aG9yaXR5IjoiUk9MRV9VU0VSIn0.wFNSz2uwRa35jP1KihNlTOewVLgMMeg3ADQ5Kztl3QQ
+Booking-Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJpc3MiOiJib29raW5nIiwiaWF0IjoxNzA0NzA0NTY0LCJleHAiOjQyMDAxNzA0NzA0NTY0LCJzZXNzaW9uSWQiOiJ7Pz8_Pz99In0.iKZaud5vfvsMzXmQzl1WaCweL9GL00U0iGzCg4_p3Zzei8Y7z19Ff_TTpxh9gLeB
+
+{
+  "seatId": 1
+}
 
 ### 예매 ~ 결제 (브라우저에서 진행해 주세요)
 GET http://localhost:8082/bookings
 
 ### [Optional] 예매 이탈
 POST http://localhost:8082/api/v1/bookings/bookingCreateTestId/exit
-#Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwic3ViIjoiam9obi5kb2VAZXhhbXBsZS5jb20iLCJpYXQiOjE3MDQ2OTE0OTEsImV4cCI6MTgwNDY4MzI5MSwiYXV0aG9yaXR5IjoiUk9MRV9VU0VSIn0.wFNSz2uwRa35jP1KihNlTOewVLgMMeg3ADQ5Kztl3QQ
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwic3ViIjoiam9obi5kb2VAZXhhbXBsZS5jb20iLCJpYXQiOjE3MDQ2OTE0OTEsImV4cCI6MTgwNDY4MzI5MSwiYXV0aG9yaXR5IjoiUk9MRV9VU0VSIn0.wFNSz2uwRa35jP1KihNlTOewVLgMMeg3ADQ5Kztl3QQ
 Booking-Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJpc3MiOiJib29raW5nIiwiaWF0IjoxNzA0NzA0NTY0LCJleHAiOjQyMDAxNzA0NzA0NTY0LCJzZXNzaW9uSWQiOiJ7Pz8_Pz99In0.iKZaud5vfvsMzXmQzl1WaCweL9GL00U0iGzCg4_p3Zzei8Y7z19Ff_TTpxh9gLeB
 
 ### 예매 취소 (브라우저에서 생성된 예매번호로 진행해 주세요)
-POST http://localhost:8082/api/v1/bookings/1704704631741/cancel
+POST http://localhost:8082/api/v1/bookings/{bookingId}/cancel
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwic3ViIjoiam9obi5kb2VAZXhhbXBsZS5jb20iLCJpYXQiOjE3MDQ2OTE0OTEsImV4cCI6MTgwNDY4MzI5MSwiYXV0aG9yaXR5IjoiUk9MRV9VU0VSIn0.wFNSz2uwRa35jP1KihNlTOewVLgMMeg3ADQ5Kztl3QQ
 Content-Type: application/json
 
 {
   "cancelReason": "변심"
 }
+
+### 내 예매 내역 목록 조회
+GET http://localhost:8082/api/v1/bookings
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwic3ViIjoiam9obi5kb2VAZXhhbXBsZS5jb20iLCJpYXQiOjE3MDQ2OTE0OTEsImV4cCI6MTgwNDY4MzI5MSwiYXV0aG9yaXR5IjoiUk9MRV9VU0VSIn0.wFNSz2uwRa35jP1KihNlTOewVLgMMeg3ADQ5Kztl3QQ
+
+### 내 예매 내역 상세 조회
+GET http://localhost:8082/api/v1/bookings/bookingCancelTestId
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwic3ViIjoiam9obi5kb2VAZXhhbXBsZS5jb20iLCJpYXQiOjE3MDQ2OTE0OTEsImV4cCI6MTgwNDY4MzI5MSwiYXV0aG9yaXR5IjoiUk9MRV9VU0VSIn0.wFNSz2uwRa35jP1KihNlTOewVLgMMeg3ADQ5Kztl3QQ

@@ -1,6 +1,7 @@
 package com.pgms.coredomain.domain.event;
 
 import com.pgms.coredomain.domain.common.BaseEntity;
+import com.pgms.coredomain.domain.member.Member;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.ConstraintMode;
@@ -40,13 +41,25 @@ public class EventReview extends BaseEntity {
 	@JoinColumn(name = "event_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
 	private Event event;
 
-	public EventReview(Integer score, String content, Event event) {
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "member_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+	private Member member;
+
+	public EventReview(Integer score, String content, Event event, Member member) {
 		this.score = score;
 		this.content = content;
 		this.event = event;
+		this.member = member;
 	}
 
 	public void updateEventReview(String content) {
 		this.content = content;
+	}
+
+	public boolean isSameReviewer(Member member) {
+		if (member != null) {
+			return this.member.equals(member);
+		}
+		return false;
 	}
 }

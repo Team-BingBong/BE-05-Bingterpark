@@ -19,6 +19,7 @@ import com.pgms.apievent.eventreview.dto.request.EventReviewUpdateRequest;
 import com.pgms.apievent.eventreview.dto.response.EventReviewResponse;
 import com.pgms.apievent.eventreview.service.EventReviewService;
 import com.pgms.coredomain.response.ApiResponse;
+import com.pgms.coresecurity.security.resolver.CurrentAccount;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -32,21 +33,24 @@ public class EventReviewController {
 
 	@PostMapping("/{eventId}")
 	public ResponseEntity<ApiResponse> createEventReview(
+		@CurrentAccount Long memberId,
 		@PathVariable Long eventId,
 		@Valid @RequestBody EventReviewCreateRequest request) {
-		EventReviewResponse response = eventReviewService.createEventReview(eventId, request);
+		EventReviewResponse response = eventReviewService.createEventReview(memberId, eventId, request);
 		URI location = ServletUriComponentsBuilder.fromCurrentRequest()
 			.path("/{id}")
 			.buildAndExpand(response.id())
 			.toUri();
+
 		return ResponseEntity.created(location).body(ApiResponse.ok(response));
 	}
 
 	@PatchMapping("/{reviewId}")
 	public ResponseEntity<ApiResponse> updateEventReview(
+		@CurrentAccount Long memberId,
 		@PathVariable Long reviewId,
 		@Valid @RequestBody EventReviewUpdateRequest request) {
-		EventReviewResponse response = eventReviewService.updateEventReview(reviewId, request);
+		EventReviewResponse response = eventReviewService.updateEventReview(memberId, reviewId, request);
 		return ResponseEntity.ok(ApiResponse.ok(response));
 	}
 
@@ -63,8 +67,8 @@ public class EventReviewController {
 	}
 
 	@DeleteMapping("/{reviewId}")
-	public ResponseEntity<Void> deleteEventReviewById(@PathVariable Long reviewId) {
-		eventReviewService.deleteEventReviewById(reviewId);
+	public ResponseEntity<Void> deleteEventReviewById(@CurrentAccount Long memberId, @PathVariable Long reviewId) {
+		eventReviewService.deleteEventReviewById(memberId, reviewId);
 		return ResponseEntity.noContent().build();
 	}
 }

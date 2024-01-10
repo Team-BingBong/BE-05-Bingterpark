@@ -1,4 +1,4 @@
-package com.pgms.apievent.eventSearch.dto.response;
+package com.pgms.coreinfraes.dto;
 
 import com.pgms.coreinfraes.document.EventDocument;
 

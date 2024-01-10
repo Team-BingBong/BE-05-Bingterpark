@@ -1,16 +1,16 @@
 package com.pgms.apievent.eventtime.dto.response;
 
-import java.time.LocalDateTime;
-
 import com.pgms.coredomain.domain.event.EventTime;
+
+import java.time.LocalDateTime;
 
 public record EventTimeResponse(
 	Long id,
 	Long eventId,
 	int round,
-	LocalDateTime startTime,
-	LocalDateTime endTime
-) {
+	LocalDateTime startedAt,
+	LocalDateTime endedAt) {
+	
 	public static EventTimeResponse of(EventTime eventTime) {
 		return new EventTimeResponse(
 			eventTime.getId(),

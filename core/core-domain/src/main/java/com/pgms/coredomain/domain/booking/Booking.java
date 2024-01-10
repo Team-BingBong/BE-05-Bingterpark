@@ -140,7 +140,7 @@ public class Booking extends BaseEntity {
 		return this.cancel == null
 			&& !this.time.getEvent().isStarted()
 			&& this.payment.isCancelable()
-			&& this.status == BookingStatus.WAITING_FOR_PAYMENT || this.status == BookingStatus.PAYMENT_COMPLETED;
+			&& (this.status == BookingStatus.WAITING_FOR_PAYMENT || this.status == BookingStatus.PAYMENT_COMPLETED);
 	}
 
 	public boolean isPaid() {
@@ -155,5 +155,9 @@ public class Booking extends BaseEntity {
 		this.status = BookingStatus.CANCELED;
 		this.cancel = cancel;
 		cancel.updateBooking(this);
+	}
+
+	public boolean isSameBooker(Long memberId) {
+		return this.member.getId().equals(memberId);
 	}
 }

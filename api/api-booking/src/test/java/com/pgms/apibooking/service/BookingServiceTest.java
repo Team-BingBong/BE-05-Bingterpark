@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.*;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -155,7 +156,7 @@ class BookingServiceTest {
 		);
 
 		// when
-		BookingCreateResponse response = bookingService.createBooking(request, member.getId());
+		BookingCreateResponse response = bookingService.createBooking(request, member.getId(), UUID.randomUUID().toString());
 
 		// then
 		Booking booking = bookingRepository.findBookingInfoById(response.bookingId()).get();
@@ -226,7 +227,7 @@ class BookingServiceTest {
 		);
 
 		// when & then
-		assertThatThrownBy(() -> bookingService.createBooking(request, member.getId()))
+		assertThatThrownBy(() -> bookingService.createBooking(request, member.getId(), UUID.randomUUID().toString()))
 			.isInstanceOf(BookingException.class)
 			.hasMessage(BookingErrorCode.UNBOOKABLE_EVENT.getMessage());
 	}
@@ -278,7 +279,7 @@ class BookingServiceTest {
 		);
 
 		// when & then
-		assertThatThrownBy(() -> bookingService.createBooking(request, member.getId()))
+		assertThatThrownBy(() -> bookingService.createBooking(request, member.getId(), UUID.randomUUID().toString()))
 			.isInstanceOf(BookingException.class)
 			.hasMessage(BookingErrorCode.NON_EXISTENT_SEAT_INCLUSION.getMessage());
 	}
@@ -328,7 +329,7 @@ class BookingServiceTest {
 		);
 
 		// when & then
-		assertThatThrownBy(() -> bookingService.createBooking(request, member.getId()))
+		assertThatThrownBy(() -> bookingService.createBooking(request, member.getId(), UUID.randomUUID().toString()))
 			.isInstanceOf(BookingException.class)
 			.hasMessage(BookingErrorCode.UNBOOKABLE_SEAT_INCLUSION.getMessage());
 	}
@@ -378,7 +379,7 @@ class BookingServiceTest {
 		);
 
 		// when & then
-		assertThatThrownBy(() -> bookingService.createBooking(request, member.getId()))
+		assertThatThrownBy(() -> bookingService.createBooking(request, member.getId(), UUID.randomUUID().toString()))
 			.isInstanceOf(BookingException.class)
 			.hasMessage(BookingErrorCode.DELIVERY_ADDRESS_REQUIRED.getMessage());
 	}
