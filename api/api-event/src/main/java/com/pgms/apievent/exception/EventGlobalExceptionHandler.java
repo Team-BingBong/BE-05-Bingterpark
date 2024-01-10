@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.pgms.coredomain.domain.common.BaseErrorCode;
 import com.pgms.coredomain.response.ErrorResponse;
+import com.pgms.coresecurity.security.exception.SecurityCustomException;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -47,5 +48,12 @@ public class EventGlobalExceptionHandler {
 		ErrorResponse errorResponse = new ErrorResponse(VALIDATION_FAILED.getErrorCode(), errorMessage);
 		fieldErrors.forEach(error -> errorResponse.addValidation(error.getField(), error.getDefaultMessage()));
 		return ResponseEntity.status(ex.getStatusCode()).body(errorResponse);
+	}
+
+	@ExceptionHandler(SecurityCustomException.class)
+	protected ResponseEntity<ErrorResponse> handleSecurityCustomException(SecurityCustomException ex) {
+		log.warn(">>>>> SecurityCustomException : {}", ex);
+		BaseErrorCode errorCode = ex.getErrorCode();
+		return ResponseEntity.status(errorCode.getStatus()).body(errorCode.getErrorResponse());
 	}
 }

@@ -3,6 +3,7 @@ package com.pgms.coresecurity.security.resolver;
 import java.util.Objects;
 
 import org.springframework.core.MethodParameter;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.support.WebDataBinderFactory;
@@ -27,13 +28,13 @@ public class CurrentAccountArgumentResolver implements HandlerMethodArgumentReso
 	public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
 		NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		checkAuthenticated(authentication);
+		validateAuthentication(authentication);
 		UserDetailsImpl userDetails = (UserDetailsImpl)authentication.getPrincipal();
 		return userDetails.getId();
 	}
 
-	private void checkAuthenticated(Authentication authentication) {
-		if (Objects.isNull(authentication)) {
+	private void validateAuthentication(Authentication authentication) {
+		if (Objects.isNull(authentication) || !(authentication instanceof UsernamePasswordAuthenticationToken)) {
 			throw new SecurityCustomException(SecurityErrorCode.UNAUTHORIZED);
 		}
 	}
