@@ -55,4 +55,11 @@ public class EventReview extends BaseEntity {
 	public void updateEventReview(String content) {
 		this.content = content;
 	}
+
+	public boolean isSameReviewer(Member member) {
+		if (member != null) {
+			return this.member.equals(member);
+		}
+		return false;
+	}
 }
