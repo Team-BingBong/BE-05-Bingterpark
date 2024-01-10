@@ -51,6 +51,7 @@ public class BookingExceptionHandler extends ResponseEntityExceptionHandler {
 	protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex,
 		HttpHeaders headers, HttpStatusCode status, WebRequest request) {
 		ErrorResponse response = BookingErrorCode.INVALID_INPUT_VALUE.getErrorResponse();
+		log.warn("HttpMessageNotReadableException Occurred : {}", response.getErrorMessage());
 		return ResponseEntity.badRequest().body(response);
 	}
 
@@ -62,6 +63,13 @@ public class BookingExceptionHandler extends ResponseEntityExceptionHandler {
 		log.warn("Validation Failed: {}", errorMessage);
 		ErrorResponse response = BookingErrorCode.INVALID_INPUT_VALUE.getErrorResponse();
 		return ResponseEntity.status(status).body(response);
+	}
+
+	@ExceptionHandler(TossPaymentException.class)
+	protected ResponseEntity<ErrorResponse> handleTossPaymentException(TossPaymentException ex) {
+		ErrorResponse response = new ErrorResponse(ex.getCode(), ex.getMessage());
+		log.warn("TossPaymentException Occurred : {}", response.getErrorMessage());
+		return ResponseEntity.status(ex.getStatus()).body(response);
 	}
 
 	@ExceptionHandler(BookingException.class)
