@@ -1,12 +1,5 @@
 package com.pgms.apievent.eventHall.service;
 
-import static com.pgms.apievent.exception.EventErrorCode.*;
-
-import java.util.List;
-
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.pgms.apievent.eventHall.dto.request.EventHallCreateRequest;
 import com.pgms.apievent.eventHall.dto.request.EventHallSeatCreateRequest;
 import com.pgms.apievent.eventHall.dto.request.EventHallUpdateRequest;
@@ -17,8 +10,13 @@ import com.pgms.coredomain.domain.event.EventHall;
 import com.pgms.coredomain.domain.event.EventHallEdit;
 import com.pgms.coredomain.domain.event.EventHallSeat;
 import com.pgms.coredomain.domain.event.repository.EventHallRepository;
-
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+import static com.pgms.apievent.exception.EventErrorCode.EVENT_HALL_NOT_FOUND;
 
 @Service
 @Transactional
@@ -88,7 +86,6 @@ public class EventHallService {
 		EventHall eventHall = eventHallRepository.findById(id)
 			.orElseThrow(() -> new EventException(EVENT_HALL_NOT_FOUND));
 
-		// TODO 못 읽어옴
 		List<EventHallSeatResponse> eventHallSeatResponses = eventHall.getEventHallSeats()
 			.stream()
 			.map(EventHallSeatResponse::of)
