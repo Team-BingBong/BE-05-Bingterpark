@@ -40,6 +40,12 @@ public class SeatService { //TODO: 테스트 코드 작성
 
 	public void selectSeat(Long seatId, Long memberId) {
 		if (seatLockService.isSeatLocked(seatId)) {
+			Optional<Long> selectorIdOpt = seatLockService.getSelectorId(seatId);
+
+			if (selectorIdOpt.isPresent() && selectorIdOpt.get().equals(memberId)) {
+				return;
+			}
+
 			throw new BookingException(BookingErrorCode.SEAT_BEING_BOOKED);
 		}
 
@@ -56,11 +62,11 @@ public class SeatService { //TODO: 테스트 코드 작성
 	public void deselectSeat(Long seatId, Long memberId) {
 		Optional<Long> selectorIdOpt = seatLockService.getSelectorId(seatId);
 
-		if(selectorIdOpt.isEmpty()) {
+		if (selectorIdOpt.isEmpty()) {
 			updateSeatStatusToAvailable(seatId);
-			throw new BookingException(BookingErrorCode.SEAT_SELECTION_EXPIRED);
+			return;
 		}
-		
+
 		if (!selectorIdOpt.get().equals(memberId)) {
 			throw new BookingException(BookingErrorCode.SEAT_SELECTED_BY_ANOTHER_MEMBER);
 		}

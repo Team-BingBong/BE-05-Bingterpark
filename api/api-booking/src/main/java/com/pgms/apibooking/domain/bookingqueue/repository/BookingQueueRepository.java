@@ -1,5 +1,7 @@
 package com.pgms.apibooking.domain.bookingqueue.repository;
 
+import java.util.Optional;
+
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -15,8 +17,8 @@ public class BookingQueueRepository {
 		redisTemplate.opsForZSet().add(String.valueOf(eventId), sessionId, currentTimeSeconds);
 	}
 	
-	public Long getRank(Long eventId, String sessionId) {
-		return redisTemplate.opsForZSet().rank(String.valueOf(eventId), sessionId);
+	public Optional<Long> getRank(Long eventId, String sessionId) {
+		return Optional.ofNullable(redisTemplate.opsForZSet().rank(String.valueOf(eventId), sessionId));
 	}
 	
 	public Long getEntryLimit() {
