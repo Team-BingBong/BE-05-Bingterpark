@@ -46,7 +46,6 @@ public class TossPaymentServiceImpl implements TossPaymentService {
 				TossPaymentConfig.TOSS_CONFIRM_URL, new HttpEntity<>(request, headers), PaymentSuccessResponse.class);
 		} catch (HttpClientErrorException e) {
 			log.warn("HttpClientErrorException: {}", e.getMessage());
-			log.warn("body : {}", e.getResponseBodyAsString());
 			ErrorResponse errorResponse = handleHttpClientErrorException(e.getResponseBodyAsString());
 			throw new TossPaymentException(errorResponse);
 		} catch (Exception e) {
