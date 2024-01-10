@@ -121,10 +121,10 @@
 
         $.ajax({
             type: "POST",
-            url: "/api/v1/bookings", // 실제 서버 엔드포인트에 맞게 수정
+            url: "/api/v1/bookings/create", // 실제 서버 엔드포인트에 맞게 수정
             contentType: "application/json",
             headers: {
-                // "Authorization": "Bearer " + "eyJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwic3ViIjoiam9obi5kb2VAZXhhbXBsZS5jb20iLCJpYXQiOjE3MDQ2OTE0OTEsImV4cCI6MTgwNDY4MzI5MSwiYXV0aG9yaXR5IjoiUk9MRV9VU0VSIn0.wFNSz2uwRa35jP1KihNlTOewVLgMMeg3ADQ5Kztl3QQ",
+                "Authorization": "Bearer " + "eyJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwic3ViIjoiam9obi5kb2VAZXhhbXBsZS5jb20iLCJpYXQiOjE3MDQ2OTE0OTEsImV4cCI6MTgwNDY4MzI5MSwiYXV0aG9yaXR5IjoiUk9MRV9VU0VSIn0.wFNSz2uwRa35jP1KihNlTOewVLgMMeg3ADQ5Kztl3QQ",
                 "Booking-Authorization": "Bearer " + "eyJhbGciOiJIUzM4NCJ9.eyJpc3MiOiJib29raW5nIiwiaWF0IjoxNzA0NzA0NTY0LCJleHAiOjQyMDAxNzA0NzA0NTY0LCJzZXNzaW9uSWQiOiJ7Pz8_Pz99In0.iKZaud5vfvsMzXmQzl1WaCweL9GL00U0iGzCg4_p3Zzei8Y7z19Ff_TTpxh9gLeB"
             },
             data: JSON.stringify(orderData),
