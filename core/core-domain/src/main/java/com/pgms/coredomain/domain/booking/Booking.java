@@ -140,7 +140,7 @@ public class Booking extends BaseEntity {
 		return this.cancel == null
 			&& !this.time.getEvent().isStarted()
 			&& this.payment.isCancelable()
-			&& this.status == BookingStatus.WAITING_FOR_PAYMENT || this.status == BookingStatus.PAYMENT_COMPLETED;
+			&& (this.status == BookingStatus.WAITING_FOR_PAYMENT || this.status == BookingStatus.PAYMENT_COMPLETED);
 	}
 
 	public boolean isPaid() {

@@ -7,8 +7,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,7 +43,6 @@ import com.pgms.coredomain.domain.event.repository.EventSeatRepository;
 import com.pgms.coredomain.domain.event.repository.EventTimeRepository;
 import com.pgms.coredomain.domain.member.Member;
 import com.pgms.coredomain.domain.member.repository.MemberRepository;
-import com.pgms.coresecurity.security.jwt.booking.BookingAuthToken;
 
 import lombok.RequiredArgsConstructor;
 
@@ -64,7 +61,7 @@ public class BookingService { //TODO: 테스트 코드 작성
 	private final TossPaymentConfig tossPaymentConfig;
 	private final PaymentService paymentService;
 
-	public BookingCreateResponse createBooking(BookingCreateRequest request, Long memberId) {
+	public BookingCreateResponse createBooking(BookingCreateRequest request, Long memberId, String tokenSessionId) {
 		Member member = getMemberById(memberId);
 		EventTime time = getBookableTimeWithEvent(request.timeId());
 		List<EventSeat> seats = getBookableSeatsWithArea(request.timeId(), request.seatIds());
@@ -91,7 +88,7 @@ public class BookingService { //TODO: 테스트 코드 작성
 
 		seats.forEach(seat -> seat.updateStatus(EventSeatStatus.BOOKED));
 
-		removeSessionIdInBookingQueue(booking.getTime().getEvent().getId());
+		removeSessionIdInBookingQueue(booking.getTime().getEvent().getId(), tokenSessionId);
 
 		return BookingCreateResponse.of(booking, tossPaymentConfig.getSuccessUrl(), tossPaymentConfig.getFailUrl());
 	}
@@ -164,8 +161,8 @@ public class BookingService { //TODO: 테스트 코드 작성
 	}
 
 	@Async
-	protected void removeSessionIdInBookingQueue(Long eventId) {
-		bookingQueueRepository.remove(eventId, getCurrentSessionId());
+	protected void removeSessionIdInBookingQueue(Long eventId, String tokenSessionId) {
+		bookingQueueRepository.remove(eventId, tokenSessionId);
 	}
 
 	private EventTime getBookableTimeWithEvent(Long timeId) {
@@ -211,13 +208,5 @@ public class BookingService { //TODO: 테스트 코드 작성
 	private Member getMemberById(Long memberId) {
 		return memberRepository.findById(memberId)
 			.orElseThrow(() -> new BookingException(MemberErrorCode.MEMBER_NOT_FOUND));
-	}
-
-	private String getCurrentSessionId() {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		if (authentication instanceof BookingAuthToken) {
-			return authentication.getPrincipal().toString();
-		}
-		return null;
 	}
 }
