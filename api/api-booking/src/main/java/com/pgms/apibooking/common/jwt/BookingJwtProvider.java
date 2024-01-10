@@ -1,4 +1,4 @@
-package com.pgms.coresecurity.security.jwt.booking;
+package com.pgms.apibooking.common.jwt;
 
 import java.util.Date;
 
