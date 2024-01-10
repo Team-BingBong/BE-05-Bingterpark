@@ -37,6 +37,7 @@ public class EventHall extends BaseEntity {
     }
 
     public void setEventHallSeatsEventHall(){
+        if(this.eventHallSeats == null) return;
         this.eventHallSeats.forEach(eventHallSeat -> eventHallSeat.setEventHall(this));
     }
 
