@@ -8,7 +8,7 @@
 - api-event   
 공연 도메인
 - api-booking   
-결제 도메인
+예매 도메인
 #### batch
 스프링 배치 모듈
 #### core
