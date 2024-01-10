@@ -6,6 +6,7 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import com.pgms.apibooking.common.interceptor.BookingSessionInterceptor;
+import com.pgms.apibooking.common.interceptor.BookingTokenInterceptor;
 
 import lombok.RequiredArgsConstructor;
 
@@ -15,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 public class WebConfig implements WebMvcConfigurer {
 
 	private final BookingSessionInterceptor bookingSessionInterceptor;
+	private final BookingTokenInterceptor bookingTokenInterceptor;
 
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
@@ -23,5 +25,11 @@ public class WebConfig implements WebMvcConfigurer {
 			.addPathPatterns("/api/*/bookings/order-in-queue")
 			.addPathPatterns("/api/*/bookings/issue-token")
 			.addPathPatterns("/api/*/bookings/exit-queue");
+		registry.addInterceptor(bookingTokenInterceptor)
+			.addPathPatterns("/api/*/bookings")
+			.addPathPatterns("/api/*/exit")
+			.addPathPatterns("/api/*/seats")
+			.addPathPatterns("/api/*/*/select")
+			.addPathPatterns("/api/*/*/deselect");
 	}
 }

@@ -21,4 +21,4 @@ payment:
 booking-jwt:
   issuer: booking
   secret-key: EENY5W0eegTf1naQB2eDeyCLl5kRS2b8xa5c4qLdS0hmVjtbvo8tOyhPMcAmtPu
-  expiry-seconds: 1
+  expiry-seconds: 420
