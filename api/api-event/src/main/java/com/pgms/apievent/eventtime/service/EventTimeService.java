@@ -51,7 +51,7 @@ public class EventTimeService {
 		EventTime eventTime = eventTimeRepository.findById(eventTimeId)
 			.orElseThrow(() -> new EventException(EVENT_TIME_NOT_FOUND));
 
-		eventTime.updateEventTime(request.startTime(), request.endTime());
+		eventTime.updateEventTime(request.startedAt(), request.endedAt());
 		return EventTimeResponse.of(eventTime);
 	}
 

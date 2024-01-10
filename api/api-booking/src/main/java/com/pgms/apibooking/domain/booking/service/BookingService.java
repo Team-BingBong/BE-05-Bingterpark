@@ -1,7 +1,6 @@
 package com.pgms.apibooking.domain.booking.service;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import org.springframework.data.domain.PageRequest;
@@ -36,6 +35,7 @@ import com.pgms.coredomain.domain.booking.Ticket;
 import com.pgms.coredomain.domain.booking.repository.BookingRepository;
 import com.pgms.coredomain.domain.booking.repository.TicketRepository;
 import com.pgms.coredomain.domain.common.BookingErrorCode;
+import com.pgms.coredomain.domain.common.MemberErrorCode;
 import com.pgms.coredomain.domain.event.EventSeat;
 import com.pgms.coredomain.domain.event.EventSeatStatus;
 import com.pgms.coredomain.domain.event.EventTime;
@@ -135,10 +135,8 @@ public class BookingService { //TODO: 테스트 코드 작성
 		BookingSearchCondition searchCondition,
 		Long memberId
 	) {
-		Member member = getMemberById(memberId);
-
 		Pageable pageable = PageRequest.of(pageCondition.getPage() - 1, pageCondition.getSize());
-		searchCondition.updateMemberId(member.getId());
+		searchCondition.updateMemberId(memberId);
 
 		List<BookingsGetResponse> bookings = bookingQuerydslRepository.findAll(searchCondition, pageable)
 			.stream()
@@ -152,12 +150,10 @@ public class BookingService { //TODO: 테스트 코드 작성
 
 	@Transactional(readOnly = true)
 	public BookingGetResponse getBooking(String id, Long memberId) {
-		Member member = getMemberById(memberId);
-
 		Booking booking = bookingRepository.findBookingInfoById(id)
 			.orElseThrow(() -> new BookingException(BookingErrorCode.BOOKING_NOT_FOUND));
 
-		if (!booking.isSameBooker(member.getId())) {
+		if (!booking.isSameBooker(memberId)) {
 			throw new BookingException(BookingErrorCode.FORBIDDEN);
 		}
 
@@ -210,8 +206,7 @@ public class BookingService { //TODO: 테스트 코드 작성
 	}
 
 	private Member getMemberById(Long memberId) {
-		System.out.println("member id get " + memberId);
 		return memberRepository.findById(memberId)
-			.orElseThrow(() -> new NoSuchElementException("Member not found"));
+			.orElseThrow(() -> new BookingException(MemberErrorCode.MEMBER_NOT_FOUND));
 	}
 }

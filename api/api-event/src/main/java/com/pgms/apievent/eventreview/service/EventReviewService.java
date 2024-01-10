@@ -15,6 +15,8 @@ import com.pgms.coredomain.domain.event.Event;
 import com.pgms.coredomain.domain.event.EventReview;
 import com.pgms.coredomain.domain.event.repository.EventRepository;
 import com.pgms.coredomain.domain.event.repository.EventReviewRepository;
+import com.pgms.coredomain.domain.member.Member;
+import com.pgms.coredomain.domain.member.repository.MemberRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -25,11 +27,13 @@ public class EventReviewService {
 
 	private final EventReviewRepository eventReviewRepository;
 	private final EventRepository eventRepository;
+	private final MemberRepository memberRepository;
 
-	public EventReviewResponse createEventReview(Long eventId, EventReviewCreateRequest request) {
+	public EventReviewResponse createEventReview(Long memberId, Long eventId, EventReviewCreateRequest request) {
+		Member member = getMember(memberId);
 		Event event = eventRepository.findById(eventId).
 			orElseThrow(() -> new EventException(EVENT_NOT_FOUND));
-		EventReview eventReview = eventReviewRepository.save(request.toEntity(event));
+		EventReview eventReview = eventReviewRepository.save(request.toEntity(event, member));
 
 		Double averageScore = eventReviewRepository.findAverageScoreByEvent(event.getId());
 		event.updateAverageScore(averageScore);
@@ -37,17 +41,17 @@ public class EventReviewService {
 		return EventReviewResponse.of(eventReview);
 	}
 
-	public EventReviewResponse updateEventReview(Long reviewId, EventReviewUpdateRequest request) {
-		EventReview eventReview = eventReviewRepository.findById(reviewId)
-			.orElseThrow(() -> new EventException(EVENT_REVIEW_NOT_FOUND));
+	public EventReviewResponse updateEventReview(Long memberId, Long reviewId, EventReviewUpdateRequest request) {
+		// TODO : 작성자와 현재 로그인한 사람이 일치하는지 검증 로직 필요
+		Member member = getMember(memberId);
+		EventReview eventReview = getEventReview(reviewId);
 		eventReview.updateEventReview(request.content());
 		return EventReviewResponse.of(eventReview);
 	}
 
 	@Transactional(readOnly = true)
 	public EventReviewResponse getEventReviewById(Long reviewId) {
-		EventReview eventReview = eventReviewRepository.findById(reviewId)
-			.orElseThrow(() -> new EventException(EVENT_REVIEW_NOT_FOUND));
+		EventReview eventReview = getEventReview(reviewId);
 		return EventReviewResponse.of(eventReview);
 	}
 
@@ -59,9 +63,20 @@ public class EventReviewService {
 			.toList();
 	}
 
-	public void deleteEventReviewById(Long reviewId) {
-		EventReview eventReview = eventReviewRepository.findById(reviewId)
-			.orElseThrow(() -> new EventException(EVENT_REVIEW_NOT_FOUND));
+	public void deleteEventReviewById(Long memberId, Long reviewId) {
+		// TODO : 작성자와 현재 로그인한 사람이 일치하는지 검증 로직 필요
+		Member member = getMember(memberId);
+		EventReview eventReview = getEventReview(reviewId);
 		eventReviewRepository.delete(eventReview);
+	}
+
+	private EventReview getEventReview(Long reviewId) {
+		return eventReviewRepository.findById(reviewId)
+			.orElseThrow(() -> new EventException(EVENT_REVIEW_NOT_FOUND));
+	}
+
+	private Member getMember(Long memberId) {
+		return memberRepository.findById(memberId)
+			.get();
 	}
 }

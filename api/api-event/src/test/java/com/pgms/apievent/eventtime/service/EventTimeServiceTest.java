@@ -147,8 +147,8 @@ class EventTimeServiceTest {
 		EventTimeResponse response = eventTimeService.updateEventTime(eventTime.getId(), request);
 
 		// Then
-		assertThat(response.startTime()).isEqualTo(request.startTime());
-		assertThat(response.endTime()).isEqualTo(request.endTime());
+		assertThat(response.startedAt()).isEqualTo(request.startedAt());
+		assertThat(response.endedAt()).isEqualTo(request.endedAt());
 	}
 
 	@Test
