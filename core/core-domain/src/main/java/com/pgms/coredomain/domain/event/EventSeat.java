@@ -33,10 +33,6 @@ public class EventSeat extends BaseEntity {
     @JoinColumn(name = "event_seat_area_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private EventSeatArea eventSeatArea;
 
-    public boolean isAvailable() {
-        return status == EventSeatStatus.AVAILABLE;
-    }
-
     public boolean isBooked() {
         return status == EventSeatStatus.BOOKED;
     }
