@@ -17,7 +17,7 @@ import com.pgms.apievent.EventTestConfig;
 import com.pgms.apievent.eventtime.dto.request.EventTimeCreateRequest;
 import com.pgms.apievent.eventtime.dto.request.EventTimeUpdateRequest;
 import com.pgms.apievent.eventtime.dto.response.EventTimeResponse;
-import com.pgms.apievent.exception.CustomException;
+import com.pgms.apievent.exception.EventException;
 import com.pgms.apievent.factory.event.EventFactory;
 import com.pgms.apievent.factory.eventhall.EventHallFactory;
 import com.pgms.coredomain.domain.event.Event;
@@ -84,7 +84,7 @@ class EventTimeServiceTest {
 
 		// When & Then
 		assertThatThrownBy(() -> eventTimeService.createEventTime(event.getId(), request))
-			.isInstanceOf(CustomException.class);
+			.isInstanceOf(EventException.class);
 	}
 
 	@Test
@@ -147,8 +147,8 @@ class EventTimeServiceTest {
 		EventTimeResponse response = eventTimeService.updateEventTime(eventTime.getId(), request);
 
 		// Then
-		assertThat(response.startTime()).isEqualTo(request.startTime());
-		assertThat(response.endTime()).isEqualTo(request.endTime());
+		assertThat(response.startedAt()).isEqualTo(request.startedAt());
+		assertThat(response.endedAt()).isEqualTo(request.endedAt());
 	}
 
 	@Test

@@ -1,24 +1,27 @@
 package com.pgms.apibooking.domain.booking.service;
 
 import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Objects;
 import java.util.Optional;
 
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.pgms.coredomain.domain.common.BookingErrorCode;
 import com.pgms.apibooking.common.exception.BookingException;
-import com.pgms.coresecurity.security.jwt.booking.BookingAuthToken;
 import com.pgms.apibooking.config.TossPaymentConfig;
 import com.pgms.apibooking.domain.booking.dto.request.BookingCancelRequest;
 import com.pgms.apibooking.domain.booking.dto.request.BookingCreateRequest;
+import com.pgms.apibooking.domain.booking.dto.request.BookingSearchCondition;
 import com.pgms.apibooking.domain.booking.dto.request.DeliveryAddress;
+import com.pgms.apibooking.domain.booking.dto.request.PageCondition;
 import com.pgms.apibooking.domain.booking.dto.response.BookingCreateResponse;
+import com.pgms.apibooking.domain.booking.dto.response.BookingGetResponse;
+import com.pgms.apibooking.domain.booking.dto.response.BookingsGetResponse;
+import com.pgms.apibooking.domain.booking.dto.response.PageResponse;
+import com.pgms.apibooking.domain.booking.repository.BookingQuerydslRepository;
 import com.pgms.apibooking.domain.bookingqueue.repository.BookingQueueRepository;
 import com.pgms.apibooking.domain.payment.dto.request.PaymentCancelRequest;
 import com.pgms.apibooking.domain.payment.dto.request.RefundAccountRequest;
@@ -31,6 +34,8 @@ import com.pgms.coredomain.domain.booking.ReceiptType;
 import com.pgms.coredomain.domain.booking.Ticket;
 import com.pgms.coredomain.domain.booking.repository.BookingRepository;
 import com.pgms.coredomain.domain.booking.repository.TicketRepository;
+import com.pgms.coredomain.domain.common.BookingErrorCode;
+import com.pgms.coredomain.domain.common.MemberErrorCode;
 import com.pgms.coredomain.domain.event.EventSeat;
 import com.pgms.coredomain.domain.event.EventSeatStatus;
 import com.pgms.coredomain.domain.event.EventTime;
@@ -51,11 +56,12 @@ public class BookingService { //TODO: 테스트 코드 작성
 	private final BookingRepository bookingRepository;
 	private final TicketRepository ticketRepository;
 	private final MemberRepository memberRepository;
+	private final BookingQuerydslRepository bookingQuerydslRepository;
 	private final BookingQueueRepository bookingQueueRepository;
 	private final TossPaymentConfig tossPaymentConfig;
 	private final PaymentService paymentService;
 
-	public BookingCreateResponse createBooking(BookingCreateRequest request, Long memberId) {
+	public BookingCreateResponse createBooking(BookingCreateRequest request, Long memberId, String tokenSessionId) {
 		Member member = getMemberById(memberId);
 		EventTime time = getBookableTimeWithEvent(request.timeId());
 		List<EventSeat> seats = getBookableSeatsWithArea(request.timeId(), request.seatIds());
@@ -82,7 +88,7 @@ public class BookingService { //TODO: 테스트 코드 작성
 
 		seats.forEach(seat -> seat.updateStatus(EventSeatStatus.BOOKED));
 
-		removeSessionIdInBookingQueue(booking.getTime().getEvent().getId());
+		removeSessionIdInBookingQueue(booking.getTime().getEvent().getId(), tokenSessionId);
 
 		return BookingCreateResponse.of(booking, tossPaymentConfig.getSuccessUrl(), tossPaymentConfig.getFailUrl());
 	}
@@ -92,8 +98,8 @@ public class BookingService { //TODO: 테스트 코드 작성
 		Booking booking = bookingRepository.findBookingInfoById(id)
 			.orElseThrow(() -> new BookingException(BookingErrorCode.BOOKING_NOT_FOUND));
 
-		if (!Objects.equals(member, booking.getMember())) {
-			throw new BookingException(BookingErrorCode.NOT_SAME_BOOKER);
+		if (!booking.isSameBooker(memberId)) {
+			throw new BookingException(BookingErrorCode.FORBIDDEN);
 		}
 
 		if (!booking.isCancelable()) {
@@ -121,6 +127,42 @@ public class BookingService { //TODO: 테스트 코드 작성
 	public void exitBooking(String id) {
 		List<Ticket> ticketsWithSeat = ticketRepository.findAllByBookingId(id);
 		ticketsWithSeat.forEach(ticket -> ticket.getSeat().updateStatus(EventSeatStatus.AVAILABLE));
+	}
+
+	@Transactional(readOnly = true)
+	public PageResponse<BookingsGetResponse> getBookings(
+		PageCondition pageCondition,
+		BookingSearchCondition searchCondition,
+		Long memberId
+	) {
+		Pageable pageable = PageRequest.of(pageCondition.getPage() - 1, pageCondition.getSize());
+		searchCondition.updateMemberId(memberId);
+
+		List<BookingsGetResponse> bookings = bookingQuerydslRepository.findAll(searchCondition, pageable)
+			.stream()
+			.map(BookingsGetResponse::from)
+			.toList();
+
+		return PageResponse.of(
+			PageableExecutionUtils.getPage(bookings, pageable, () -> bookingQuerydslRepository.count(searchCondition))
+		);
+	}
+
+	@Transactional(readOnly = true)
+	public BookingGetResponse getBooking(String id, Long memberId) {
+		Booking booking = bookingRepository.findBookingInfoById(id)
+			.orElseThrow(() -> new BookingException(BookingErrorCode.BOOKING_NOT_FOUND));
+
+		if (!booking.isSameBooker(memberId)) {
+			throw new BookingException(BookingErrorCode.FORBIDDEN);
+		}
+
+		return BookingGetResponse.from(booking);
+	}
+
+	@Async
+	protected void removeSessionIdInBookingQueue(Long eventId, String tokenSessionId) {
+		bookingQueueRepository.remove(eventId, tokenSessionId);
 	}
 
 	private EventTime getBookableTimeWithEvent(Long timeId) {
@@ -164,21 +206,7 @@ public class BookingService { //TODO: 테스트 코드 작성
 	}
 
 	private Member getMemberById(Long memberId) {
-		System.out.println("member id get " + memberId);
 		return memberRepository.findById(memberId)
-			.orElseThrow(() -> new NoSuchElementException("Member not found"));
-	}
-
-	private String getCurrentSessionId() {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		if (authentication instanceof BookingAuthToken) {
-			return authentication.getPrincipal().toString();
-		}
-		return null;
-	}
-
-	@Async
-	protected void removeSessionIdInBookingQueue(Long eventId) {
-		bookingQueueRepository.remove(eventId, getCurrentSessionId());
+			.orElseThrow(() -> new BookingException(MemberErrorCode.MEMBER_NOT_FOUND));
 	}
 }

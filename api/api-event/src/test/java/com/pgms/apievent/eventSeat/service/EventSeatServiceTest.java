@@ -1,13 +1,12 @@
 package com.pgms.apievent.eventSeat.service;
 
-import com.pgms.apievent.EventTestConfig;
-import com.pgms.apievent.eventSeat.dto.request.EventSeatsCreateRequest;
-import com.pgms.apievent.eventSeat.dto.response.EventSeatResponse;
-import com.pgms.apievent.eventSeat.dto.response.LeftEventSeatResponse;
-import com.pgms.apievent.factory.event.EventFactory;
-import com.pgms.apievent.factory.eventhall.EventHallFactory;
-import com.pgms.coredomain.domain.event.*;
-import com.pgms.coredomain.domain.event.repository.*;
+import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.Matchers.*;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.IntStream;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,12 +14,23 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.IntStream;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import com.pgms.apievent.EventTestConfig;
+import com.pgms.apievent.eventSeat.dto.request.EventSeatsCreateRequest;
+import com.pgms.apievent.eventSeat.dto.response.EventSeatResponse;
+import com.pgms.apievent.eventSeat.dto.response.LeftEventSeatResponse;
+import com.pgms.apievent.factory.event.EventFactory;
+import com.pgms.apievent.factory.eventhall.EventHallFactory;
+import com.pgms.coredomain.domain.event.Event;
+import com.pgms.coredomain.domain.event.EventHall;
+import com.pgms.coredomain.domain.event.EventSeatArea;
+import com.pgms.coredomain.domain.event.EventSeatStatus;
+import com.pgms.coredomain.domain.event.EventTime;
+import com.pgms.coredomain.domain.event.SeatAreaType;
+import com.pgms.coredomain.domain.event.repository.EventHallRepository;
+import com.pgms.coredomain.domain.event.repository.EventRepository;
+import com.pgms.coredomain.domain.event.repository.EventSeatAreaRepository;
+import com.pgms.coredomain.domain.event.repository.EventSeatRepository;
+import com.pgms.coredomain.domain.event.repository.EventTimeRepository;
 
 @Transactional
 @SpringBootTest
@@ -68,7 +78,7 @@ class EventSeatServiceTest {
 
 		List<EventSeatsCreateRequest> eventSeatsCreateRequests = IntStream.range(0, 20)
 			.mapToObj(i ->
-				new EventSeatsCreateRequest("", EventSeatStatus.AVAILABLE, eventSeatArea.getId()))
+				new EventSeatsCreateRequest("", "AVAILABLE", eventSeatArea.getId()))
 			.toList();
 
 		// when
@@ -94,7 +104,7 @@ class EventSeatServiceTest {
 
 		List<EventSeatsCreateRequest> eventSeatsCreateRequests = IntStream.range(0, 20)
 			.mapToObj(i ->
-				new EventSeatsCreateRequest("", EventSeatStatus.AVAILABLE, eventSeatArea.getId()))
+				new EventSeatsCreateRequest("", "AVAILABLE", eventSeatArea.getId()))
 			.toList();
 		eventSeatService.createEventSeats(event.getId(), eventSeatsCreateRequests);
 

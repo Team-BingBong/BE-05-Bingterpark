@@ -12,7 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.pgms.apievent.exception.CustomException;
+import com.pgms.apievent.exception.EventException;
 
 import lombok.RequiredArgsConstructor;
 
@@ -32,7 +32,7 @@ public class S3Service {
 			amazonS3Client.putObject(bucket, filename, file.getInputStream(), metadata);
 			return amazonS3Client.getUrl(bucket, filename);
 		} catch (IOException e) {
-			throw new CustomException(S3_UPLOAD_FAILED_EXCEPTION);
+			throw new EventException(S3_UPLOAD_FAILED_EXCEPTION);
 		}
 	}
 

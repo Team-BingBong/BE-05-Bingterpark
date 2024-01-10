@@ -1,9 +1,10 @@
 package com.pgms.coreinfraes.dto;
 
-import lombok.Builder;
+import java.util.List;
+
 import org.springframework.data.domain.Pageable;
 
-import java.util.List;
+import lombok.Builder;
 
 @Builder
 public record EventKeywordSearchDto(

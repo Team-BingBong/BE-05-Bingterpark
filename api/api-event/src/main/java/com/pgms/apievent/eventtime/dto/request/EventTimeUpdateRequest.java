@@ -1,14 +1,12 @@
 package com.pgms.apievent.eventtime.dto.request;
 
-import java.time.LocalDateTime;
-
 import org.springframework.format.annotation.DateTimeFormat;
 
-public record EventTimeUpdateRequest(
-	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-	LocalDateTime startTime,
+import java.time.LocalDateTime;
 
-	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-	LocalDateTime endTime
-) {
+public record EventTimeUpdateRequest(
+    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    LocalDateTime startedAt,
+    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    LocalDateTime endedAt) {
 }

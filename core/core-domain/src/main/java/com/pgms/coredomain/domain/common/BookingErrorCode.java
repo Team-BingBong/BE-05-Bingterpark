@@ -13,6 +13,8 @@ public enum BookingErrorCode implements BaseErrorCode{
 	SEAT_NOT_FOUND(HttpStatus.BAD_REQUEST, "SEAT_NOT_FOUND", "존재하지 않는 좌석입니다."),
 	SEAT_BEING_BOOKED(HttpStatus.BAD_REQUEST, "SEAT_BEING_BOOKED", "예매중인 좌석입니다."),
 	SEAT_ALREADY_BOOKED(HttpStatus.BAD_REQUEST, "SEAT_ALREADY_BOOKED", "예매된 좌석입니다."),
+	SEAT_SELECTED_BY_ANOTHER_MEMBER(HttpStatus.BAD_REQUEST, "SEAT_SELECTED_BY_ANOTHER_MEMBER", "다른 회원이 선택한 좌석입니다."),
+	SEAT_SELECTION_EXPIRED(HttpStatus.BAD_REQUEST, "SEAT_SELECTION_EXPIRED", "좌석 선택 시간이 만료되었습니다."),
 
 	TIME_NOT_FOUND(HttpStatus.BAD_REQUEST, "TIME_NOT_FOUND", "존재하지 않는 공연 회차입니다."),
 	UNBOOKABLE_EVENT(HttpStatus.BAD_REQUEST, "UNBOOKABLE_EVENT", "현재 예매가 불가능한 공연입니다."),
@@ -20,7 +22,6 @@ public enum BookingErrorCode implements BaseErrorCode{
 	UNBOOKABLE_SEAT_INCLUSION(HttpStatus.BAD_REQUEST, "UNBOOKABLE_SEAT_INCLUSION", "예매가 불가능한 좌석이 포함되어 있습니다."),
 	DELIVERY_ADDRESS_REQUIRED(HttpStatus.BAD_REQUEST, "DELIVERY_ADDRESS_REQUIRED", "배송지 정보를 입력해주세요."),
 
-	NOT_SAME_BOOKER(HttpStatus.BAD_REQUEST, "NOT_SAME_BOOKER", "해당 예약의 예약자가 아닙니다."),
 	UNCANCELABLE_BOOKING(HttpStatus.BAD_REQUEST, "UNCANCELABLE_BOOKING", "취소할 수 없는 예매입니다."),
 	REFUND_ACCOUNT_REQUIRED(HttpStatus.BAD_REQUEST, "REFUND_ACCOUNT_REQUIRED", "환불 받을 계좌 정보를 입력해주세요."),
 
@@ -38,7 +39,10 @@ public enum BookingErrorCode implements BaseErrorCode{
 	BOOKING_SESSION_ID_NOT_EXIST(HttpStatus.BAD_REQUEST, "BOOKING_SESSION_ID_NOT_EXIST", "예매 세션 ID가 존재하지 않습니다."),
 	BOOKING_TOKEN_NOT_EXIST(HttpStatus.UNAUTHORIZED, "BOOKING_TOKEN_NOT_EXIST", "예매 토큰이 존재하지 않습니다."),
 	INVALID_BOOKING_TOKEN(HttpStatus.UNAUTHORIZED, "INVALID_BOOKING_TOKEN", "올바르지 않은 예매 토큰입니다."),
-	OUT_OF_ORDER(HttpStatus.BAD_REQUEST, "OUT_OF_ORDER", "예매 순서가 아닙니다.");
+	OUT_OF_ORDER(HttpStatus.BAD_REQUEST, "OUT_OF_ORDER", "예매 순서가 아닙니다."),
+	NOT_IN_QUEUE(HttpStatus.BAD_REQUEST, "NOT_IN_QUEUE", "대기열에 존재하지 않습니다."),
+
+	FORBIDDEN(HttpStatus.FORBIDDEN, "BOOKER_NOT_SAME", "권한이 없습니다.");
 
 	private final HttpStatus status;
 	private final String code;

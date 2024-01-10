@@ -12,6 +12,8 @@ public record EventResponse(
 	String rating,
 	String genreType,
 	String thumbnail,
+	String bookingStartedAt,
+	String bookingEndedAt,
 	String eventHall,
 	Double averageScore
 ) {
@@ -26,6 +28,8 @@ public record EventResponse(
 			event.getViewRating(),
 			event.getGenreType().getDescription(),
 			event.getThumbnail(),
+			event.getBookingStartedAt().toString(),
+			event.getBookingEndedAt().toString(),
 			event.getEventHall().getName(),
 			event.getAverageScore()
 		);
