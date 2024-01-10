@@ -8,8 +8,8 @@ import org.springframework.context.annotation.ComponentScan;
 @ComponentScan("com.pgms")
 public class ApiMemberApplication {
 
-    public static void main(String[] args) {
-        SpringApplication.run(ApiMemberApplication.class, args);
-    }
+	public static void main(String[] args) {
+		SpringApplication.run(ApiMemberApplication.class, args);
+	}
 
 }

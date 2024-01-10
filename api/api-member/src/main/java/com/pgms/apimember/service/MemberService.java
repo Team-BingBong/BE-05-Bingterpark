@@ -2,6 +2,7 @@ package com.pgms.apimember.service;
 
 import static com.pgms.coredomain.domain.common.MemberErrorCode.*;
 
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,6 +14,8 @@ import com.pgms.apimember.dto.response.MemberDetailGetResponse;
 import com.pgms.apimember.exception.MemberException;
 import com.pgms.coredomain.domain.common.MemberErrorCode;
 import com.pgms.coredomain.domain.member.Member;
+import com.pgms.coredomain.domain.member.redis.BlockedToken;
+import com.pgms.coredomain.domain.member.redis.BlockedTokenRepository;
 import com.pgms.coredomain.domain.member.repository.MemberRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -23,6 +26,7 @@ import lombok.RequiredArgsConstructor;
 public class MemberService {
 
 	private final MemberRepository memberRepository;
+	private final BlockedTokenRepository blockedTokenRepository;
 	private final PasswordEncoder passwordEncoder;
 
 	public Long signUp(MemberSignUpRequest requestDto) {
@@ -71,12 +75,16 @@ public class MemberService {
 	public void deleteMember(Long memberId) {
 		final Member member = getAvailableMember(memberId);
 		member.updateToDeleted();
+		blockedTokenRepository.save(
+			new BlockedToken(getCurrentAccessToken())
+		);
 	}
 
 	public Long restoreMember(Long memberId) {
 		Member member = memberRepository.findByIdAndIsDeletedTrue(memberId)
 			.orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
 		member.updateToActive();
+		blockedTokenRepository.deleteById(getCurrentAccessToken());
 		return member.getId();
 	}
 
@@ -101,5 +109,9 @@ public class MemberService {
 	private Member getAvailableMember(Long memberId) {
 		return memberRepository.findByIdAndIsDeletedFalse(memberId)
 			.orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
+	}
+
+	private String getCurrentAccessToken() {
+		return (String)SecurityContextHolder.getContext().getAuthentication().getCredentials();
 	}
 }

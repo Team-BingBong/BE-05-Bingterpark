@@ -74,7 +74,7 @@ public class JwtTokenProvider {
 
 		UserDetails principal = new UserDetailsImpl(claims.get("id", Long.class), claims.getSubject(), null,
 			authorities);
-		return new UsernamePasswordAuthenticationToken(principal, null, authorities);
+		return new UsernamePasswordAuthenticationToken(principal, accessToken, authorities);
 	}
 
 	public boolean validateAccessToken(String authToken) {

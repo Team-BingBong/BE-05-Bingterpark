@@ -1,4 +1,4 @@
-@token = eyJhbGciOiJIUzI1NiJ9.eyJpZCI6Mywic3ViIjoiZGh4bDUwQG5hdmVyLmNvbSIsImlhdCI6MTcwNDYxNjU4NSwiZXhwIjoyMDY0NjE2NTg1LCJhdXRob3JpdHkiOiJST0xFX1VTRVIifQ.OIiQazdvmv-bsZp0VroiouW5gEqNAj7ROqRTOcLbWXQ
+@token = eyJhbGciOiJIUzM4NCJ9.eyJpZCI6Mywic3ViIjoidGVzdEB0ZXN0LmNvbSIsImlhdCI6MTcwNDc5MjA5OCwiZXhwIjoxNzA0NzkzODk4LCJhdXRob3JpdHkiOiJST0xFX1VTRVIifQ.iPqLlu_2xIdZo-gN6PPW6xE9NB8ecWiinEcMyGsL39Q13rPz0FeqUWYJxpTKULD5
 @adminToken = eyJhbGciOiJIUzI1NiJ9.eyJpZCI6Miwic3ViIjoiYWRtaW5AZXhhbXBsZS5jb20iLCJpYXQiOjE3MDQ2Mzc1NzgsImV4cCI6MjA2NDYzNzU3OCwiYXV0aG9yaXR5IjoiUk9MRV9BRE1JTiJ9.lAXg2NbcVeuSak6IW-AUNKC6zqd_0x_ER8RU3CMxNpk
 
 ## AUTH
@@ -142,7 +142,7 @@ http://localhost:8081/login
 
 ### 멤버 본인 정보 조회 (토큰 필요)
 GET http://localhost:8081/api/v1/members/me
-Authorization: Bearer {{token}}
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJpZCI6Mywic3ViIjoidGVzdEB0ZXN0LmNvbSIsImlhdCI6MTcwNDc5Mjg3NSwiZXhwIjoxNzA0Nzk0Njc1LCJhdXRob3JpdHkiOiIifQ.pD0WG-Pp33x_di-lBmWxfoCH0PdTv35z3skVDSSgKo0kMp2Iie2GQwvk7XaW_I5u
 
 ### 멤버 본인 정보 수정 (토큰 필요)
 PATCH http://localhost:8081/api/v1/members/me
