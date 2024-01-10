@@ -1,20 +1,19 @@
 package com.pgms.apievent.eventSearch.controller;
 
-import java.util.List;
-
+import com.pgms.apievent.common.dto.response.PageResponseDto;
+import com.pgms.apievent.eventSearch.dto.request.EventKeywordSearchRequest;
+import com.pgms.apievent.eventSearch.dto.response.RecentTop10KeywordsResponse;
+import com.pgms.apievent.eventSearch.service.EventSearchService;
+import com.pgms.coredomain.response.ApiResponse;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.pgms.apievent.common.dto.response.PageResponseDto;
-import com.pgms.apievent.eventSearch.dto.request.EventKeywordSearchRequest;
-import com.pgms.apievent.eventSearch.dto.response.RecentTop10KeywordsResponse;
-import com.pgms.apievent.eventSearch.service.EventSearchService;
-import com.pgms.coredomain.response.ApiResponse;
-
-import lombok.RequiredArgsConstructor;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/events/search")
@@ -25,7 +24,7 @@ public class EventSearchController {
 
 	@GetMapping("/keyword")
 	public ResponseEntity<ApiResponse> searchEventsByKeyword(
-		@ModelAttribute EventKeywordSearchRequest eventKeywordSearchRequest) {
+		@ModelAttribute @Valid EventKeywordSearchRequest eventKeywordSearchRequest) {
 		PageResponseDto response = eventSearchService.searchEventsByKeyword(eventKeywordSearchRequest);
 		return ResponseEntity.ok(ApiResponse.ok(response));
 	}
