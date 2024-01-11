@@ -183,7 +183,7 @@ public class BookingService { //TODO: 테스트 코드 작성
 	private List<EventSeat> getBookableSeatsWithArea(Long timeId, List<Long> seatIds, Long memberId) {
 		seatIds.forEach(seatId -> {
 			Long selectorId = seatLockService.getSelectorId(seatId);
-			if (!selectorId.equals(memberId)) {
+			if (selectorId == null || !selectorId.equals(memberId)) {
 				throw new BookingException(BookingErrorCode.UNBOOKABLE_SEAT_INCLUSION);
 			}
 		});
