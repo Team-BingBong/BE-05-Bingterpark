@@ -17,8 +17,11 @@ import com.pgms.apievent.image.dto.request.ThumbnailCreateRequest;
 import com.pgms.apievent.image.dto.request.ThumbnailUpdateRequest;
 import com.pgms.apievent.image.service.EventImageService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
+@Tag(name = "공연 이미지", description = "공연 이미지 관련 API 입니다.")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1")
@@ -26,6 +29,7 @@ public class EventImageController {
 
 	private final EventImageService eventImageService;
 
+	@Operation(summary = "공연 썸네일 이미지 생성", description = "공연 썸네일 이미지 생성 메서드입니다.")
 	@PostMapping("/thumbnails/events/{eventId}")
 	public ResponseEntity<Void> createEventThumbnail(
 		@PathVariable Long eventId,
@@ -34,6 +38,7 @@ public class EventImageController {
 		return ResponseEntity.noContent().build();
 	}
 
+	@Operation(summary = "공연 썸네일 이미지 수정", description = "공연 썸네일 이미지 수정 메서드입니다.")
 	@PatchMapping("/thumbnails/events/{eventId}")
 	public ResponseEntity<Void> updateEventThumbnail(
 		@PathVariable Long eventId,
@@ -42,6 +47,7 @@ public class EventImageController {
 		return ResponseEntity.noContent().build();
 	}
 
+	@Operation(summary = "공연 상세 이미지 추가", description = "공연 상세 이미지 추가 메서드입니다.")
 	@PostMapping("/event-images/events/{eventId}")
 	public ResponseEntity<Void> addEventImages(
 		@PathVariable Long eventId,
@@ -50,6 +56,7 @@ public class EventImageController {
 		return ResponseEntity.noContent().build();
 	}
 
+	@Operation(summary = "공연 상세 이미지 삭제", description = "공연 상세 이미지 삭제 메서드입니다.")
 	@DeleteMapping("/event-images/events/{eventId}")
 	public ResponseEntity<Void> removeEventImages(@PathVariable Long eventId, @RequestParam List<Long> removeImageIds) {
 		eventImageService.removeEventImages(eventId, removeImageIds);

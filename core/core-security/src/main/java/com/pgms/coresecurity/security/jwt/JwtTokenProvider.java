@@ -21,8 +21,6 @@ import com.pgms.coresecurity.security.service.UserDetailsImpl;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
@@ -86,19 +84,8 @@ public class JwtTokenProvider {
 		return new UsernamePasswordAuthenticationToken(principal, accessToken, authorities);
 	}
 
-	public boolean validateAccessToken(String authToken) {
-		try {
-			Jwts.parser().verifyWith(key()).build().parse(authToken);
-			return true;
-		} catch (MalformedJwtException e) {
-			log.error("Invalid JWT token: {}", e.getMessage());
-		} catch (UnsupportedJwtException e) {
-			log.error("JWT token is unsupported: {}", e.getMessage());
-		} catch (IllegalArgumentException e) {
-			log.error("JWT claims string is empty: {}", e.getMessage());
-		}
-
-		return false;
+	public void validateAccessToken(String authToken) {
+		Jwts.parser().verifyWith(key()).build().parse(authToken);
 	}
 
 	public String generateRefreshToken() {
