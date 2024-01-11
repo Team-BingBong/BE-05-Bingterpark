@@ -1,13 +1,27 @@
 package com.pgms.coredomain.domain.event;
 
+import java.time.LocalDateTime;
+
 import com.pgms.coredomain.domain.common.BaseEntity;
-import jakarta.persistence.*;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.ConstraintMode;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Lob;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
 
 @Getter
 @Entity
@@ -73,6 +87,8 @@ public class Event extends BaseEntity {
 		LocalDateTime bookingStartedAt,
 		LocalDateTime bookingEndedAt,
 		EventHall eventHall) {
+		validateEventTime(startedAt, endedAt);
+		validateEventTime(bookingStartedAt, bookingEndedAt);
 		this.title = title;
 		this.description = description;
 		this.runningTime = runningTime;
@@ -84,6 +100,7 @@ public class Event extends BaseEntity {
 		this.bookingStartedAt = bookingStartedAt;
 		this.bookingEndedAt = bookingEndedAt;
 		this.eventHall = eventHall;
+
 	}
 
 	public void updateEvent(EventEdit eventEdit) {
@@ -115,5 +132,11 @@ public class Event extends BaseEntity {
 	public boolean isStarted() {
 		LocalDateTime now = LocalDateTime.now();
 		return now.isAfter(startedAt);
+	}
+
+	private void validateEventTime(LocalDateTime startedAt, LocalDateTime endedAt) {
+		if (startedAt.isAfter(endedAt)) {
+			throw new IllegalArgumentException("StartedAt should be before or equal to EndedAt");
+		}
 	}
 }
