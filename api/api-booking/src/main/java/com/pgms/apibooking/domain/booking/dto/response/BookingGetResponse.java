@@ -28,7 +28,8 @@ public record BookingGetResponse(
 	PaymentCardResponse paymentCard,
 	PaymentVirtualResponse paymentVirtual,
 	String paymentApprovedAt,
-	List<BookedSeatResponse> seats
+	List<BookedSeatResponse> seats,
+	BookingCancelResponse cancel
 ) {
 
 	public static BookingGetResponse from(Booking booking) {
@@ -60,7 +61,8 @@ public record BookingGetResponse(
 			booking.getPayment().getMethod() == PaymentMethod.CARD ? null :
 				PaymentVirtualResponse.from(booking.getPayment()),
 			booking.getPayment().getApprovedAt().toString(),
-			booking.getTickets().stream().map(ticket -> BookedSeatResponse.of(ticket.getSeat())).toList()
+			booking.getTickets().stream().map(ticket -> BookedSeatResponse.from(ticket.getSeat())).toList(),
+			booking.getCancel() == null ? null : BookingCancelResponse.from(booking.getCancel())
 		);
 	}
 }

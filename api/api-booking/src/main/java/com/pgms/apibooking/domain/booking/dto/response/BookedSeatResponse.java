@@ -8,7 +8,7 @@ public record BookedSeatResponse(
 	Integer price
 ) {
 
-	public static BookedSeatResponse of(EventSeat seat) {
+	public static BookedSeatResponse from(EventSeat seat) {
 		return new BookedSeatResponse(
 			seat.getEventSeatArea().getSeatAreaType().getDescription(),
 			seat.getName(),
