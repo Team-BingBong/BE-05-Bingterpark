@@ -9,8 +9,6 @@ import java.util.stream.Collectors;
 
 import javax.crypto.SecretKey;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -25,10 +23,12 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Component
 public class JwtTokenProvider {
-	private static final Logger logger = LoggerFactory.getLogger(JwtTokenProvider.class);
+	private static final String AUTHORITIES_CLAIM_NAME = "authority";
 
 	@Value("${jwt.secret-key}")
 	private String secretKey;
@@ -40,16 +40,19 @@ public class JwtTokenProvider {
 		Instant now = Instant.now();
 		Instant expirationTime = now.plusSeconds(expirySeconds);
 
-		String authorities = userDetails.getAuthorities().stream()
-			.map(GrantedAuthority::getAuthority)
-			.collect(Collectors.joining(","));
+		String authorities = null;
+		if (userDetails.getAuthorities() != null) {
+			authorities = userDetails.getAuthorities().stream()
+				.map(GrantedAuthority::getAuthority)
+				.collect(Collectors.joining(","));
+		}
 
 		return Jwts.builder()
 			.claim("id", userDetails.getId())
 			.subject((userDetails.getUsername()))
 			.issuedAt(Date.from(now))
 			.expiration(Date.from(expirationTime))
-			.claim("authority", authorities)
+			.claim(AUTHORITIES_CLAIM_NAME, authorities)
 			.signWith(key())
 			.compact();
 	}
@@ -65,14 +68,20 @@ public class JwtTokenProvider {
 			.parseSignedClaims(accessToken)
 			.getPayload();
 
-		Collection<? extends GrantedAuthority> authorities =
-			Arrays.stream(claims.get("authority").toString().split(","))
+		Collection<? extends GrantedAuthority> authorities = null;
+		if (claims.get(AUTHORITIES_CLAIM_NAME) != null) {
+			authorities = Arrays.stream(claims.get(AUTHORITIES_CLAIM_NAME).toString().split(","))
 				.map(SimpleGrantedAuthority::new)
 				.toList();
+		}
 
-		UserDetails principal = new UserDetailsImpl(claims.get("id", Long.class), claims.getSubject(), null,
-			authorities);
-		return new UsernamePasswordAuthenticationToken(principal, null, authorities);
+		UserDetails principal = new UserDetailsImpl(
+			claims.get("id", Long.class),
+			claims.getSubject(),
+			null,
+			authorities
+		);
+		return new UsernamePasswordAuthenticationToken(principal, accessToken, authorities);
 	}
 
 	public void validateAccessToken(String authToken) {

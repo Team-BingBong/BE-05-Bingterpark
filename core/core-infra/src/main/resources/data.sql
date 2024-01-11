@@ -21,8 +21,8 @@ VALUES (100000, 'S', 1),
 
 -- EventSeat
 INSERT INTO event_seat (name, status, event_seat_area_id, event_time_id)
-VALUES ('A1', 'BEING_BOOKED', 1, 1)
-     , ('A2', 'BEING_BOOKED', 1, 1)
+VALUES ('A1', 'AVAILABLE', 1, 1)
+     , ('A2', 'AVAILABLE', 1, 1)
      , ('A3', 'AVAILABLE', 1, 1)
      , ('E1', 'AVAILABLE', 2, 1)
      , ('E2', 'AVAILABLE', 2, 1)
@@ -54,74 +54,49 @@ VALUES ('슈퍼관리자', 'superadmin@example.com', '$2a$10$tfdM.PjviEH0zMEXVYj
 
 -- Booking
 INSERT INTO booking (id,
+                     member_id,
+                     time_id,
                      amount,
                      booking_name,
                      buyer_name,
                      buyer_phone_number,
-                     status,
                      receipt_type,
-                     member_id,
-                     time_id,
-                     created_at)
-VALUES ('bookingCreateTestId',
+                     status,
+                     created_at,
+                     updated_at)
+VALUES ('bookingTestId',
+        1,
+        1,
         180000,
-        '빙봉의 주문',
-        '빙봉',
+        '1번 멤버의 주문',
+        '1번',
         '010-1234-5678',
-        'WAITING_FOR_PAYMENT',
         'PICK_UP',
-        1,
-        1,
-        CURRENT_TIMESTAMP),
-       ('bookingCancelTestId',
-        180000,
-        '주영의 주문',
-        '주영',
-        '010-1234-5678',
-        'PAYMENT_COMPLETED',
-        'PICK_UP',
-        1,
-        1,
+        'CANCELED',
+        CURRENT_TIMESTAMP,
         CURRENT_TIMESTAMP);
-
 
 -- Ticket
 INSERT INTO ticket (booking_id, seat_id)
-VALUES ('bookingCreateTestId', 1),
-       ('bookingCreateTestId', 2),
-       ('bookingCancelTestId', 3);
-
+VALUES ('bookingTestId', 3),
+       ('bookingTestId', 4);
 
 -- Payment
-INSERT INTO payment (amount,
-                     approved_at,
+INSERT INTO payment (booking_id,
+                     amount,
+                     method,
+                     card_issuer,
                      card_number,
                      installment_plan_months,
                      is_interest_free,
-                     method,
                      payment_key,
-                     requested_at,
                      status,
-                     booking_id)
-VALUES (180000,
-        CURRENT_TIMESTAMP,
-        '5555-5555-5555-5555',
-        0,
-        false,
-        'CARD',
-        'paymentkey1',
-        CURRENT_TIMESTAMP,
-        'READY',
-        'bookingCreateTestId'),
-       (180000,
-        CURRENT_TIMESTAMP,
-        '5555-5555-5555-5555',
-        0,
-        false,
-        'CARD',
-        'paymentkey2',
-        CURRENT_TIMESTAMP,
-        'DONE',
-        'bookingCancelTestId')
+                     requested_at,
+                     approved_at,
+                     created_at,
+                     updated_at)
+VALUES ('bookingTestId', 180000, 'CARD', 'HYUNDAI', '11111111****111*', 0, false, 'paymentkey', 'CANCELED', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
-
+-- Booking Cancel
+INSERT INTO booking_cancel (booking_id, amount, reason, created_by, created_at, updated_at)
+VALUES ('bookingTestId', 180000, '구매자 변심', 'test@gmail.com', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);

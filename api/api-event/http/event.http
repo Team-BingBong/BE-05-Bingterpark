@@ -19,7 +19,7 @@ Content-Type: application/json
 GET http://localhost:8080/api/v1/events/2
 
 ### 공연 목록 - 랭킹
-GET http://localhost:8080/api/v1/events/sort/ranking?page=1&size=10&genreType=CONCERT&dateOffset=7
+GET http://localhost:8080/api/v1/events/sort/ranking?page=1&size=10&genreType=CONCERT&dateRange=WEEKLY
 
 ### 공연 목록 - 리뷰순
 GET http://localhost:8080/api/v1/events/sort/review?page=1&size=10&genreType=CONCERT

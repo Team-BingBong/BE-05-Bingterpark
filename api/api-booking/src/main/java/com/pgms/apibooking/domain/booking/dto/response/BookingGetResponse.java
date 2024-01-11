@@ -3,8 +3,6 @@ package com.pgms.apibooking.domain.booking.dto.response;
 import java.util.List;
 
 import com.pgms.apibooking.domain.booking.dto.request.DeliveryAddress;
-import com.pgms.apibooking.domain.payment.dto.response.PaymentCardResponse;
-import com.pgms.apibooking.domain.payment.dto.response.PaymentVirtualResponse;
 import com.pgms.coredomain.domain.booking.Booking;
 import com.pgms.coredomain.domain.booking.PaymentMethod;
 import com.pgms.coredomain.domain.booking.ReceiptType;
@@ -26,9 +24,10 @@ public record BookingGetResponse(
 	String createdAt,
 	String paymentMethod,
 	PaymentCardResponse paymentCard,
-	PaymentVirtualResponse paymentVirtual,
+	PaymentVirtualAccountResponse paymentVirtualAccount,
 	String paymentApprovedAt,
-	List<BookedSeatResponse> seats
+	List<BookedSeatResponse> seats,
+	BookingCancelResponse cancel
 ) {
 
 	public static BookingGetResponse from(Booking booking) {
@@ -58,9 +57,10 @@ public record BookingGetResponse(
 			booking.getPayment().getMethod() == PaymentMethod.VIRTUAL_ACCOUNT ? null :
 				PaymentCardResponse.from(booking.getPayment()),
 			booking.getPayment().getMethod() == PaymentMethod.CARD ? null :
-				PaymentVirtualResponse.from(booking.getPayment()),
-			booking.getPayment().getApprovedAt().toString(),
-			booking.getTickets().stream().map(ticket -> BookedSeatResponse.of(ticket.getSeat())).toList()
+				PaymentVirtualAccountResponse.from(booking.getPayment()),
+			booking.getPayment().getApprovedAt() == null ? null : booking.getPayment().getApprovedAt().toString(),
+			booking.getTickets().stream().map(ticket -> BookedSeatResponse.from(ticket.getSeat())).toList(),
+			booking.getCancel() == null ? null : BookingCancelResponse.from(booking.getCancel())
 		);
 	}
 }
