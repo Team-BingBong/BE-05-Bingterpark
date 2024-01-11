@@ -53,20 +53,12 @@ public class WebSecurityConfig {
 	 */
 	@Bean
 	public SecurityFilterChain securityFilterChainPermitAll(HttpSecurity http) throws Exception {
+		configureCommonSecuritySettings(http);
 		http
 			.securityMatchers(matchers -> matchers
 				.requestMatchers(requestPermitAll())
 			)
-			.authorizeHttpRequests().anyRequest().permitAll().and()
-
-			// filter 비활성화
-			.csrf().disable()
-			.anonymous().disable()
-			.formLogin().disable()
-			.httpBasic().disable()
-			.rememberMe().disable()
-			.logout().disable()
-			.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+			.authorizeHttpRequests().anyRequest().permitAll();
 		return http.build();
 	}
 
@@ -85,6 +77,7 @@ public class WebSecurityConfig {
 	 */
 	@Bean
 	public SecurityFilterChain securityFilterChainOAuth(HttpSecurity http) throws Exception {
+		configureCommonSecuritySettings(http);
 		http
 			.securityMatchers(matchers -> matchers
 				.requestMatchers(
@@ -98,16 +91,7 @@ public class WebSecurityConfig {
 				.loginPage("/login")
 				.successHandler(oauthSuccessHandler)
 				.userInfoEndpoint()
-				.userService(oAuth2UserService))
-
-			// 필터 비활성화
-			.csrf().disable()
-			.anonymous().disable()
-			.formLogin().disable()
-			.httpBasic().disable()
-			.rememberMe().disable()
-			.logout().disable()
-			.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+				.userService(oAuth2UserService));
 		return http.build();
 	}
 
@@ -116,6 +100,7 @@ public class WebSecurityConfig {
 	 */
 	@Bean
 	public SecurityFilterChain securityFilterChainAuthorized(HttpSecurity http) throws Exception {
+		configureCommonSecuritySettings(http);
 		http
 			.securityMatchers(matchers -> matchers
 				.requestMatchers(requestHasRoleUser())
@@ -131,16 +116,7 @@ public class WebSecurityConfig {
 				exception.authenticationEntryPoint(jwtAuthenticationEntryPoint);
 				exception.accessDeniedHandler(jwtAccessDeniedHandler);
 			})
-			.addFilterAfter(jwtAuthenticationFilter, ExceptionTranslationFilter.class)
-
-			// filter 비활성화
-			.csrf().disable()
-			.anonymous().disable()
-			.formLogin().disable()
-			.httpBasic().disable()
-			.rememberMe().disable()
-			.logout().disable()
-			.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+			.addFilterAfter(jwtAuthenticationFilter, ExceptionTranslationFilter.class);
 		return http.build();
 	}
 
@@ -174,22 +150,25 @@ public class WebSecurityConfig {
 	 */
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+		configureCommonSecuritySettings(http);
 		http
 			.authorizeHttpRequests().anyRequest().permitAll().and() // TODO 완성 후 denyAll 로 변경, exceptionHandling 삭제하기
 			.exceptionHandling(exception -> {
 				exception.authenticationEntryPoint(jwtAuthenticationEntryPoint);
 				exception.accessDeniedHandler(jwtAccessDeniedHandler);
-			})
+			});
+		return http.build();
+	}
 
-			// filter 비활성화
+	private void configureCommonSecuritySettings(HttpSecurity http) throws Exception {
+		http
 			.csrf().disable()
 			.anonymous().disable()
 			.formLogin().disable()
 			.httpBasic().disable()
 			.rememberMe().disable()
 			.logout().disable()
-			.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-		return http.build();
+			.sessionManagement()
+			.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 	}
-
 }
