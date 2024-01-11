@@ -10,6 +10,7 @@ import com.pgms.apimember.dto.request.LoginRequest;
 import com.pgms.apimember.dto.request.RefreshTokenRequest;
 import com.pgms.apimember.dto.response.AuthResponse;
 import com.pgms.apimember.service.AuthService;
+import com.pgms.coredomain.domain.member.enums.Role;
 import com.pgms.coredomain.response.ApiResponse;
 
 import jakarta.validation.Valid;
@@ -27,14 +28,14 @@ public class AuthController {
 	 */
 	@PostMapping("/admin/login")
 	public ResponseEntity<ApiResponse<AuthResponse>> adminLogin(@Valid @RequestBody LoginRequest request) {
-		AuthResponse response = authService.login(request, "admin");
+		AuthResponse response = authService.login(request, Role.ROLE_ADMIN);
 		return ResponseEntity.ok(ApiResponse.ok(response));
 	}
 
 	@PostMapping("/members/login")
 	public ResponseEntity<ApiResponse<AuthResponse>> memberLogin(@Valid @RequestBody LoginRequest request) {
 		// TODO: 나중에 enum으로..?
-		AuthResponse response = authService.login(request, "member");
+		AuthResponse response = authService.login(request, Role.ROLE_USER);
 		return ResponseEntity.ok(ApiResponse.ok(response));
 	}
 
