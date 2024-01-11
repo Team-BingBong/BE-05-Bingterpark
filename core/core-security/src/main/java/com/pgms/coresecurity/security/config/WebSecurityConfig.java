@@ -69,15 +69,30 @@ public class WebSecurityConfig {
 			antMatcher("/api/*/auth/**"),
 			antMatcher("/api/*/members/signup"),
 
-			// SWAGGER
-			antMatcher("/v3/api-docs/**"),
-			antMatcher("/swagger-ui/**"),
-
 			// BOOKING
 			antMatcher(GET, "/api/*/payments/**"),
 			antMatcher(POST, "/api/*/payments/**"),
 			antMatcher("/bookings"),
-			antMatcher("/payments")
+			antMatcher("/payments"),
+
+			// EVENT
+			antMatcher(GET, "/api/*/events/*"),                // 공연 아이디 조회
+			antMatcher(GET, "/api/*/events/sort/ranking"),    // 공연 목록 조회 - 랭킹순
+			antMatcher(GET, "/api/*/events/sort/review"),    // 공연 목록 조회 - 리뷰순
+			antMatcher(GET, "/api/*/events/sort/ended-at"),    // 공연 목록 조회 - 예약마감일자순
+			antMatcher(GET, "/api/*/events/search/keyword"),    // 공연 키워드 검색
+			antMatcher(GET, "/api/*/events/search/top-ten"),    // 실시간 검색어 순위
+			antMatcher(GET, "/api/*/event-times/*"),    // 회차 아이디로 회차 정보 조회
+			antMatcher(GET, "/api/*/event-times/events/*"),    // 공연 아이디로 특정 공연에 대한 전체 회차 정보 조회
+			antMatcher(GET, "/api/*/event-halls/*"),    // 공연장 아이디 조회
+			antMatcher(GET, "/api/*/event-halls"),    // 공연장 목록 조회
+			antMatcher(GET, "/api/*/event-seats/event-times/*/seats"),    // 회차별 공연 좌석 조회
+			antMatcher(GET, "/api/*/event-seats/event-times/*/available-numbers"),    // 회차별 공연 좌석 구역별 남은 자리 수 조회
+			antMatcher(GET, "/api/*/events/*/seat-area"),    // 공연 좌석 구역 목록 조회
+
+			// DOCS
+			antMatcher("/v3/api-docs/**"),
+			antMatcher("/swagger-ui/**")
 		);
 		return requestMatchers.toArray(RequestMatcher[]::new);
 	}
@@ -118,7 +133,6 @@ public class WebSecurityConfig {
 				.requestMatchers(requestHasRoleSuperAdmin())
 			)
 			.authorizeHttpRequests(auth -> auth
-				// TODO 엔드포인트별 authorize 통합
 				.requestMatchers(requestHasRoleSuperAdmin()).hasAuthority(Role.ROLE_SUPERADMIN.name())
 				.requestMatchers(requestHasRoleAdmin()).hasAuthority(Role.ROLE_ADMIN.name())
 				.requestMatchers(requestHasRoleUser()).hasAuthority(Role.ROLE_USER.name()))
@@ -145,7 +159,30 @@ public class WebSecurityConfig {
 
 	private RequestMatcher[] requestHasRoleAdmin() {
 		List<RequestMatcher> requestMatchers = List.of(
-			antMatcher("/api/*/admin/**"));
+			// MEMBER
+			antMatcher("/api/*/admin/**"),
+
+			// EVENT
+			antMatcher(POST, "/api/*/events"),                        // 공연 생성
+			antMatcher(PUT, "/api/*/events/*"),                        // 공연 수정
+			antMatcher(DELETE, "/api/*/events/*"),                   // 공연 삭제
+			antMatcher(POST, "/api/*/event-times/*"),       // 공연 회차 생성
+			antMatcher(PATCH, "/api/*/event-times/*"),  // 회차 아이디로 회차 정보 수정
+			antMatcher(DELETE, "/api/*/event-times/*"), // 회차 아이디로 회차 삭제
+			antMatcher(POST, "/api/*/event-halls"),                 // 공연장 생성
+			antMatcher(DELETE, "/api/*/event-halls/*"),          // 공연장 삭제
+			antMatcher(PUT, "/api/*/event-halls/*"),             // 공연장 수정
+			antMatcher(POST, "/api/*/event-seats/events/*"),     // 공연 좌석 생성
+			antMatcher(PATCH, "/api/*/event-seats/seat-area"),      // 공연 좌석 등급 일괄 수정
+			antMatcher(DELETE, "/api/*/event-seats"),               // 공연 좌석 일괄 삭제
+			antMatcher(POST, "/api/*/events/*/seat-area"),       // 공연 좌석 구역 생성
+			antMatcher(DELETE, "/api/*/events/seat-area/*"),     // 공연 좌석 구역 삭제
+			antMatcher(PUT, "/api/*/events/seat-area/*"),        // 공연 좌석 구역 수정
+			antMatcher(POST, "/api/*/thumbnails/events/*"), // 공연 썸네일 이미지 생성
+			antMatcher(PATCH, "/api/*/thumbnails/events/*"),// 공연 썸네일 이미지 수정
+			antMatcher(POST, "/api/*/event-images/events/*"),            // 공연 상세 이미지 추가
+			antMatcher(DELETE, "/api/*/event-images/events/*")            // 공연 상세 이미지 삭제
+		);
 		return requestMatchers.toArray(RequestMatcher[]::new);
 	}
 
@@ -158,7 +195,14 @@ public class WebSecurityConfig {
 			antMatcher(GET, "/api/*/bookings/**"),
 			antMatcher(POST, "/api/*/bookings/**"),
 			antMatcher(GET, "/api/*/seats/**"),
-			antMatcher(POST, "/api/*/seats/**")
+			antMatcher(POST, "/api/*/seats/**"),
+
+			// EVENT
+			antMatcher(POST, "/api/*/event-reviews/*"), // 공연 후기 생성
+			antMatcher(PATCH, "/api/*/event-reviews/*"), // 공연 후기 수정
+			antMatcher(GET, "/api/*/event-reviews/*"), // 리뷰 아이디로 조회
+			antMatcher(GET, "/api/*/event-reviews/events/*"), // 특정 공연에 대한 리뷰 전체 조회
+			antMatcher(DELETE, "/api/*/event-reviews/*") // 리뷰 아이디로 삭제
 		);
 		return requestMatchers.toArray(RequestMatcher[]::new);
 	}
