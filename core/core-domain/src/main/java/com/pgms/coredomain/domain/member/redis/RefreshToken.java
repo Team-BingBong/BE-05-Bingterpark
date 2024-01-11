@@ -1,4 +1,4 @@
-package com.pgms.apimember.redis;
+package com.pgms.coredomain.domain.member.redis;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;

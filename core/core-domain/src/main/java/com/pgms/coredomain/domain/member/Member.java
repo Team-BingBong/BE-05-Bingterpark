@@ -105,24 +105,30 @@ public class Member extends AccountBaseEntity {
 		String streetAddress,
 		String detailAddress,
 		String zipCode) {
-		this.name = name;
-		this.phoneNumber = phoneNumber;
-		this.birthDate = birthDate;
-		this.gender = gender;
-		this.streetAddress = streetAddress;
-		this.detailAddress = detailAddress;
-		this.zipCode = zipCode;
+		this.name = name != null ? name : this.name;
+		this.phoneNumber = phoneNumber != null ? phoneNumber : this.phoneNumber;
+		this.birthDate = birthDate != null ? birthDate : this.birthDate;
+		this.gender = gender != null ? gender : this.gender;
+		this.streetAddress = streetAddress != null ? streetAddress : this.streetAddress;
+		this.detailAddress = detailAddress != null ? detailAddress : this.detailAddress;
+		this.zipCode = zipCode != null ? zipCode : this.zipCode;
 	}
 
 	public boolean isDeleted() {
 		return this.status == DELETED;
 	}
 
+	public boolean isLoginByProvider() {
+		return this.provider != null;
+	}
+
 	public void updateToDeleted() {
+		this.role = null;
 		this.status = DELETED;
 	}
 
 	public void updateToActive() {
+		this.role = Role.ROLE_USER;
 		this.status = ACTIVE;
 	}
 

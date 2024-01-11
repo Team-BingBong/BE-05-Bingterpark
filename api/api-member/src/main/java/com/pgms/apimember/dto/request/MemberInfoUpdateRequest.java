@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 public record MemberInfoUpdateRequest(
+	@Size(min = 2, max = 50, message = "이름은 2자 이상 50자 이하로 입력해주세요.")
 	String name,
 
 	@Pattern(regexp = "\\d+", message = "전화번호는 숫자만 입력해주세요.")
