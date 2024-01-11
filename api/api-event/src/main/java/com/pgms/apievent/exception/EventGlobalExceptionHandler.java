@@ -4,6 +4,7 @@ import com.pgms.coredomain.domain.common.BaseErrorCode;
 import com.pgms.coredomain.response.ErrorResponse;
 import com.pgms.coresecurity.security.exception.SecurityCustomException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -44,6 +45,13 @@ public class EventGlobalExceptionHandler {
 	@ExceptionHandler(IllegalArgumentException.class)
 	protected ResponseEntity<ErrorResponse> handleEventIllegalArgumentException(IllegalArgumentException ex) {
 		log.warn(">>>>> IllegalArgument Exception : {}", ex);
+		ErrorResponse errorResponse = new ErrorResponse("ILLEGAL ARGUMENT ERROR", ex.getMessage());
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+	}
+
+	@ExceptionHandler(InvalidDataAccessApiUsageException.class)
+	protected ResponseEntity<ErrorResponse> handleInvalidDataAccessApiUsageException(InvalidDataAccessApiUsageException ex) {
+		log.warn(">>>>> InvalidDataAccessApiUsageException Exception : {}", ex);
 		ErrorResponse errorResponse = new ErrorResponse("ILLEGAL ARGUMENT ERROR", ex.getMessage());
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
 	}
