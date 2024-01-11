@@ -1,5 +1,6 @@
 package com.pgms.coresecurity.security.config;
 
+import static com.pgms.coredomain.domain.member.enums.Role.*;
 import static org.springframework.http.HttpMethod.*;
 import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.*;
 
@@ -20,7 +21,6 @@ import org.springframework.security.web.access.ExceptionTranslationFilter;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
-import com.pgms.coredomain.domain.member.enums.Role;
 import com.pgms.coresecurity.security.jwt.JwtAccessDeniedHandler;
 import com.pgms.coresecurity.security.jwt.JwtAuthenticationEntryPoint;
 import com.pgms.coresecurity.security.jwt.JwtAuthenticationFilter;
@@ -133,9 +133,9 @@ public class WebSecurityConfig {
 				.requestMatchers(requestHasRoleSuperAdmin())
 			)
 			.authorizeHttpRequests(auth -> auth
-				.requestMatchers(requestHasRoleSuperAdmin()).hasAuthority(Role.ROLE_SUPERADMIN.name())
-				.requestMatchers(requestHasRoleAdmin()).hasAuthority(Role.ROLE_ADMIN.name())
-				.requestMatchers(requestHasRoleUser()).hasAuthority(Role.ROLE_USER.name()))
+				.requestMatchers(requestHasRoleSuperAdmin()).hasAuthority(ROLE_SUPERADMIN.name())
+				.requestMatchers(requestHasRoleAdmin()).hasAuthority(ROLE_ADMIN.name())
+				.requestMatchers(requestHasRoleUser()).hasAuthority(ROLE_USER.name()))
 			.exceptionHandling(exception -> {
 				exception.authenticationEntryPoint(jwtAuthenticationEntryPoint);
 				exception.accessDeniedHandler(jwtAccessDeniedHandler);
@@ -163,23 +163,23 @@ public class WebSecurityConfig {
 			antMatcher("/api/*/admin/**"),
 
 			// EVENT
-			antMatcher(POST, "/api/*/events"),             // 공연 생성
+			antMatcher(POST, "/api/*/events"),                // 공연 생성
 			antMatcher(PUT, "/api/*/events/*"),               // 공연 수정
 			antMatcher(DELETE, "/api/*/events/*"),            // 공연 삭제
 			antMatcher(POST, "/api/*/event-times/*"),         // 공연 회차 생성
 			antMatcher(PATCH, "/api/*/event-times/*"),         // 회차 아이디로 회차 정보 수정
 			antMatcher(DELETE, "/api/*/event-times/*"),        // 회차 아이디로 회차 삭제
-			antMatcher(POST, "/api/*/event-halls"),          // 공연장 생성
-			antMatcher(DELETE, "/api/*/event-halls/*"),       // 공연장 삭제
-			antMatcher(PUT, "/api/*/event-halls/*"),          // 공연장 수정
-			antMatcher(POST, "/api/*/event-seats/events/*"),  // 공연 좌석 생성
+			antMatcher(POST, "/api/*/event-halls"),            // 공연장 생성
+			antMatcher(DELETE, "/api/*/event-halls/*"),        // 공연장 삭제
+			antMatcher(PUT, "/api/*/event-halls/*"),           // 공연장 수정
+			antMatcher(POST, "/api/*/event-seats/events/*"),   // 공연 좌석 생성
 			antMatcher(PATCH, "/api/*/event-seats/seat-area"),   // 공연 좌석 등급 일괄 수정
 			antMatcher(DELETE, "/api/*/event-seats"),            // 공연 좌석 일괄 삭제
 			antMatcher(POST, "/api/*/events/*/seat-area"),       // 공연 좌석 구역 생성
 			antMatcher(DELETE, "/api/*/events/seat-area/*"),     // 공연 좌석 구역 삭제
 			antMatcher(PUT, "/api/*/events/seat-area/*"),        // 공연 좌석 구역 수정
 			antMatcher(POST, "/api/*/thumbnails/events/*"),      // 공연 썸네일 이미지 생성
-			antMatcher(PATCH, "/api/*/thumbnails/events/*"),        // 공연 썸네일 이미지 수정
+			antMatcher(PATCH, "/api/*/thumbnails/events/*"),     // 공연 썸네일 이미지 수정
 			antMatcher(POST, "/api/*/event-images/events/*"),    // 공연 상세 이미지 추가
 			antMatcher(DELETE, "/api/*/event-images/events/*")   // 공연 상세 이미지 삭제
 		);
@@ -208,13 +208,16 @@ public class WebSecurityConfig {
 	}
 
 	/**
-	 * 위에서 정의된 엔드포인트 이외에는 denyAll 로 설정
+	 * 위에서 정의된 엔드포인트 이외에는 authenticated 로 설정
 	 */
 	@Bean
-	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+	public SecurityFilterChain securityFilterChainDefault(HttpSecurity http) throws Exception {
 		configureCommonSecuritySettings(http);
 		http
-			.authorizeHttpRequests().anyRequest().permitAll().and() // TODO 완성 후 denyAll 로 변경, exceptionHandling 삭제하기
+			.authorizeHttpRequests()
+			.anyRequest().authenticated()
+			.and()
+			.addFilterAfter(jwtAuthenticationFilter, ExceptionTranslationFilter.class)
 			.exceptionHandling(exception -> {
 				exception.authenticationEntryPoint(jwtAuthenticationEntryPoint);
 				exception.accessDeniedHandler(jwtAccessDeniedHandler);
