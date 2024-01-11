@@ -47,6 +47,7 @@ public class TossPaymentServiceFake implements TossPaymentService {
 					NOW.toString(),
 					NOW.toString(),
 					new PaymentCardResponse(
+						"61",
 						"12341234****123*",
 						0,
 						false
@@ -96,6 +97,7 @@ public class TossPaymentServiceFake implements TossPaymentService {
 					NOW.toString(),
 					NOW.toString(),
 					new PaymentCardResponse(
+						"61",
 						"12341234****123*",
 						0,
 						false
