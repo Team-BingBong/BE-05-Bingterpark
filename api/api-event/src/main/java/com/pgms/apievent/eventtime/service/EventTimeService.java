@@ -2,6 +2,7 @@ package com.pgms.apievent.eventtime.service;
 
 import static com.pgms.apievent.exception.EventErrorCode.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -10,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.pgms.apievent.eventtime.dto.request.EventTimeCreateRequest;
 import com.pgms.apievent.eventtime.dto.request.EventTimeUpdateRequest;
 import com.pgms.apievent.eventtime.dto.response.EventTimeResponse;
+import com.pgms.apievent.eventtime.repository.EventTimeCustomRepository;
 import com.pgms.apievent.exception.EventException;
 import com.pgms.coredomain.domain.event.Event;
 import com.pgms.coredomain.domain.event.EventTime;
@@ -25,11 +27,13 @@ public class EventTimeService {
 
 	private final EventTimeRepository eventTimeRepository;
 	private final EventRepository eventRepository;
+	private final EventTimeCustomRepository eventTimeCustomRepository;
 
 	public EventTimeResponse createEventTime(Long eventId, EventTimeCreateRequest request) {
 		validateEventTimeRoundAlreadyExist(eventId, request.round());
 		Event event = eventRepository.findById(eventId)
 			.orElseThrow(() -> new EventException(EVENT_NOT_FOUND));
+		validateAlreadyExistEventPlayTime(request.startedAt(), event.getEndedAt(), eventId);
 		EventTime eventTime = eventTimeRepository.save(request.toEntity(event));
 		return EventTimeResponse.of(eventTime);
 	}
@@ -64,6 +68,12 @@ public class EventTimeService {
 	private void validateEventTimeRoundAlreadyExist(Long eventId, int round) {
 		if (eventTimeRepository.existsEventTimeForEventByRound(eventId, round)) {
 			throw new EventException(ALREADY_EXIST_EVENT_TIME);
+		}
+	}
+
+	private void validateAlreadyExistEventPlayTime(LocalDateTime startedAt, LocalDateTime endedAt, Long eventId) {
+		if (!eventTimeCustomRepository.isAlreadyExistEventPlayTime(startedAt, endedAt, eventId)) {
+			throw new EventException(ALREADY_EXIST_EVENT_PLAY_TIME);
 		}
 	}
 }
