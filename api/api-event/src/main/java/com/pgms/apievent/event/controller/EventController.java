@@ -47,9 +47,9 @@ public class EventController {
 	}
 
 	@Operation(summary = "공연ID 조회", description = "공연을 ID로 조회하는 메서드입니다.")
-	@GetMapping("/{id}")
-	public ResponseEntity<ApiResponse> getEventById(@PathVariable Long id) {
-		EventResponse response = eventService.getEventById(id);
+	@GetMapping("/{eventId}")
+	public ResponseEntity<ApiResponse> getEventById(@PathVariable Long eventId) {
+		EventResponse response = eventService.getEventById(eventId);
 		return ResponseEntity.ok(ApiResponse.ok(response));
 	}
 
@@ -78,18 +78,18 @@ public class EventController {
 	}
 
 	@Operation(summary = "공연 정보 수정", description = "공연 정보를 수정하는 메서드입니다.")
-	@PutMapping("/{id}")
+	@PutMapping("/{eventId}")
 	public ResponseEntity<ApiResponse> updateEvent(
-		@PathVariable Long id,
+		@PathVariable Long eventId,
 		@RequestBody EventUpdateRequest request) {
-		EventResponse response = eventService.updateEvent(id, request);
+		EventResponse response = eventService.updateEvent(eventId, request);
 		return ResponseEntity.ok(ApiResponse.ok(response));
 	}
 
 	@Operation(summary = "공연 삭제", description = "공연을 ID로 삭제하는 메서드입니다.")
-	@DeleteMapping("/{id}")
-	public ResponseEntity<Void> deleteEventById(@PathVariable Long id) {
-		eventService.deleteEventById(id);
+	@DeleteMapping("/{eventId}")
+	public ResponseEntity<Void> deleteEventById(@PathVariable Long eventId) {
+		eventService.deleteEventById(eventId);
 		return ResponseEntity.noContent().build();
 	}
 }
