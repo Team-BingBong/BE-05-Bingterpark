@@ -35,12 +35,12 @@ public class SeatController {
 	@PostMapping("/{seatId}/select")
 	public ResponseEntity<Void> selectSeat(@PathVariable Long seatId, @CurrentAccount Long memberId) {
 		seatService.selectSeat(seatId, memberId);
-		return ResponseEntity.ok().build();
+		return ResponseEntity.noContent().build();
 	}
 
 	@PostMapping("/{seatId}/deselect")
 	public ResponseEntity<Void> deselectSeat(@PathVariable Long seatId, @CurrentAccount Long memberId) {
 		seatService.deselectSeat(seatId, memberId);
-		return ResponseEntity.ok().build();
+		return ResponseEntity.noContent().build();
 	}
 }

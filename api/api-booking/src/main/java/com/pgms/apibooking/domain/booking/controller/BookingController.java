@@ -58,13 +58,13 @@ public class BookingController {
 		@PathVariable String id,
 		@RequestBody @Valid BookingCancelRequest request) {
 		bookingService.cancelBooking(id, request, memberId);
-		return ResponseEntity.ok().build();
+		return ResponseEntity.noContent().build();
 	}
 
 	@PostMapping("/{id}/exit")
 	public ResponseEntity<Void> exitBooking(@PathVariable String id) {
 		bookingService.exitBooking(id);
-		return ResponseEntity.ok().build();
+		return ResponseEntity.noContent().build();
 	}
 
 	@GetMapping
