@@ -29,7 +29,7 @@ public class WebConfig implements WebMvcConfigurer {
 			.addPathPatterns("/api/*/bookings/create")
 			.addPathPatterns("/api/*/exit")
 			.addPathPatterns("/api/*/seats")
-			.addPathPatterns("/api/*/*/select")
-			.addPathPatterns("/api/*/*/deselect");
+			.addPathPatterns("/api/*/seats/*/select")
+			.addPathPatterns("/api/*/seats/*/deselect");
 	}
 }
