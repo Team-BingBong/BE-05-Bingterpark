@@ -181,9 +181,21 @@ Content-Type: application/json
 
 ### 멤버 본인 탈퇴 (토큰 필요)
 DELETE http://localhost:8081/api/v1/members/me
-Authorization: Bearer {{token}}
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJpZCI6Mywic3ViIjoiZGh4bDUwQG5hdmVyLmNvbSIsImlhdCI6MTcwNDk3MzE5OCwiZXhwIjoxNzA0OTc0OTk4LCJhdXRob3JpdHkiOiJST0xFX1VTRVIifQ.6QrGoK0YJ2P9idqh5gVYZVRbZX_pNdCLLdAI9W0-npQXy_JBNAMTP2QGfSK7F9CZ
 
-### 멤버 계정 복구 (토큰 필요)
-POST http://localhost:8081/api/v1/members/restore
-Content-Type: application/x-www-form-urlencoded
-Authorization: Bearer {{token}}
+### 멤버 계정 복구 이메일 전송
+POST http://localhost:8081/api/v1/members/send-restore-email
+Content-Type: application/json
+
+{
+  "email": "dhxl50@naver.com"
+}
+
+### 멤버 계정 복구 (이메일 코드 포함)
+PATCH http://localhost:8081/api/v1/members/confirm-restore
+Content-Type: application/json
+
+{
+  "email": "dhxl50@naver.com",
+  "code": "925340"
+}

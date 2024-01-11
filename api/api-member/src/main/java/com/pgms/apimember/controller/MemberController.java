@@ -9,9 +9,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.pgms.apimember.dto.request.ConfirmRestoreRequest;
 import com.pgms.apimember.dto.request.MemberInfoUpdateRequest;
 import com.pgms.apimember.dto.request.MemberPasswordUpdateRequest;
 import com.pgms.apimember.dto.request.MemberPasswordVerifyRequest;
+import com.pgms.apimember.dto.request.MemberRestoreRequest;
 import com.pgms.apimember.dto.request.MemberSignUpRequest;
 import com.pgms.apimember.dto.response.MemberDetailGetResponse;
 import com.pgms.apimember.service.MemberService;
@@ -67,8 +69,15 @@ public class MemberController {
 		return ResponseEntity.noContent().build();
 	}
 
-	@PostMapping("/restore")
-	public ResponseEntity<ApiResponse<Long>> restoreMember(@CurrentAccount Long memberId) {
-		return ResponseEntity.ok(ApiResponse.ok(memberService.restoreMember(memberId)));
+	@PostMapping("send-restore-email")
+	public ResponseEntity<ApiResponse<String>> sendRestoreEmail(@RequestBody @Valid MemberRestoreRequest requestDto) {
+		memberService.sendRestoreEmail(requestDto);
+		return ResponseEntity.noContent().build();
+	}
+
+	@PatchMapping("/confirm-restore")
+	public ResponseEntity<ApiResponse<Void>> confirmRestore(@RequestBody @Valid ConfirmRestoreRequest requestDto) {
+		memberService.confirmRestoreMember(requestDto);
+		return ResponseEntity.noContent().build();
 	}
 }

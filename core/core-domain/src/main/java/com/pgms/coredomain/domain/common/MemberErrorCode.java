@@ -20,7 +20,11 @@ public enum MemberErrorCode implements BaseErrorCode {
 	MEMBER_ALREADY_DELETED("MEMBER ALREADY DELETED", HttpStatus.BAD_REQUEST, "탈퇴한 회원입니다. 사용을 원하시면 회원 복구를 해주세요."),
 	PASSWORD_NOT_MATCHED("PASSWORD NOT MATCHED", HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다."),
 	PASSWORD_CONFIRM_NOT_MATCHED("PASSWORD CONFIRM NOT MATCHED", HttpStatus.BAD_REQUEST, "비밀번호 확인이 일치하지 않습니다."),
-	NOT_ALLOWED_BY_PROVIDER("NOT ALLOWED BY PROVIDER", HttpStatus.BAD_REQUEST, "소셜 로그인 회원은 불가능한 요청입니다.");
+	NOT_ALLOWED_BY_PROVIDER("NOT ALLOWED BY PROVIDER", HttpStatus.BAD_REQUEST, "소셜 로그인 회원은 불가능한 요청입니다."),
+	EMAIL_SEND_FAIL("EMAIL SEND FAIL", HttpStatus.INTERNAL_SERVER_ERROR, "이메일 발송에 실패했습니다."),
+	EMAIL_SEND_FAILED("EMAIL SEND FAIL", HttpStatus.INTERNAL_SERVER_ERROR, "이메일 발송에 실패했습니다."),
+	CREATE_VERIFY_CODE_FAILED("CREATE VERIFY CODE FAIL", HttpStatus.INTERNAL_SERVER_ERROR, "이메일 인증 코드 생성에 실패했습니다."),
+	EMAIL_VERIFY_FAILED("EMAIL VERIFY FAIL", HttpStatus.BAD_REQUEST, "이메일 인증에 실패했습니다.");
 
 	private final String errorCode;
 	private final HttpStatus status;
