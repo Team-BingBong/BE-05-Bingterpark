@@ -1,7 +1,6 @@
 package com.pgms.apibooking.domain.seat.service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -36,13 +35,13 @@ public class SeatService { //TODO: 테스트 코드 작성
 
 	public void selectSeat(Long seatId, Long memberId) {
 		if (seatLockService.isSeatLocked(seatId)) {
-			Optional<Long> selectorIdOpt = seatLockService.getSelectorId(seatId);
+			Long selectorId = seatLockService.getSelectorId(seatId);
 
-			if (selectorIdOpt.isPresent() && selectorIdOpt.get().equals(memberId)) {
+			if (selectorId != null && selectorId.equals(memberId)) {
 				return;
 			}
 
-			throw new BookingException(BookingErrorCode.SEAT_BEING_BOOKED);
+			throw new BookingException(BookingErrorCode.SEAT_SELECTED_BY_ANOTHER_MEMBER);
 		}
 
 		EventSeat seat = getSeat(seatId);
@@ -56,14 +55,14 @@ public class SeatService { //TODO: 테스트 코드 작성
 	}
 
 	public void deselectSeat(Long seatId, Long memberId) {
-		Optional<Long> selectorIdOpt = seatLockService.getSelectorId(seatId);
+		Long selectorId = seatLockService.getSelectorId(seatId);
 
-		if (selectorIdOpt.isEmpty()) {
+		if (selectorId == null) {
 			updateSeatStatusToAvailable(seatId);
 			return;
 		}
 
-		if (!selectorIdOpt.get().equals(memberId)) {
+		if (!selectorId.equals(memberId)) {
 			throw new BookingException(BookingErrorCode.SEAT_SELECTED_BY_ANOTHER_MEMBER);
 		}
 
