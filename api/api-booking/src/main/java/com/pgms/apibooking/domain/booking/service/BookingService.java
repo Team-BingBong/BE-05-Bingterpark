@@ -1,6 +1,7 @@
 package com.pgms.apibooking.domain.booking.service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.springframework.data.domain.PageRequest;
@@ -110,7 +111,6 @@ public class BookingService { //TODO: 테스트 코드 작성
 			request.refundReceiveAccount());
 
 		Integer cancelAmount = calculateRefundAmount(booking);
-
 		paymentService.cancelPayment(
 			booking.getPayment().getPaymentKey(),
 			PaymentCancelRequest.of(
@@ -119,9 +119,10 @@ public class BookingService { //TODO: 테스트 코드 작성
 				request.refundReceiveAccount()
 			)
 		);
+		cancelAmount = Objects.requireNonNullElse(cancelAmount, 0);
 
 		booking.cancel(
-			BookingCancelRequest.toEntity(request, booking.getAmount(), member.getEmail(), booking)
+			BookingCancelRequest.toEntity(request, cancelAmount, member.getEmail(), booking)
 		);
 	}
 

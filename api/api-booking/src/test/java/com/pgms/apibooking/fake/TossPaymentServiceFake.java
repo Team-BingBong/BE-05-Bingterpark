@@ -113,6 +113,9 @@ public class TossPaymentServiceFake implements TossPaymentService {
 				);
 			}
 			case VIRTUAL_ACCOUNT -> {
+				int amount = payment.getAmount();
+				if(payment.getStatus() == PaymentStatus.WAITING_FOR_DEPOSIT)
+					amount = 0;
 				return new PaymentCancelResponse(
 					paymentKey,
 					payment.getBooking().getId(),
@@ -131,7 +134,7 @@ public class TossPaymentServiceFake implements TossPaymentService {
 					List.of(
 						new PaymentCancelDetailResponse(
 							request.cancelReason(),
-							request.cancelAmount(),
+							amount,
 							NOW.toString()
 						)
 					)
