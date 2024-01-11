@@ -5,7 +5,6 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -35,11 +34,15 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
 		String password = authentication.getCredentials().toString();
 		Role accountType = (Role)authentication.getDetails();
 
-		UserDetails userDetails;
+		UserDetailsImpl userDetails;
 		if (accountType.equals(Role.ROLE_USER)) {
-			userDetails = memberUserDetailsService.loadUserByUsername(email);
+			userDetails = (UserDetailsImpl)memberUserDetailsService.loadUserByUsername(email);
 		} else {
-			userDetails = adminUserDetailsService.loadUserByUsername(email);
+			userDetails = (UserDetailsImpl)adminUserDetailsService.loadUserByUsername(email);
+		}
+
+		if (userDetails.getProvider() != null) {
+			throw new SecurityCustomException(MemberErrorCode.NOT_ALLOWED_BY_PROVIDER);
 		}
 
 		if (!passwordEncoder.matches(password, userDetails.getPassword())) {

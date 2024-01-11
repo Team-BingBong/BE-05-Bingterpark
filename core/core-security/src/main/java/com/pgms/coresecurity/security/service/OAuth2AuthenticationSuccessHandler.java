@@ -14,6 +14,8 @@ import org.springframework.stereotype.Component;
 
 import com.pgms.coredomain.domain.member.Member;
 import com.pgms.coredomain.domain.member.enums.Provider;
+import com.pgms.coredomain.domain.member.redis.RefreshToken;
+import com.pgms.coredomain.domain.member.redis.RefreshTokenRepository;
 import com.pgms.coredomain.domain.member.repository.MemberRepository;
 import com.pgms.coresecurity.security.jwt.JwtTokenProvider;
 import com.pgms.coresecurity.security.util.HttpResponseUtil;
@@ -31,6 +33,7 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
 
 	private final MemberRepository memberRepository;
 	private final JwtTokenProvider jwtTokenProvider;
+	private final RefreshTokenRepository refreshTokenRepository;
 
 	@Override
 	@Transactional
@@ -53,11 +56,15 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
 			userDetails.getAuthorities());
 
 		// 토큰 생성 후 반환
-		Map<String, Object> body = new HashMap<>();
-		body.put("accessToken", jwtTokenProvider.generateAccessToken((UserDetailsImpl)authenticated.getPrincipal()));
-		body.put("refreshToken", jwtTokenProvider.generateRefreshToken());
+		String accessToken = jwtTokenProvider.generateAccessToken((UserDetailsImpl)authenticated.getPrincipal());
+		String refreshToken = jwtTokenProvider.generateRefreshToken();
 
-		// TODO redis에 토큰 정보 저장
+		Map<String, Object> body = new HashMap<>();
+		body.put("accessToken", accessToken);
+		body.put("refreshToken", refreshToken);
+
+		refreshTokenRepository.save(new RefreshToken(refreshToken, accessToken, "member",
+			((UserDetailsImpl)authenticated.getPrincipal()).getEmail()));
 		HttpResponseUtil.setSuccessResponse(response, HttpStatus.OK, body);
 	}
 

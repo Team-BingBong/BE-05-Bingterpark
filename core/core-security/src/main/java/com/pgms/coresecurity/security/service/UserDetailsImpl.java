@@ -10,12 +10,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.pgms.coredomain.domain.member.Admin;
 import com.pgms.coredomain.domain.member.Member;
+import com.pgms.coredomain.domain.member.enums.Provider;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
-@AllArgsConstructor
 public class UserDetailsImpl implements UserDetails {
 
 	private Long id;
@@ -23,6 +22,23 @@ public class UserDetailsImpl implements UserDetails {
 	@JsonIgnore
 	private String password;
 	private Collection<? extends GrantedAuthority> authorities;
+	private Provider provider;
+
+	public UserDetailsImpl(Long id, String email, String password, Collection<? extends GrantedAuthority> authorities) {
+		this.id = id;
+		this.email = email;
+		this.password = password;
+		this.authorities = authorities;
+	}
+
+	public UserDetailsImpl(Long id, String email, String password, Collection<? extends GrantedAuthority> authorities,
+		Provider provider) {
+		this.id = id;
+		this.email = email;
+		this.password = password;
+		this.authorities = authorities;
+		this.provider = provider;
+	}
 
 	public static UserDetails from(Admin admin) {
 		List<GrantedAuthority> authorities = admin.getRole() != null ?
@@ -35,7 +51,13 @@ public class UserDetailsImpl implements UserDetails {
 		List<GrantedAuthority> authorities = member.getRole() != null ?
 			List.of(new SimpleGrantedAuthority(member.getRole().name()))
 			: null;
-		return new UserDetailsImpl(member.getId(), member.getEmail(), member.getPassword(), authorities);
+		return new UserDetailsImpl(
+			member.getId(),
+			member.getEmail(),
+			member.getPassword(),
+			authorities,
+			member.getProvider()
+		);
 	}
 
 	@Override
