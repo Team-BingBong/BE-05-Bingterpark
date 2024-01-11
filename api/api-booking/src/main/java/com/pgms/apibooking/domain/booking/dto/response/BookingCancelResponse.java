@@ -1,10 +1,22 @@
 package com.pgms.apibooking.domain.booking.dto.response;
 
-import java.time.LocalDateTime;
+import com.pgms.coredomain.domain.booking.BookingCancel;
 
 public record BookingCancelResponse(
-	String reason,
+	Long id,
 	Integer amount,
-	LocalDateTime createdAt
+	String reason,
+	String createdBy,
+	String createdAt
 ) {
+
+	public static BookingCancelResponse from(BookingCancel cancel) {
+		return new BookingCancelResponse(
+			cancel.getId(),
+			cancel.getAmount(),
+			cancel.getReason(),
+			cancel.getCreatedBy(),
+			cancel.getCreatedAt().toString()
+		);
+	}
 }

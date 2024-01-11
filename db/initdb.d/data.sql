@@ -5,14 +5,14 @@ VALUES ('고척스카이돔', '서울 구로구 경인로 430');
 -- Event
 INSERT INTO event (title, description, running_time, started_at, ended_at, rating, genre, average_score, thumbnail,
                    booking_started_at, booking_ended_at, event_hall_id)
-VALUES ('BLACKPINK WORLD TOUR ［BORN PINK］ FINALE IN SEOUL', 'BLACKPINK WORLD TOUR ［BORN PINK］ FINALE IN SEOUL', 120,
-        '2025-01-01T10:00:00', '2025-01-01T12:00:00', '15세 이상 관람가', 'CONCERT', 0.0,
-        'https://ticketimage.interpark.com/Play/image/large/23/23011804_p.gif', '2023-12-21T09:00:00',
-        '2024-12-31T11:00:00', 1);
+VALUES ('BLACKPINK WORLD TOUR [BORN PINK] FINALE IN SEOUL', 'BLACKPINK WORLD TOUR [BORN PINK] FINALE IN SEOUL', 120,
+        '2025-01-01 10:00:00', '2025-01-01 12:00:00', '15세 이상 관람가', 'CONCERT', 0.0,
+        'https://ticketimage.interpark.com/Play/image/large/23/23011804_p.gif', '2023-12-21 09:00:00',
+        '2024-12-31 11:00:00', 1);
 
 -- EventTime
 INSERT INTO event_time (round, started_at, ended_at, event_id)
-VALUES (1, '2025-01-01T10:00:00', '2025-01-01T12:00:00', 1);
+VALUES (1, '2025-01-01 10:00:00', '2025-01-01 12:00:00', 1);
 
 -- EventSeatArea
 INSERT INTO event_seat_area (price, area_type, event_id)
@@ -21,12 +21,12 @@ VALUES (100000, 'S', 1),
 
 -- EventSeat
 INSERT INTO event_seat (name, status, event_seat_area_id, event_time_id)
-VALUES ('A1', 'AVAILABLE', 1, 1)
-     , ('A2', 'AVAILABLE', 1, 1)
-     , ('A3', 'AVAILABLE', 1, 1)
-     , ('E1', 'AVAILABLE', 2, 1)
-     , ('E2', 'AVAILABLE', 2, 1)
-     , ('E3', 'AVAILABLE', 2, 1);
+VALUES ('A1', 'AVAILABLE', 1, 1),
+       ('A2', 'AVAILABLE', 1, 1),
+       ('A3', 'AVAILABLE', 1, 1),
+       ('E1', 'AVAILABLE', 2, 1),
+       ('E2', 'AVAILABLE', 2, 1),
+       ('E3', 'AVAILABLE', 2, 1);
 
 -- EventReview
 INSERT INTO event_review (score, content, event_id)
@@ -37,10 +37,10 @@ INSERT INTO member (name, password, phone_number, email, birth_date, gender, str
                     status, provider, role, last_login_at, last_password_updated_at)
 VALUES ('김빙봉', '$2a$10$tfdM.PjviEH0zMEXVYjH.ODJPSviQRrYpb17rdMjvJtbWbSnC8nTa', '01012345678', 'member1@example.com',
         '1990-01-01', 'MALE', '경기도 성남시 분당구', '정든마을 101호',
-        '12345', 'ACTIVE', 'KAKAO', 'ROLE_USER', '2024-01-01T10:00:00', '2024-01-01T10:00:00'),
+        '12345', 'ACTIVE', 'KAKAO', 'ROLE_USER', '2024-01-01 10:00:00', '2024-01-01 10:00:00'),
        ('이행복', '$2a$10$tfdM.PjviEH0zMEXVYjH.ODJPSviQRrYpb17rdMjvJtbWbSnC8nTa', '01087654321', 'member2@example.com',
         '1992-02-02', 'FEMALE', '광주광역시 광산로 67',
-        '103동 202호', '54321', 'ACTIVE', 'KAKAO', 'ROLE_USER', '2024-01-01T10:00:00', '2024-01-01T10:00:00');
+        '103동 202호', '54321', 'ACTIVE', 'KAKAO', 'ROLE_USER', '2024-01-01 10:00:00', '2024-01-01 10:00:00');
 
 -- Admin
 INSERT INTO admin (name, email, password, phone_number, status, role, last_login_at, last_password_updated_at)
@@ -95,7 +95,8 @@ INSERT INTO payment (booking_id,
                      approved_at,
                      created_at,
                      updated_at)
-VALUES ('bookingTestId', 180000, 'CARD', 'HYUNDAI', '11111111****111*', 0, false, 'paymentkey', 'CANCELED', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+VALUES ('bookingTestId', 180000, 'CARD', 'HYUNDAI', '11111111****111*', 0, false, 'paymentkey', 'CANCELED',
+        CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 -- Booking Cancel
 INSERT INTO booking_cancel (booking_id, amount, reason, created_by, created_at, updated_at)

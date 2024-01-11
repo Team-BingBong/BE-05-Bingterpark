@@ -2,6 +2,7 @@ package com.pgms.apievent.event.repository;
 
 import com.pgms.apievent.event.dto.request.EventPageRequest;
 import com.pgms.apievent.event.dto.response.EventResponse;
+import com.pgms.coredomain.domain.event.DateRangeType;
 import com.pgms.coredomain.domain.event.GenreType;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -33,7 +34,8 @@ public class EventCustomRepositoryImpl implements EventCustomRepository {
 		Pageable pageable = eventPageRequest.getPageable();
 		int offset = (eventPageRequest.getPage() - 1) * eventPageRequest.getSize();
 
-		LocalDateTime cmpDate = LocalDateTime.now().minusDays(eventPageRequest.getDateOffset())
+		DateRangeType dateRangeType = DateRangeType.of(eventPageRequest.getDateRange());
+		LocalDateTime cmpDate = LocalDateTime.now().minusDays(dateRangeType.getDateRange())
 			.with(LocalTime.MIN);
 
 		List<EventResponse> content = jpaQueryFactory.selectFrom(event)

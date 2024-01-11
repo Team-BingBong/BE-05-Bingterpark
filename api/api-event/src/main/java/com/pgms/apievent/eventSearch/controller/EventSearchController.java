@@ -6,6 +6,8 @@ import com.pgms.apievent.eventSearch.dto.response.RecentTop10KeywordsResponse;
 import com.pgms.apievent.eventSearch.service.EventSearchService;
 import com.pgms.apievent.exception.EventException;
 import com.pgms.coredomain.response.ApiResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +21,7 @@ import java.util.List;
 
 import static com.pgms.apievent.exception.EventErrorCode.BINDING_FAILED_EXCEPTION;
 
+@Tag(name = "검색", description = "검색 관련 API 입니다.")
 @RestController
 @RequestMapping("/api/v1/events/search")
 @RequiredArgsConstructor
@@ -26,6 +29,7 @@ public class EventSearchController {
 
 	private final EventSearchService eventSearchService;
 
+	@Operation(summary = "키워드 검색", description = "키워드로 종합 검색합니다.")
 	@GetMapping("/keyword")
 	public ResponseEntity<ApiResponse> searchEventsByKeyword(
 		@ModelAttribute @Valid EventKeywordSearchRequest eventKeywordSearchRequest,
@@ -38,6 +42,7 @@ public class EventSearchController {
 		return ResponseEntity.ok(ApiResponse.ok(response));
 	}
 
+	@Operation(summary = "실시간 검색", description = "실시간 인기 검색어 10개를 조회합니다.")
 	@GetMapping("/top-ten")
 	ResponseEntity<ApiResponse> getRecentTop10Keywords() {
 		List<RecentTop10KeywordsResponse> response = eventSearchService.getRecentTop10Keywords();

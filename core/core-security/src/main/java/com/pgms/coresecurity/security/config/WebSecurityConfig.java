@@ -10,16 +10,15 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.ExceptionTranslationFilter;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
+import com.pgms.coredomain.domain.member.enums.Role;
 import com.pgms.coresecurity.security.jwt.JwtAccessDeniedHandler;
 import com.pgms.coresecurity.security.jwt.JwtAuthenticationEntryPoint;
 import com.pgms.coresecurity.security.jwt.JwtAuthenticationFilter;
@@ -48,61 +47,141 @@ public class WebSecurityConfig {
 		return authConfig.getAuthenticationManager();
 	}
 
+	/**
+	 * permitAll 권한을 가진 엔드포인트에 적용되는 SecurityFilterChain 입니다.
+	 */
 	@Bean
-	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+	public SecurityFilterChain securityFilterChainPermitAll(HttpSecurity http) throws Exception {
 		http
-			.csrf(AbstractHttpConfigurer::disable)
-			.cors(AbstractHttpConfigurer::disable)
-			.formLogin(AbstractHttpConfigurer::disable)
-			.oauth2Login(oauth2Configurer -> oauth2Configurer
-				.loginPage("/login")
-				.successHandler(oauthSuccessHandler)
-				.userInfoEndpoint()
-				.userService(oAuth2UserService))
-			.httpBasic(AbstractHttpConfigurer::disable)
-			.headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
-			.sessionManagement(session -> session
-				.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+			.securityMatchers(matchers -> matchers
+				.requestMatchers(requestPermitAll())
 			)
-			.authorizeHttpRequests(auth -> auth
-				// TODO 엔드포인트별 authorize 통합
-				.requestMatchers(requestPermitAll()).permitAll()
-				.requestMatchers(requestHasRoleSuperAdmin()).hasRole("SUPERADMIN")
-				.requestMatchers(requestHasRoleAdmin()).hasRole("ADMIN")
-				.requestMatchers(requestHasRoleUser()).hasRole("USER")
-				.anyRequest().permitAll()) // 완성 후 denyAll 로 변경할 예정
-			.exceptionHandling(exception -> {
-				exception.authenticationEntryPoint(jwtAuthenticationEntryPoint);
-				exception.accessDeniedHandler(jwtAccessDeniedHandler);
-			})
-			.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+			.authorizeHttpRequests().anyRequest().permitAll().and()
+
+			// filter 비활성화
+			.csrf().disable()
+			.anonymous().disable()
+			.formLogin().disable()
+			.httpBasic().disable()
+			.rememberMe().disable()
+			.logout().disable()
+			.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 		return http.build();
 	}
 
 	private RequestMatcher[] requestPermitAll() {
 		List<RequestMatcher> requestMatchers = List.of(
-			antMatcher("/login"),
-			antMatcher("/api/v1/auth/**"),
-			antMatcher("/api/v1/members/signup"),
-			antMatcher("/api/v1/members/restore"));
+			antMatcher("/api/*/auth/**"),
+			antMatcher("/api/*/members/signup"),
+			antMatcher("/v3/api-docs/**"),
+			antMatcher("/swagger-ui/**")
+		);
 		return requestMatchers.toArray(RequestMatcher[]::new);
+	}
+
+	/**
+	 * OAuth 관련 엔드포인트에 적용되는 SecurityFilterChain 입니다.
+	 */
+	@Bean
+	public SecurityFilterChain securityFilterChainOAuth(HttpSecurity http) throws Exception {
+		http
+			.securityMatchers(matchers -> matchers
+				.requestMatchers(
+					antMatcher("/login"),
+					antMatcher("/login/oauth2/code/kakao"),
+					antMatcher("/oauth2/authorization/kakao")
+				))
+			.authorizeHttpRequests().anyRequest().permitAll().and()
+
+			.oauth2Login(oauth2Configurer -> oauth2Configurer
+				.loginPage("/login")
+				.successHandler(oauthSuccessHandler)
+				.userInfoEndpoint()
+				.userService(oAuth2UserService))
+
+			// 필터 비활성화
+			.csrf().disable()
+			.anonymous().disable()
+			.formLogin().disable()
+			.httpBasic().disable()
+			.rememberMe().disable()
+			.logout().disable()
+			.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+		return http.build();
+	}
+
+	/**
+	 * 인증 및 인가가 필요한 엔드포인트에 적용되는 SecurityFilterChain 입니다.
+	 */
+	@Bean
+	public SecurityFilterChain securityFilterChainAuthorized(HttpSecurity http) throws Exception {
+		http
+			.securityMatchers(matchers -> matchers
+				.requestMatchers(requestHasRoleUser())
+				.requestMatchers(requestHasRoleAdmin())
+				.requestMatchers(requestHasRoleSuperAdmin())
+			)
+			.authorizeHttpRequests(auth -> auth
+				// TODO 엔드포인트별 authorize 통합
+				.requestMatchers(requestHasRoleSuperAdmin()).hasAuthority(Role.ROLE_SUPERADMIN.name())
+				.requestMatchers(requestHasRoleAdmin()).hasAuthority(Role.ROLE_ADMIN.name())
+				.requestMatchers(requestHasRoleUser()).hasAuthority(Role.ROLE_USER.name()))
+			.exceptionHandling(exception -> {
+				exception.authenticationEntryPoint(jwtAuthenticationEntryPoint);
+				exception.accessDeniedHandler(jwtAccessDeniedHandler);
+			})
+			.addFilterAfter(jwtAuthenticationFilter, ExceptionTranslationFilter.class)
+
+			// filter 비활성화
+			.csrf().disable()
+			.anonymous().disable()
+			.formLogin().disable()
+			.httpBasic().disable()
+			.rememberMe().disable()
+			.logout().disable()
+			.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+		return http.build();
 	}
 
 	private RequestMatcher[] requestHasRoleSuperAdmin() {
 		List<RequestMatcher> requestMatchers = List.of(
-			antMatcher("/api/v1/admin/management/**"));
+			antMatcher("/api/*/admin/management/**"));
 		return requestMatchers.toArray(RequestMatcher[]::new);
 	}
 
 	private RequestMatcher[] requestHasRoleAdmin() {
 		List<RequestMatcher> requestMatchers = List.of(
-			antMatcher("/api/v1/admin/**"));
+			antMatcher("/api/*/admin/**"));
 		return requestMatchers.toArray(RequestMatcher[]::new);
 	}
 
 	private RequestMatcher[] requestHasRoleUser() {
 		List<RequestMatcher> requestMatchers = List.of(
-			antMatcher("/api/v1/members/**"));
+			antMatcher("/api/*/members/**"));
 		return requestMatchers.toArray(RequestMatcher[]::new);
 	}
+
+	/**
+	 * 위에서 정의된 엔드포인트 이외에는 denyAll 로 설정
+	 */
+	@Bean
+	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+		http
+			.authorizeHttpRequests().anyRequest().permitAll().and() // TODO 완성 후 denyAll 로 변경, exceptionHandling 삭제하기
+			.exceptionHandling(exception -> {
+				exception.authenticationEntryPoint(jwtAuthenticationEntryPoint);
+				exception.accessDeniedHandler(jwtAccessDeniedHandler);
+			})
+
+			// filter 비활성화
+			.csrf().disable()
+			.anonymous().disable()
+			.formLogin().disable()
+			.httpBasic().disable()
+			.rememberMe().disable()
+			.logout().disable()
+			.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+		return http.build();
+	}
+
 }

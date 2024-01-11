@@ -9,7 +9,7 @@ public enum BookingStatus {
 
 	WAITING_FOR_PAYMENT("결제대기"),
 	PAYMENT_COMPLETED("결제완료"),
-	CANCELED("취소");
+	CANCELED("취소완료");
 
 	private final String description;
 
