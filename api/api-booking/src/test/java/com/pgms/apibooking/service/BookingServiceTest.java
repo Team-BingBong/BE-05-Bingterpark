@@ -1,6 +1,7 @@
 package com.pgms.apibooking.service;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.mockito.BDDMockito.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -15,15 +16,14 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.pgms.coredomain.domain.common.BookingErrorCode;
 import com.pgms.apibooking.common.exception.BookingException;
 import com.pgms.apibooking.config.TestConfig;
 import com.pgms.apibooking.domain.booking.dto.request.BookingCancelRequest;
 import com.pgms.apibooking.domain.booking.dto.request.BookingCreateRequest;
 import com.pgms.apibooking.domain.booking.dto.response.BookingCreateResponse;
 import com.pgms.apibooking.domain.booking.service.BookingService;
-import com.pgms.apibooking.domain.bookingqueue.repository.BookingQueueRepository;
 import com.pgms.apibooking.domain.payment.dto.request.RefundAccountRequest;
+import com.pgms.apibooking.domain.seat.service.SeatLockService;
 import com.pgms.apibooking.factory.BookingFactory;
 import com.pgms.apibooking.factory.EventFactory;
 import com.pgms.apibooking.factory.EventHallFactory;
@@ -41,6 +41,7 @@ import com.pgms.coredomain.domain.booking.PaymentStatus;
 import com.pgms.coredomain.domain.booking.ReceiptType;
 import com.pgms.coredomain.domain.booking.Ticket;
 import com.pgms.coredomain.domain.booking.repository.BookingRepository;
+import com.pgms.coredomain.domain.common.BookingErrorCode;
 import com.pgms.coredomain.domain.event.Event;
 import com.pgms.coredomain.domain.event.EventHall;
 import com.pgms.coredomain.domain.event.EventSeat;
@@ -63,6 +64,7 @@ import com.pgms.coredomain.domain.member.repository.MemberRepository;
 class BookingServiceTest {
 
 	private static final LocalDateTime NOW = LocalDateTime.now();
+	private static final String SESSION_ID = UUID.randomUUID().toString();
 
 	@Autowired
 	private EventHallRepository eventHallRepository;
@@ -84,12 +86,12 @@ class BookingServiceTest {
 
 	@Autowired
 	private BookingService bookingService;
-	
+
 	@Autowired
 	private MemberRepository memberRepository;
 
 	@MockBean
-	private BookingQueueRepository bookingQueueRepository;
+	private SeatLockService seatLockService;
 
 	private Member member;
 
@@ -155,8 +157,11 @@ class BookingServiceTest {
 			Optional.empty()
 		);
 
+		given(seatLockService.getSelectorId(seat1.getId())).willReturn(member.getId());
+		given(seatLockService.getSelectorId(seat2.getId())).willReturn(member.getId());
+
 		// when
-		BookingCreateResponse response = bookingService.createBooking(request, member.getId(), UUID.randomUUID().toString());
+		BookingCreateResponse response = bookingService.createBooking(request, member.getId(), SESSION_ID);
 
 		// then
 		Booking booking = bookingRepository.findBookingInfoById(response.bookingId()).get();
@@ -180,6 +185,66 @@ class BookingServiceTest {
 			.extracting("seat")
 			.extracting("name")
 			.containsOnly(seat1Name, seat2Name);
+	}
+
+	@Test
+	void 내가_선점한_좌석이_아니면_예매를_생성할_수_없다() {
+		// given
+		LocalDateTime eventStartedAt = NOW.plusDays(2);
+		LocalDateTime eventEndedAt = NOW.plusDays(2).plusMinutes(120);
+		LocalDateTime bookingStartedAt = NOW;
+		LocalDateTime bookingEndedAt = NOW.plusDays(1);
+
+		EventHall hall = EventHallFactory.generate();
+		eventHallRepository.save(hall);
+
+		Event event = EventFactory.generate(
+			hall,
+			eventStartedAt,
+			eventEndedAt,
+			bookingStartedAt,
+			bookingEndedAt
+		);
+		eventRepository.save(event);
+
+		EventTime time = EventTimeFactory.generate(event, eventStartedAt, eventEndedAt);
+		eventTimeRepository.save(time);
+
+		EventSeatArea area1 = EventSeatAreaFactory.generate(event, SeatAreaType.S);
+		eventSeatAreaRepository.save(area1);
+		EventSeatArea area2 = EventSeatAreaFactory.generate(event, SeatAreaType.R);
+		eventSeatAreaRepository.save(area2);
+
+		String seat1Name = "A1";
+		String seat2Name = "A2";
+
+		EventSeat seat1 = EventSeatFactory.generate(time, area1, seat1Name, EventSeatStatus.AVAILABLE);
+		eventSeatRepository.save(seat1);
+		EventSeat seat2 = EventSeatFactory.generate(time, area2, seat2Name, EventSeatStatus.AVAILABLE);
+		eventSeatRepository.save(seat2);
+
+		Long timeId = time.getId();
+		List<Long> seatIds = List.of(seat1.getId(), seat2.getId());
+		String receiptType = ReceiptType.PICK_UP.getDescription();
+		String buyerName = "구매자 명";
+		String buyerPhoneNumber = "010-1234-5678";
+
+		BookingCreateRequest request = new BookingCreateRequest(
+			timeId,
+			seatIds,
+			receiptType,
+			buyerName,
+			buyerPhoneNumber,
+			Optional.empty()
+		);
+
+		given(seatLockService.getSelectorId(seat1.getId())).willReturn(null);
+		given(seatLockService.getSelectorId(seat2.getId())).willReturn(member.getId() + 1);
+
+		// when & then
+		assertThatThrownBy(() -> bookingService.createBooking(request, member.getId(), SESSION_ID))
+			.isInstanceOf(BookingException.class)
+			.hasMessage(BookingErrorCode.UNBOOKABLE_SEAT_INCLUSION.getMessage());
 	}
 
 	@Test
@@ -227,7 +292,7 @@ class BookingServiceTest {
 		);
 
 		// when & then
-		assertThatThrownBy(() -> bookingService.createBooking(request, member.getId(), UUID.randomUUID().toString()))
+		assertThatThrownBy(() -> bookingService.createBooking(request, member.getId(), SESSION_ID))
 			.isInstanceOf(BookingException.class)
 			.hasMessage(BookingErrorCode.UNBOOKABLE_EVENT.getMessage());
 	}
@@ -278,8 +343,10 @@ class BookingServiceTest {
 			Optional.empty()
 		);
 
+		given(seatLockService.getSelectorId(seat.getId())).willReturn(member.getId());
+
 		// when & then
-		assertThatThrownBy(() -> bookingService.createBooking(request, member.getId(), UUID.randomUUID().toString()))
+		assertThatThrownBy(() -> bookingService.createBooking(request, member.getId(), SESSION_ID))
 			.isInstanceOf(BookingException.class)
 			.hasMessage(BookingErrorCode.NON_EXISTENT_SEAT_INCLUSION.getMessage());
 	}
@@ -329,7 +396,7 @@ class BookingServiceTest {
 		);
 
 		// when & then
-		assertThatThrownBy(() -> bookingService.createBooking(request, member.getId(), UUID.randomUUID().toString()))
+		assertThatThrownBy(() -> bookingService.createBooking(request, member.getId(), SESSION_ID))
 			.isInstanceOf(BookingException.class)
 			.hasMessage(BookingErrorCode.UNBOOKABLE_SEAT_INCLUSION.getMessage());
 	}
@@ -378,8 +445,10 @@ class BookingServiceTest {
 			Optional.empty()
 		);
 
+		given(seatLockService.getSelectorId(seat.getId())).willReturn(member.getId());
+
 		// when & then
-		assertThatThrownBy(() -> bookingService.createBooking(request, member.getId(), UUID.randomUUID().toString()))
+		assertThatThrownBy(() -> bookingService.createBooking(request, member.getId(), SESSION_ID))
 			.isInstanceOf(BookingException.class)
 			.hasMessage(BookingErrorCode.DELIVERY_ADDRESS_REQUIRED.getMessage());
 	}
