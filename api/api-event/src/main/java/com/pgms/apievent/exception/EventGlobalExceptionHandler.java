@@ -1,10 +1,9 @@
 package com.pgms.apievent.exception;
 
-import static com.pgms.apievent.exception.EventErrorCode.*;
-
-import java.util.List;
-import java.util.Objects;
-
+import com.pgms.coredomain.domain.common.BaseErrorCode;
+import com.pgms.coredomain.response.ErrorResponse;
+import com.pgms.coresecurity.security.exception.SecurityCustomException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -13,11 +12,10 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import com.pgms.coredomain.domain.common.BaseErrorCode;
-import com.pgms.coredomain.response.ErrorResponse;
-import com.pgms.coresecurity.security.exception.SecurityCustomException;
+import java.util.List;
+import java.util.Objects;
 
-import lombok.extern.slf4j.Slf4j;
+import static com.pgms.apievent.exception.EventErrorCode.VALIDATION_FAILED;
 
 @Slf4j
 @RestControllerAdvice
@@ -41,6 +39,13 @@ public class EventGlobalExceptionHandler {
 		ErrorResponse errorResponse = new ErrorResponse(VALIDATION_FAILED.getErrorCode(), errorMessage);
 		fieldErrors.forEach(error -> errorResponse.addValidation(error.getField(), error.getDefaultMessage()));
 		return ResponseEntity.status(ex.getStatusCode()).body(errorResponse);
+	}
+
+	@ExceptionHandler(IllegalArgumentException.class)
+	protected ResponseEntity<ErrorResponse> handleEventIllegalArgumentException(IllegalArgumentException ex) {
+		log.warn(">>>>> IllegalArgument Exception : {}", ex);
+		ErrorResponse errorResponse = new ErrorResponse("ILLEGAL ARGUMENT ERROR", ex.getMessage());
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
 	}
 
 	@ExceptionHandler(SecurityCustomException.class)
