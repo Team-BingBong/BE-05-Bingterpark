@@ -51,7 +51,7 @@ public class SeatService { //TODO: 테스트 코드 작성
 			throw new BookingException(BookingErrorCode.SEAT_ALREADY_BOOKED);
 		}
 
-		seat.updateStatus(EventSeatStatus.BEING_BOOKED);
+		seat.updateStatus(EventSeatStatus.SELECTED);
 		seatLockService.lockSeat(seatId, memberId);
 	}
 
