@@ -53,6 +53,7 @@ public class EventTime extends BaseEntity {
 
 	@Builder
 	public EventTime(int round, LocalDateTime startedAt, LocalDateTime endedAt, Event event) {
+		validateEventTimePlayTime(startedAt, endedAt);
 		this.round = round;
 		this.startedAt = startedAt;
 		this.endedAt = endedAt;
@@ -60,7 +61,14 @@ public class EventTime extends BaseEntity {
 	}
 
 	public void updateEventTime(LocalDateTime startedAt, LocalDateTime endedAt) {
+		validateEventTimePlayTime(startedAt, endedAt);
 		this.startedAt = startedAt;
 		this.endedAt = endedAt;
+	}
+
+	private void validateEventTimePlayTime(LocalDateTime startedAt, LocalDateTime endedAt) {
+		if (startedAt.isAfter(endedAt)) {
+			throw new IllegalArgumentException("StartedAt should be before or equal to EndedAt");
+		}
 	}
 }
