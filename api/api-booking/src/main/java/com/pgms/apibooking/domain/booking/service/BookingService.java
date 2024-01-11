@@ -1,6 +1,7 @@
 package com.pgms.apibooking.domain.booking.service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.springframework.data.domain.PageRequest;
@@ -106,10 +107,10 @@ public class BookingService { //TODO: 테스트 코드 작성
 			throw new BookingException(BookingErrorCode.UNCANCELABLE_BOOKING);
 		}
 
-		validateRefundReceiveAccount(booking.getPayment().getMethod(), request.refundReceiveAccount());
+		validateRefundReceiveAccount(booking.getPayment().getMethod(), booking.getPayment().getStatus(),
+			request.refundReceiveAccount());
 
-		int cancelAmount = booking.isPaid() ? booking.getAmount() : 0;
-
+		Integer cancelAmount = calculateRefundAmount(booking);
 		paymentService.cancelPayment(
 			booking.getPayment().getPaymentKey(),
 			PaymentCancelRequest.of(
@@ -118,6 +119,7 @@ public class BookingService { //TODO: 테스트 코드 작성
 				request.refundReceiveAccount()
 			)
 		);
+		cancelAmount = Objects.requireNonNullElse(cancelAmount, 0);
 
 		booking.cancel(
 			BookingCancelRequest.toEntity(request, cancelAmount, member.getEmail(), booking)
@@ -198,11 +200,23 @@ public class BookingService { //TODO: 테스트 코드 작성
 		}
 	}
 
-	private void validateRefundReceiveAccount(PaymentMethod paymentMethod,
+	private void validateRefundReceiveAccount(PaymentMethod paymentMethod, PaymentStatus paymentStatus,
 		Optional<RefundAccountRequest> refundReceiveAccount) {
-		if (paymentMethod == PaymentMethod.VIRTUAL_ACCOUNT && refundReceiveAccount.isEmpty()) {
+		if (paymentMethod == PaymentMethod.VIRTUAL_ACCOUNT && paymentStatus == PaymentStatus.DONE
+			&&refundReceiveAccount.isEmpty()){
 			throw new BookingException(BookingErrorCode.REFUND_ACCOUNT_REQUIRED);
 		}
+	}
+
+	public Integer calculateRefundAmount(Booking booking) {
+		if (booking.isPaid())
+			return booking.getAmount();
+
+		Payment payment = booking.getPayment();
+		return (payment.getMethod() == PaymentMethod.VIRTUAL_ACCOUNT &&
+			payment.getStatus() == PaymentStatus.WAITING_FOR_DEPOSIT)
+			? null
+			: 0;
 	}
 
 	private Member getMemberById(Long memberId) {
