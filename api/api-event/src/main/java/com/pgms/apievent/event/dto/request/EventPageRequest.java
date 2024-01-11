@@ -1,19 +1,24 @@
 package com.pgms.apievent.event.dto.request;
 
 import com.pgms.apievent.common.dto.request.PageRequestDto;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
+@Setter
 public class EventPageRequest extends PageRequestDto {
 	private String genreType;
-	@Min(1) @Max(10000)
-	private Integer dateOffset;
+	private String dateRange;
 
-	public EventPageRequest(Integer page, Integer size, String genreType, Integer dateOffset) {
+	public EventPageRequest() {
+		super(null, null);
+		this.genreType = "CONCERT";
+		this.dateRange = "DAILY";
+	}
+
+	public EventPageRequest(Integer page, Integer size, String genreType, String dateRange) {
 		super(page, size);
 		this.genreType = genreType;
-		this.dateOffset = dateOffset;
+		this.dateRange = dateRange;
 	}
 }

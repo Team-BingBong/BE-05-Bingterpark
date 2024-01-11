@@ -18,6 +18,7 @@ import com.pgms.apimember.dto.response.MemberDetailGetResponse;
 import com.pgms.apimember.dto.response.MemberSummaryGetResponse;
 import com.pgms.apimember.exception.AdminException;
 import com.pgms.coredomain.domain.member.Admin;
+import com.pgms.coredomain.domain.member.redis.BlockedTokenRepository;
 import com.pgms.coredomain.domain.member.repository.AdminRepository;
 import com.pgms.coredomain.domain.member.repository.MemberRepository;
 
@@ -30,6 +31,7 @@ public class AdminService {
 
 	private final AdminRepository adminRepository;
 	private final MemberRepository memberRepository;
+	private final BlockedTokenRepository blockedTokenRepository;
 	private final PasswordEncoder passwordEncoder;
 
 	// 슈퍼 관리자 기능
