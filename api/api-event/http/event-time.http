@@ -2,6 +2,7 @@
 ### 공연 회차 생성
 POST http://localhost:8080/api/v1/event-times/2
 Content-Type: application/json
+Authorization: Bearer {{adminToken}}
 
 {
   "round": 1,
@@ -18,6 +19,7 @@ GET http://localhost:8080/api/v1/event-times/events/2
 ### 회차 아이디로 회차 정보 수정
 PATCH http://localhost:8080/api/v1/event-times/2
 Content-Type: application/json
+Authorization: Bearer {{adminToken}}
 
 {
   "startedAt": "2024-02-06T12:00:00",
@@ -26,3 +28,4 @@ Content-Type: application/json
 
 ### 회차 아이디로 회차 삭제
 DELETE http://localhost:8080/api/v1/event-times/1
+Authorization: Bearer {{adminToken}}
