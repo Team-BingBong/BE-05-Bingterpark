@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 public class BookingCancel extends BaseEntity {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
 

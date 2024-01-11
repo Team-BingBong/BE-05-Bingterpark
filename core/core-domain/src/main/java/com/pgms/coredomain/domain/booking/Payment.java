@@ -46,6 +46,10 @@ public class Payment extends BaseEntity {
 	@Column(name = "amount", nullable = false)
 	private int amount;
 
+	@Enumerated(EnumType.STRING)
+	@Column(name = "card_issuer")
+	private CardIssuer cardIssuer;
+
 	@Column(name = "card_number")
 	private String cardNumber;
 
@@ -102,7 +106,8 @@ public class Payment extends BaseEntity {
 		this.booking = booking;
 	}
 
-	public void updateCardInfo(String cardNumber, int installmentPlanMonths, boolean isInterestFree) {
+	public void updateCardInfo(CardIssuer cardIssuer, String cardNumber, int installmentPlanMonths, boolean isInterestFree) {
+		this.cardIssuer = cardIssuer;
 		this.cardNumber = cardNumber;
 		this.installmentPlanMonths = installmentPlanMonths;
 		this.isInterestFree = isInterestFree;
