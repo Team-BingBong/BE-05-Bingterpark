@@ -3,6 +3,7 @@ package com.pgms.coresecurity.security.jwt;
 import java.io.IOException;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.CredentialsExpiredException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
@@ -29,7 +30,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 		log.warn("Unauthorized: ", authException);
 
 		ErrorResponse errorResponse;
-		if (request.getAttribute("expired") != null) {
+		if (authException instanceof CredentialsExpiredException) {
 			errorResponse = SecurityErrorCode.ACCESS_TOKEN_EXPIRED.getErrorResponse();
 		} else {
 			errorResponse = SecurityErrorCode.UNAUTHORIZED.getErrorResponse();
