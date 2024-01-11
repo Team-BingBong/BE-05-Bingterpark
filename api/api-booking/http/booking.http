@@ -1,12 +1,12 @@
 ### 세션 아이디 발급
 POST http://localhost:8082/api/v1/bookings/issue-session-id
-Authorization: Bearer {{token}}
+Authorization: Bearer {{accessToken}}
 
 ### 대기열 진입
 POST http://localhost:8082/api/v1/bookings/enter-queue
 Content-Type: application/json
-Authorization: Bearer {{token}}
-Booking-Session-Id: {sessionId}
+Authorization: Bearer {{accessToken}}
+Booking-Session-Id: {{sessionId}}
 
 {
   "eventId": 1
@@ -14,15 +14,15 @@ Booking-Session-Id: {sessionId}
 
 ### 대기열 조회
 GET http://localhost:8082/api/v1/bookings/order-in-queue?eventId=1
-Authorization: Bearer {{token}}
-Booking-Session-Id: {sessionId}
+Authorization: Bearer {{accessToken}}
+Booking-Session-Id: {{sessionId}}
 
 
 ### 예매 토큰 발급
 POST http://localhost:8082/api/v1/bookings/issue-token
 Content-Type: application/json
-Authorization: Bearer {{token}}
-Booking-Session-Id: {sessionId}
+Authorization: Bearer {{accessToken}}
+Booking-Session-Id: {{sessionId}}
 
 {
   "eventId": 1
@@ -31,8 +31,8 @@ Booking-Session-Id: {sessionId}
 ### [Optional] 대기열 이탈
 POST http://localhost:8082/api/v1/bookings/exit-queue
 Content-Type: application/json
-Authorization: Bearer {{token}}
-Booking-Session-Id: {sessionId}
+Authorization: Bearer {{accessToken}}
+Booking-Session-Id: {{sessionId}}
 
 {
   "eventId": 1
@@ -40,50 +40,42 @@ Booking-Session-Id: {sessionId}
 
 ### 좌석 목록 조회
 GET http://localhost:8082/api/v1/seats?eventTimeId=1
-Authorization: Bearer {{token}}
-Booking-Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJpc3MiOiJib29raW5nIiwiaWF0IjoxNzA0NzA0NTY0LCJleHAiOjQyMDAxNzA0NzA0NTY0LCJzZXNzaW9uSWQiOiJ7Pz8_Pz99In0.iKZaud5vfvsMzXmQzl1WaCweL9GL00U0iGzCg4_p3Zzei8Y7z19Ff_TTpxh9gLeB
+Authorization: Bearer {{accessToken}}
+Booking-Authorization: Bearer {{bookingToken}}
 
 ### 좌석 선택
 POST http://localhost:8082/api/v1/seats/1/select
 Content-Type: application/json
-Authorization: Bearer {{token}}
-Booking-Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJpc3MiOiJib29raW5nIiwiaWF0IjoxNzA0NzA0NTY0LCJleHAiOjQyMDAxNzA0NzA0NTY0LCJzZXNzaW9uSWQiOiJ7Pz8_Pz99In0.iKZaud5vfvsMzXmQzl1WaCweL9GL00U0iGzCg4_p3Zzei8Y7z19Ff_TTpxh9gLeB
-
-{
-  "seatId": 1
-}
+Authorization: Bearer {{accessToken}}
+Booking-Authorization: Bearer {{bookingToken}}
 
 ### 좌석 선택 해제
 POST http://localhost:8082/api/v1/seats/1/deselect
 Content-Type: application/json
-Authorization: Bearer {{token}}
-Booking-Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJpc3MiOiJib29raW5nIiwiaWF0IjoxNzA0NzA0NTY0LCJleHAiOjQyMDAxNzA0NzA0NTY0LCJzZXNzaW9uSWQiOiJ7Pz8_Pz99In0.iKZaud5vfvsMzXmQzl1WaCweL9GL00U0iGzCg4_p3Zzei8Y7z19Ff_TTpxh9gLeB
+Authorization: Bearer {{accessToken}}
+Booking-Authorization: Bearer {{bookingToken}}
 
-{
-  "seatId": 1
-}
-
-### 예매 ~ 결제 (브라우저에서 진행해 주세요)
+### 예매 ~ 결제 승인 (브라우저에서 진행해 주세요)
 GET http://localhost:8082/bookings
 
 ### [Optional] 예매 이탈
-POST http://localhost:8082/api/v1/bookings/bookingCreateTestId/exit
-Authorization: Bearer {{token}}
-Booking-Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJpc3MiOiJib29raW5nIiwiaWF0IjoxNzA0NzA0NTY0LCJleHAiOjQyMDAxNzA0NzA0NTY0LCJzZXNzaW9uSWQiOiJ7Pz8_Pz99In0.iKZaud5vfvsMzXmQzl1WaCweL9GL00U0iGzCg4_p3Zzei8Y7z19Ff_TTpxh9gLeB
+POST http://localhost:8082/api/v1/bookings/1/exit
+Authorization: Bearer {{accessToken}}
+Booking-Authorization: Bearer {{bookingToken}}
 
-### 예매 취소 (브라우저에서 생성된 예매번호로 진행해 주세요)
-POST http://localhost:8082/api/v1/bookings/{bookingId}/cancel
-Authorization: Bearer {{token}}
+### 예매 취소 (브라우저에서 생성된 예매 번호로 진행해 주세요)
+POST http://localhost:8082/api/v1/bookings/1/cancel
 Content-Type: application/json
+Authorization: Bearer {{accessToken}}
 
 {
-  "cancelReason": "변심"
+  "cancelReason": "구매자 변심"
 }
 
 ### 내 예매 내역 목록 조회
 GET http://localhost:8082/api/v1/bookings
-Authorization: Bearer {{token}}
+Authorization: Bearer {{accessToken}}
 
 ### 내 예매 내역 상세 조회
-GET http://localhost:8082/api/v1/bookings/bookingCancelTestId
-Authorization: Bearer {{token}}
+GET http://localhost:8082/api/v1/bookings/{bookingId}
+Authorization: Bearer {{accessToken}}

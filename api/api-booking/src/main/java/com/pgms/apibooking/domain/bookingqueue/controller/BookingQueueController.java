@@ -37,7 +37,7 @@ public class BookingQueueController {
 	@PostMapping("/enter-queue")
 	public ResponseEntity<Void> enterQueue(@RequestBody @Valid BookingQueueEnterRequest request, @RequestAttribute("bookingSessionId") String bookingSessionId) {
 		bookingQueueService.enterQueue(request, bookingSessionId);
-		return ResponseEntity.ok().build();
+		return ResponseEntity.noContent().build();
 	}
 
 	@GetMapping("/order-in-queue")
@@ -56,6 +56,6 @@ public class BookingQueueController {
 	@PostMapping("/exit-queue")
 	public ResponseEntity<Void> exitQueue(@RequestBody @Valid BookingQueueExitRequest request, @RequestAttribute("bookingSessionId") String bookingSessionId) {
 		bookingQueueService.exitQueue(request, bookingSessionId);
-		return ResponseEntity.ok().build();
+		return ResponseEntity.noContent().build();
 	}
 }

@@ -1,8 +1,10 @@
 package com.pgms.coredomain.domain.booking;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 @Getter
+@RequiredArgsConstructor
 public enum CardIssuer {
 	IBK_BC("기업 BC", "3K"),
 	GWANGJUBANK("광주은행", "46"),
@@ -37,11 +39,6 @@ public enum CardIssuer {
 
 	private final String name;
 	private final String officialCode;
-
-	CardIssuer(String name, String officialCode) {
-		this.name = name;
-		this.officialCode = officialCode;
-	}
 
 	public static CardIssuer fromOfficialCode(String officialCode) {
 		for (CardIssuer cardIssuer : CardIssuer.values()) {
