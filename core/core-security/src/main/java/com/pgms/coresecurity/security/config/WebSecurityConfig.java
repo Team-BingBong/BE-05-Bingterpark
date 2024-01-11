@@ -1,5 +1,6 @@
 package com.pgms.coresecurity.security.config;
 
+import static org.springframework.http.HttpMethod.*;
 import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.*;
 
 import java.util.List;
@@ -64,10 +65,19 @@ public class WebSecurityConfig {
 
 	private RequestMatcher[] requestPermitAll() {
 		List<RequestMatcher> requestMatchers = List.of(
+			// MEMBER
 			antMatcher("/api/*/auth/**"),
 			antMatcher("/api/*/members/signup"),
+
+			// SWAGGER
 			antMatcher("/v3/api-docs/**"),
-			antMatcher("/swagger-ui/**")
+			antMatcher("/swagger-ui/**"),
+
+			// BOOKING
+			antMatcher(GET, "/api/*/payments/**"),
+			antMatcher(POST, "/api/*/payments/**"),
+			antMatcher("/bookings"),
+			antMatcher("/payments")
 		);
 		return requestMatchers.toArray(RequestMatcher[]::new);
 	}
@@ -141,7 +151,15 @@ public class WebSecurityConfig {
 
 	private RequestMatcher[] requestHasRoleUser() {
 		List<RequestMatcher> requestMatchers = List.of(
-			antMatcher("/api/*/members/**"));
+			// MEMBER
+			antMatcher("/api/*/members/**"),
+
+			// BOOKING
+			antMatcher(GET, "/api/*/bookings/**"),
+			antMatcher(POST, "/api/*/bookings/**"),
+			antMatcher(GET, "/api/*/seats/**"),
+			antMatcher(POST, "/api/*/seats/**")
+		);
 		return requestMatchers.toArray(RequestMatcher[]::new);
 	}
 
