@@ -47,7 +47,7 @@ public class EventImageController {
 		return ResponseEntity.noContent().build();
 	}
 
-	@Operation(summary = "공연 상세 이미지 생성", description = "공연 상세 이미지 생성 메서드입니다.")
+	@Operation(summary = "공연 상세 이미지 추가", description = "공연 상세 이미지 추가 메서드입니다.")
 	@PostMapping("/event-images/events/{eventId}")
 	public ResponseEntity<Void> addEventImages(
 		@PathVariable Long eventId,
