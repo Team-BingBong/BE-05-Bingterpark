@@ -1,6 +1,7 @@
 ### 공연 좌석 구역 생성
 POST http://localhost:8080/api/v1/events/1/seat-area
 Content-Type: application/json
+Authorization: Bearer {{adminToken}}
 
 {
   "requests" :
@@ -19,6 +20,7 @@ Content-Type: application/json
 ### 공연 좌석 생성
 POST http://localhost:8080/api/v1/event-seats/events/1
 Content-Type: application/json
+Authorization: Bearer {{adminToken}}
 
 [
   {

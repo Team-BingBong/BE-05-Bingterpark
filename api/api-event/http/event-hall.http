@@ -1,6 +1,7 @@
 ### 공연장 생성
 POST http://localhost:8080/api/v1/event-halls
 Content-Type: application/json
+Authorization: Bearer {{adminToken}}
 
 {
   "name" : "잠실 종합운동장",

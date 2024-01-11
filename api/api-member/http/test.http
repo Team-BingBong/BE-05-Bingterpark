@@ -142,7 +142,7 @@ http://localhost:8081/login
 
 ### 멤버 본인 정보 조회 (토큰 필요)
 GET http://localhost:8081/api/v1/members/me
-Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJpZCI6Mywic3ViIjoidGVzdEB0ZXN0LmNvbSIsImlhdCI6MTcwNDc5Mjg3NSwiZXhwIjoxNzA0Nzk0Njc1LCJhdXRob3JpdHkiOiIifQ.pD0WG-Pp33x_di-lBmWxfoCH0PdTv35z3skVDSSgKo0kMp2Iie2GQwvk7XaW_I5u
+Authorization: Bearer {{token}}
 
 ### 멤버 본인 정보 수정 (토큰 필요)
 PATCH http://localhost:8081/api/v1/members/me
