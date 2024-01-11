@@ -18,6 +18,10 @@ spring:
       enabled: true
       path: /h2-console
 
+logging:
+  level:
+    org.hibernate.SQL: DEBUG
+
 ---
 
 spring:
@@ -33,13 +37,8 @@ spring:
     database-platform: org.hibernate.dialect.MySQLDialect
     show-sql: true
     hibernate:
-      ddl-auto: update
-    defer-datasource-initialization: true
+      ddl-auto: none
 
   sql:
     init:
-      mode: always
-
-logging:
-  level:
-    org.hibernate.SQL: DEBUG
+      mode: never
