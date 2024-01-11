@@ -84,20 +84,19 @@ VALUES ('bookingTestId', 3),
 -- Payment
 INSERT INTO payment (booking_id,
                      amount,
+                     method,
+                     card_issuer,
                      card_number,
                      installment_plan_months,
                      is_interest_free,
-                     method,
                      payment_key,
                      status,
                      requested_at,
                      approved_at,
                      created_at,
                      updated_at)
-VALUES ('bookingTestId', 180000, '1111-1111-1111-1111', 0, false, 'CARD', 'paymentkey', 'CANCELED', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+VALUES ('bookingTestId', 180000, 'CARD', 'HYUNDAI', '11111111****111*', 0, false, 'paymentkey', 'CANCELED', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 -- Booking Cancel
 INSERT INTO booking_cancel (booking_id, amount, reason, created_by, created_at, updated_at)
 VALUES ('bookingTestId', 180000, '구매자 변심', 'test@gmail.com', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
-
-
