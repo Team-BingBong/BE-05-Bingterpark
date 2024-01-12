@@ -38,11 +38,10 @@ public class SeatService { //TODO: 테스트 코드 작성
 	public void selectSeat(Long seatId, Long memberId) {
 		Long selectorId = seatLockManager.getSelectorId(seatId).orElse(null);
 
-		if (selectorId.equals(memberId)) {
-			return;
-		}
-
 		if (selectorId != null) {
+			if (selectorId.equals(memberId)) {
+				return;
+			}
 			throw new BookingException(BookingErrorCode.SEAT_HELD_BY_ANOTHER_MEMBER);
 		}
 
