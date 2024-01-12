@@ -55,11 +55,10 @@ public class WebSecurityConfig {
 	@Bean
 	public SecurityFilterChain securityFilterChainPermitAll(HttpSecurity http) throws Exception {
 		configureCommonSecuritySettings(http);
-		http
-			.securityMatchers(matchers -> matchers
-				.requestMatchers(requestPermitAll())
-			)
-			.authorizeHttpRequests().anyRequest().permitAll();
+		http.securityMatchers(matchers -> matchers.requestMatchers(requestPermitAll()))
+			.authorizeHttpRequests()
+			.anyRequest()
+			.permitAll();
 		return http.build();
 	}
 
@@ -163,8 +162,7 @@ public class WebSecurityConfig {
 	}
 
 	private RequestMatcher[] requestHasRoleSuperAdmin() {
-		List<RequestMatcher> requestMatchers = List.of(
-			antMatcher("/api/*/admin/management/**"));
+		List<RequestMatcher> requestMatchers = List.of(antMatcher("/api/*/admin/management/**"));
 		return requestMatchers.toArray(RequestMatcher[]::new);
 	}
 
@@ -224,15 +222,14 @@ public class WebSecurityConfig {
 	@Bean
 	public SecurityFilterChain securityFilterChainDefault(HttpSecurity http) throws Exception {
 		configureCommonSecuritySettings(http);
-		http
-			.authorizeHttpRequests()
-			.anyRequest().permitAll();
-		// .and()
-		// .addFilterAfter(jwtAuthenticationFilter, ExceptionTranslationFilter.class)
-		// .exceptionHandling(exception -> {
-		// 	exception.authenticationEntryPoint(jwtAuthenticationEntryPoint);
-		// 	exception.accessDeniedHandler(jwtAccessDeniedHandler);
-		// });
+		http.authorizeHttpRequests()
+			.anyRequest().authenticated()
+			.and()
+			.addFilterAfter(jwtAuthenticationFilter, ExceptionTranslationFilter.class)
+			.exceptionHandling(exception -> {
+				exception.authenticationEntryPoint(jwtAuthenticationEntryPoint);
+				exception.accessDeniedHandler(jwtAccessDeniedHandler);
+			});
 		return http.build();
 	}
 
