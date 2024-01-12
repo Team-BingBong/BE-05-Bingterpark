@@ -172,9 +172,6 @@ CREATE TABLE IF NOT EXISTS payment
     account_number          VARCHAR(20),                                -- 가상 계좌 번호
     depositor_name          VARCHAR(20),                                -- 입금자 명
     due_date                DATETIME,                                   -- 입금 기한
-    refund_account_number   VARCHAR(20),                                -- 환불 계좌 번호
-    refund_bank_code        CHAR(2),                                    -- 환불 은행 코드
-    refund_holder_name      VARCHAR(20),                                -- 환불 계좌 예금주
     failed_msg              VARCHAR(255),                               -- 결제 실패 메시지
     requested_at            DATETIME,                                   -- 결제 요청 날짜
     approved_at             DATETIME,                                   -- 결제 승인 날짜
@@ -198,12 +195,15 @@ CREATE TABLE IF NOT EXISTS ticket
 
 CREATE TABLE IF NOT EXISTS booking_cancel
 (
-    id         BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY, -- 예매 취소 id
-    amount     INT UNSIGNED NOT NULL,                      -- 환불 금액
-    reason     VARCHAR(100) NOT NULL,                      -- 취소 사유
-    created_by VARCHAR(50)  NOT NULL,                      -- 취소 요청자
-    booking_id CHAR(13)     NOT NULL,                      -- 예매 번호
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    id                    BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY, -- 예매 취소 id
+    amount                INT UNSIGNED NOT NULL,                      -- 환불 금액
+    reason                VARCHAR(100) NOT NULL,                      -- 취소 사유
+    created_by            VARCHAR(50)  NOT NULL,                      -- 취소 요청자
+    booking_id            CHAR(13)     NOT NULL,                      -- 예매 번호
+    refund_account_number VARCHAR(20),                                -- 환불 계좌 번호
+    refund_bank_code      CHAR(2),                                    -- 환불 은행 코드
+    refund_holder_name    VARCHAR(20),                                -- 환불 계좌 예금주
+    created_at            DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at            DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     INDEX booking_cancel_idx_booking_id (booking_id)
 );
