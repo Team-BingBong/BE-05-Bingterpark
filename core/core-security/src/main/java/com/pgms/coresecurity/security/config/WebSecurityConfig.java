@@ -55,11 +55,10 @@ public class WebSecurityConfig {
 	@Bean
 	public SecurityFilterChain securityFilterChainPermitAll(HttpSecurity http) throws Exception {
 		configureCommonSecuritySettings(http);
-		http
-			.securityMatchers(matchers -> matchers
-				.requestMatchers(requestPermitAll())
-			)
-			.authorizeHttpRequests().anyRequest().permitAll();
+		http.securityMatchers(matchers -> matchers.requestMatchers(requestPermitAll()))
+			.authorizeHttpRequests()
+			.anyRequest()
+			.permitAll();
 		return http.build();
 	}
 
@@ -68,6 +67,8 @@ public class WebSecurityConfig {
 			// MEMBER
 			antMatcher("/api/*/auth/**"),
 			antMatcher("/api/*/members/signup"),
+			antMatcher("/api/*/members/send-restore-email"),
+			antMatcher("/api/*/members/confirm-restore"),
 
 			// BOOKING
 			antMatcher(GET, "/api/*/payments/**"),
@@ -91,8 +92,17 @@ public class WebSecurityConfig {
 			antMatcher(GET, "/api/*/events/*/seat-area"),    // 공연 좌석 구역 목록 조회
 
 			// DOCS
+			antMatcher("/swagger-ui/**"),
+			antMatcher("/swagger-ui"),
+			antMatcher("/swagger-ui.html"),
+			antMatcher("/swagger/**"),
+			antMatcher("/swagger-resources/**"),
 			antMatcher("/v3/api-docs/**"),
-			antMatcher("/swagger-ui/**")
+			antMatcher("/webjars/**"),
+
+			// H2-CONSOLE
+			antMatcher("/h2-console/**")
+
 		);
 		return requestMatchers.toArray(RequestMatcher[]::new);
 	}
@@ -152,8 +162,7 @@ public class WebSecurityConfig {
 	}
 
 	private RequestMatcher[] requestHasRoleSuperAdmin() {
-		List<RequestMatcher> requestMatchers = List.of(
-			antMatcher("/api/*/admin/management/**"));
+		List<RequestMatcher> requestMatchers = List.of(antMatcher("/api/*/admin/management/**"));
 		return requestMatchers.toArray(RequestMatcher[]::new);
 	}
 
@@ -213,8 +222,7 @@ public class WebSecurityConfig {
 	@Bean
 	public SecurityFilterChain securityFilterChainDefault(HttpSecurity http) throws Exception {
 		configureCommonSecuritySettings(http);
-		http
-			.authorizeHttpRequests()
+		http.authorizeHttpRequests()
 			.anyRequest().authenticated()
 			.and()
 			.addFilterAfter(jwtAuthenticationFilter, ExceptionTranslationFilter.class)
@@ -232,8 +240,10 @@ public class WebSecurityConfig {
 			.formLogin().disable()
 			.httpBasic().disable()
 			.rememberMe().disable()
+			.headers().frameOptions().disable().and()
 			.logout().disable()
 			.sessionManagement()
 			.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+
 	}
 }

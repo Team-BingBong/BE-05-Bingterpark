@@ -23,12 +23,13 @@ import com.pgms.apibooking.domain.booking.dto.response.BookingGetResponse;
 import com.pgms.apibooking.domain.booking.dto.response.BookingsGetResponse;
 import com.pgms.apibooking.domain.booking.dto.response.PageResponse;
 import com.pgms.apibooking.domain.booking.repository.BookingQuerydslRepository;
-import com.pgms.apibooking.domain.bookingqueue.repository.BookingQueueRepository;
+import com.pgms.apibooking.domain.bookingqueue.service.BookingQueueManager;
 import com.pgms.apibooking.domain.payment.dto.request.PaymentCancelRequest;
 import com.pgms.apibooking.domain.payment.dto.request.RefundAccountRequest;
 import com.pgms.apibooking.domain.payment.service.PaymentService;
-import com.pgms.apibooking.domain.seat.service.SeatLockService;
+import com.pgms.apibooking.domain.seat.service.SeatLockManager;
 import com.pgms.coredomain.domain.booking.Booking;
+import com.pgms.coredomain.domain.booking.BookingCancel;
 import com.pgms.coredomain.domain.booking.Payment;
 import com.pgms.coredomain.domain.booking.PaymentMethod;
 import com.pgms.coredomain.domain.booking.PaymentStatus;
@@ -59,8 +60,8 @@ public class BookingService { //TODO: 테스트 코드 작성
 	private final TicketRepository ticketRepository;
 	private final MemberRepository memberRepository;
 	private final BookingQuerydslRepository bookingQuerydslRepository;
-	private final BookingQueueRepository bookingQueueRepository;
-	private final SeatLockService seatLockService;
+	private final BookingQueueManager bookingQueueManager;
+	private final SeatLockManager seatLockManager;
 	private final PaymentService paymentService;
 	private final TossPaymentConfig tossPaymentConfig;
 
@@ -123,9 +124,16 @@ public class BookingService { //TODO: 테스트 코드 작성
 		);
 		cancelAmount = Objects.requireNonNullElse(cancelAmount, 0);
 
-		booking.cancel(
-			BookingCancelRequest.toEntity(request, cancelAmount, member.getEmail(), booking)
-		);
+		BookingCancel bookingCancel = BookingCancelRequest.toEntity(request, cancelAmount, member.getEmail(), booking);
+		if (request.refundReceiveAccount().isPresent()) {
+			RefundAccountRequest refundAccountRequest = request.refundReceiveAccount().get();
+			bookingCancel.updateRefundInfo(
+				refundAccountRequest.bank(),
+				refundAccountRequest.accountNumber(),
+				refundAccountRequest.holderName()
+			);
+		}
+		booking.cancel(bookingCancel);
 	}
 
 	public void exitBooking(String id) {
@@ -166,7 +174,7 @@ public class BookingService { //TODO: 테스트 코드 작성
 
 	@Async
 	protected void removeSessionIdInBookingQueue(Long eventId, String tokenSessionId) {
-		bookingQueueRepository.remove(eventId, tokenSessionId);
+		bookingQueueManager.remove(eventId, tokenSessionId);
 	}
 
 	private EventTime getBookableTimeWithEvent(Long timeId) {
@@ -181,12 +189,7 @@ public class BookingService { //TODO: 테스트 코드 작성
 	}
 
 	private List<EventSeat> getBookableSeatsWithArea(Long timeId, List<Long> seatIds, Long memberId) {
-		seatIds.forEach(seatId -> {
-			Long selectorId = seatLockService.getSelectorId(seatId);
-			if (selectorId == null || !selectorId.equals(memberId)) {
-				throw new BookingException(BookingErrorCode.UNBOOKABLE_SEAT_INCLUSION);
-			}
-		});
+		checkHeldSeats(seatIds, memberId);
 
 		List<EventSeat> seats = eventSeatRepository.findAllWithAreaByTimeIdAndSeatIds(timeId, seatIds);
 
@@ -199,6 +202,15 @@ public class BookingService { //TODO: 테스트 코드 작성
 		}
 
 		return seats;
+	}
+
+	private void checkHeldSeats(List<Long> seatIds, Long memberId) {
+		seatIds.forEach(seatId -> {
+			Long selectorId = seatLockManager.getSelectorId(seatId).orElse(null);
+			if (selectorId == null || !selectorId.equals(memberId)) {
+				throw new BookingException(BookingErrorCode.UNBOOKABLE_SEAT_INCLUSION);
+			}
+		});
 	}
 
 	private void validateDeliveryAddress(ReceiptType receiptType, Optional<DeliveryAddress> deliveryAddress) {

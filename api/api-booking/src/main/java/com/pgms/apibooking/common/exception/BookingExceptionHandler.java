@@ -1,5 +1,6 @@
 package com.pgms.apibooking.common.exception;
 
+import java.net.ConnectException;
 import java.util.Objects;
 
 import org.springframework.http.HttpHeaders;
@@ -83,6 +84,13 @@ public class BookingExceptionHandler extends ResponseEntityExceptionHandler {
 	protected ResponseEntity<ErrorResponse> handleSecurityCustomException(SecurityCustomException ex) {
 		log.warn("SecurityCustomException Occurred: {}", ex);
 		BaseErrorCode errorCode = ex.getErrorCode();
+		return ResponseEntity.status(errorCode.getStatus()).body(errorCode.getErrorResponse());
+	}
+
+	@ExceptionHandler(ConnectException.class)
+	protected ResponseEntity<ErrorResponse> handleConnectException(ConnectException ex) {
+		log.error("ConnectException Occurred: {}", ex.getMessage());
+		BaseErrorCode errorCode = BookingErrorCode.SERVICE_UNAVAILABLE;
 		return ResponseEntity.status(errorCode.getStatus()).body(errorCode.getErrorResponse());
 	}
 }

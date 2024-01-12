@@ -12,6 +12,7 @@ Content-Type: application/json
 ### 공연장 등록
 POST http://localhost:8080/api/v1/event-halls
 Content-Type: application/json
+Authorization: Bearer {{adminToken}}
 
 {
   "name": "잠실 종합운동장",
@@ -35,23 +36,25 @@ Content-Type: application/json
 ### 공연 등록
 POST http://localhost:8080/api/v1/events
 Content-Type: application/json
+Authorization: Bearer {{adminToken}}
 
 {
   "title": "히사이시 조 영화음악 콘서트",
   "description": "영화보다 빛나는 영화 음악, 그 여운을 다시 한 번! 지브리 스튜디오 미야자키 히야오의 모든 애니메이션 음악을 담당하며 현존하는 최고의 작곡가&지휘자 히사이시 조",
   "runningTime": 100,
   "startedAt": "2024-02-05T12:00:00",
-  "endedAt": "2024-02-022T12:00:00",
+  "endedAt": "2024-02-22T12:00:00",
   "viewRating": "12",
   "genreType": "CONCERT",
   "bookingStartedAt": "2024-01-05T12:00:00",
   "bookingEndedAt": "2024-02-01T12:00:00",
-  "eventHallId": 1
+  "eventHallId": 2
 }
 
 ### 공연 회차 생성
 POST http://localhost:8080/api/v1/event-times/2
 Content-Type: application/json
+Authorization: Bearer {{adminToken}}
 
 {
   "round": 1,
@@ -62,6 +65,7 @@ Content-Type: application/json
 ### 공연 좌석 구역 생성
 POST http://localhost:8080/api/v1/events/2/seat-area
 Content-Type: application/json
+Authorization: Bearer {{adminToken}}
 
 {
   "requests": [
@@ -79,6 +83,7 @@ Content-Type: application/json
 ### 공연 좌석 생성
 POST http://localhost:8080/api/v1/event-seats/events/2
 Content-Type: application/json
+Authorization: Bearer {{adminToken}}
 
 [
   {
@@ -146,7 +151,7 @@ http://localhost:8081/login
 
 ### 내 정보 확인
 GET http://localhost:8081/api/v1/members/me
-Authorization: Bearer {{accessToken}}
+Authorization: Bearer {{token}}
 
 ### 공연 목록 - 리뷰순
 GET http://localhost:8080/api/v1/events/sort/ranking?page=1&size=10&genreType=CONCERT&dateOffset=7
@@ -211,13 +216,11 @@ Booking-Authorization: Bearer {{bookingToken}}
 
 ### 좌석 선택
 POST http://localhost:8082/api/v1/seats/1/select
-Content-Type: application/json
 Authorization: Bearer {{accessToken}}
 Booking-Authorization: Bearer {{bookingToken}}
 
 ### 좌석 선택 해제
 POST http://localhost:8082/api/v1/seats/1/deselect
-Content-Type: application/json
 Authorization: Bearer {{accessToken}}
 Booking-Authorization: Bearer {{bookingToken}}
 

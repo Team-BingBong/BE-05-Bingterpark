@@ -25,6 +25,8 @@ import com.pgms.apibooking.domain.booking.service.BookingService;
 import com.pgms.coredomain.response.ApiResponse;
 import com.pgms.coresecurity.security.resolver.CurrentAccount;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -32,10 +34,12 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/api/v1/bookings")
 @RequiredArgsConstructor
+@Tag(name = "예매")
 public class BookingController {
 
 	private final BookingService bookingService;
 
+	@Operation(summary = "예매 생성")
 	@PostMapping("/create")
 	public ResponseEntity<ApiResponse<BookingCreateResponse>> createBooking(
 		@CurrentAccount Long memberId,
@@ -52,6 +56,7 @@ public class BookingController {
 		return ResponseEntity.created(location).body(response);
 	}
 
+	@Operation(summary = "예매 취소")
 	@PostMapping("/{id}/cancel")
 	public ResponseEntity<Void> cancelBooking(
 		@CurrentAccount Long memberId,
@@ -61,12 +66,14 @@ public class BookingController {
 		return ResponseEntity.noContent().build();
 	}
 
+	@Operation(summary = "예매 이탈")
 	@PostMapping("/{id}/exit")
 	public ResponseEntity<Void> exitBooking(@PathVariable String id) {
 		bookingService.exitBooking(id);
 		return ResponseEntity.noContent().build();
 	}
 
+	@Operation(summary = "내 예매 목록 조회")
 	@GetMapping
 	public ResponseEntity<ApiResponse<PageResponse<BookingsGetResponse>>> getBookings(
 		@CurrentAccount Long memberId,
@@ -78,6 +85,7 @@ public class BookingController {
 		return ResponseEntity.ok().body(response);
 	}
 
+	@Operation(summary = "내 예매 상세 조회")
 	@GetMapping("/{id}")
 	public ResponseEntity<ApiResponse<BookingGetResponse>> getBooking(
 		@CurrentAccount Long memberId,
