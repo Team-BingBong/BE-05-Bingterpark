@@ -13,6 +13,27 @@ CREATE TABLE admin
     status                   VARCHAR(255) NOT NULL
 );
 
+CREATE TABLE member
+(
+    id                       BIGINT AUTO_INCREMENT PRIMARY KEY,
+    created_at               TIMESTAMP(6),
+    updated_at               TIMESTAMP(6),
+    last_login_at            TIMESTAMP(6) NOT NULL,
+    last_password_updated_at TIMESTAMP(6) NOT NULL,
+    birth_date               VARCHAR(255),
+    detail_address           VARCHAR(255),
+    email                    VARCHAR(255) NOT NULL,
+    gender                   VARCHAR(255),
+    name                     VARCHAR(255) NOT NULL,
+    password                 VARCHAR(255),
+    phone_number             VARCHAR(255),
+    provider                 VARCHAR(255),
+    role                     VARCHAR(255),
+    status                   VARCHAR(255) NOT NULL,
+    street_address           VARCHAR(255),
+    zip_code                 VARCHAR(255)
+);
+
 CREATE TABLE booking
 (
     id                     VARCHAR(255) NOT NULL PRIMARY KEY,
@@ -137,27 +158,6 @@ CREATE TABLE event_time
     started_at TIMESTAMP(6),
     event_id   BIGINT,
     FOREIGN KEY (event_id) REFERENCES event (id)
-);
-
-CREATE TABLE member
-(
-    id                       BIGINT AUTO_INCREMENT PRIMARY KEY,
-    created_at               TIMESTAMP(6),
-    updated_at               TIMESTAMP(6),
-    last_login_at            TIMESTAMP(6) NOT NULL,
-    last_password_updated_at TIMESTAMP(6) NOT NULL,
-    birth_date               VARCHAR(255),
-    detail_address           VARCHAR(255),
-    email                    VARCHAR(255) NOT NULL,
-    gender                   VARCHAR(255),
-    name                     VARCHAR(255) NOT NULL,
-    password                 VARCHAR(255),
-    phone_number             VARCHAR(255),
-    provider                 VARCHAR(255),
-    role                     VARCHAR(255),
-    status                   VARCHAR(255) NOT NULL,
-    street_address           VARCHAR(255),
-    zip_code                 VARCHAR(255)
 );
 
 CREATE TABLE payment
