@@ -36,13 +36,13 @@ public class SeatService { //TODO: 테스트 코드 작성
 	}
 
 	public void selectSeat(Long seatId, Long memberId) {
-		if (seatLockManager.isSeatLocked(seatId)) {
-			Long selectorId = seatLockManager.getSelectorId(seatId);
+		Long selectorId = seatLockManager.getSelectorId(seatId).orElse(null);
 
-			if (selectorId != null && selectorId.equals(memberId)) {
-				return;
-			}
+		if (selectorId.equals(memberId)) {
+			return;
+		}
 
+		if (selectorId != null) {
 			throw new BookingException(BookingErrorCode.SEAT_SELECTED_BY_ANOTHER_MEMBER);
 		}
 
@@ -57,7 +57,7 @@ public class SeatService { //TODO: 테스트 코드 작성
 	}
 
 	public void deselectSeat(Long seatId, Long memberId) {
-		Long selectorId = seatLockManager.getSelectorId(seatId);
+		Long selectorId = seatLockManager.getSelectorId(seatId).orElse(null);
 
 		if (selectorId == null) {
 			updateSeatStatusToAvailable(seatId);

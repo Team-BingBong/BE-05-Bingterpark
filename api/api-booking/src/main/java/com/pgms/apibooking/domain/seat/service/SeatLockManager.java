@@ -1,6 +1,7 @@
 package com.pgms.apibooking.domain.seat.service;
 
 import java.time.Duration;
+import java.util.Optional;
 
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
@@ -15,14 +16,10 @@ public class SeatLockManager {
 	private final static String SEAT_LOCK_CACHE_VALUE_PREFIX = "memberId:";
 	private final RedisTemplate<String, String> redisTemplate;
 
-	public Long getSelectorId(Long seatId) {
+	public Optional<Long> getSelectorId(Long seatId) {
 		String key = generateSeatLockKey(seatId);
 		String value = redisTemplate.opsForValue().get(key);
-		return value == null ? null : extractMemberId(value);
-	}
-
-	public boolean isSeatLocked(Long seatId) {
-		return redisTemplate.opsForValue().get(generateSeatLockKey(seatId)) != null;
+		return Optional.ofNullable(value == null ? null : extractMemberId(value));
 	}
 
 	public void lockSeat(Long seatId, Long memberId, Integer expirationSeconds) {
