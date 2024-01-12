@@ -103,6 +103,7 @@ public class WebSecurityConfig {
 
 			// H2-CONSOLE
 			antMatcher("/h2-console/**")
+
 		);
 		return requestMatchers.toArray(RequestMatcher[]::new);
 	}
@@ -225,13 +226,13 @@ public class WebSecurityConfig {
 		configureCommonSecuritySettings(http);
 		http
 			.authorizeHttpRequests()
-			.anyRequest().authenticated()
-			.and()
-			.addFilterAfter(jwtAuthenticationFilter, ExceptionTranslationFilter.class)
-			.exceptionHandling(exception -> {
-				exception.authenticationEntryPoint(jwtAuthenticationEntryPoint);
-				exception.accessDeniedHandler(jwtAccessDeniedHandler);
-			});
+			.anyRequest().permitAll();
+		// .and()
+		// .addFilterAfter(jwtAuthenticationFilter, ExceptionTranslationFilter.class)
+		// .exceptionHandling(exception -> {
+		// 	exception.authenticationEntryPoint(jwtAuthenticationEntryPoint);
+		// 	exception.accessDeniedHandler(jwtAccessDeniedHandler);
+		// });
 		return http.build();
 	}
 
