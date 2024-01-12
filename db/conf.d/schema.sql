@@ -13,37 +13,6 @@ CREATE TABLE admin
     status                   VARCHAR(255) NOT NULL
 );
 
-CREATE TABLE booking
-(
-    id                     VARCHAR(255) NOT NULL PRIMARY KEY,
-    created_at             TIMESTAMP(6),
-    updated_at             TIMESTAMP(6),
-    amount                 INT          NOT NULL,
-    booking_name           VARCHAR(255) NOT NULL,
-    buyer_name             VARCHAR(255) NOT NULL,
-    buyer_phone_number     VARCHAR(255) NOT NULL,
-    detail_address         VARCHAR(255),
-    receipt_type           VARCHAR(255) NOT NULL,
-    recipient_name         VARCHAR(255),
-    recipient_phone_number VARCHAR(255),
-    status                 VARCHAR(255) NOT NULL,
-    street_address         VARCHAR(255),
-    zip_code               VARCHAR(255),
-    member_id              BIGINT       NOT NULL,
-    time_id                BIGINT       NOT NULL
-);
-
-CREATE TABLE booking_cancel
-(
-    id         BIGINT AUTO_INCREMENT PRIMARY KEY,
-    created_at TIMESTAMP(6),
-    updated_at TIMESTAMP(6),
-    amount     INT          NOT NULL,
-    created_by VARCHAR(255) NOT NULL,
-    reason     VARCHAR(255) NOT NULL,
-    booking_id VARCHAR(255) NOT NULL
-);
-
 CREATE TABLE event
 (
     id                 BIGINT AUTO_INCREMENT PRIMARY KEY,
@@ -160,40 +129,82 @@ CREATE TABLE member
     zip_code                 VARCHAR(255)
 );
 
-CREATE TABLE payment
+
+-- 예매
+
+CREATE TABLE IF NOT EXISTS booking
 (
-    id                      BIGINT AUTO_INCREMENT PRIMARY KEY,
-    created_at              TIMESTAMP(6),
-    updated_at              TIMESTAMP(6),
-    account_number          VARCHAR(255),
-    amount                  INT          NOT NULL,
-    approved_at             TIMESTAMP(6),
-    bank_code               VARCHAR(255),
-    card_issuer             VARCHAR(255),
-    card_number             VARCHAR(255),
-    depositor_name          VARCHAR(255),
-    due_date                TIMESTAMP(6),
-    failed_msg              VARCHAR(255),
-    installment_plan_months INT,
-    is_interest_free        BOOLEAN,
-    method                  VARCHAR(255),
-    payment_key             VARCHAR(255),
-    refund_account_number   VARCHAR(255),
-    refund_bank_code        VARCHAR(255),
-    refund_holder_name      VARCHAR(255),
-    requested_at            TIMESTAMP(6),
-    status                  VARCHAR(255) NOT NULL,
-    booking_id              VARCHAR(255),
-    FOREIGN KEY (booking_id) REFERENCES booking (id)
+    id                     CHAR(13)        NOT NULL PRIMARY KEY, -- 예매 번호
+    amount                 INT UNSIGNED    NOT NULL,             -- 결제 금액
+    booking_name           VARCHAR(255)    NOT NULL,             -- 예매 명
+    status                 VARCHAR(20)     NOT NULL,             -- 예매 상태
+    buyer_name             VARCHAR(100)    NOT NULL,             -- 구매자 명
+    buyer_phone_number     VARCHAR(20)     NOT NULL,             -- 구매자 전화번호
+    receipt_type           VARCHAR(20)     NOT NULL,             -- 티켓 수령 타입
+    recipient_name         VARCHAR(100),                         -- 수령인 명
+    recipient_phone_number VARCHAR(20),                          -- 수령인 전화번호
+    street_address         VARCHAR(255),                         -- 수령지 도로명 주소
+    detail_address         VARCHAR(255),                         -- 수령지 상세 주소
+    zip_code               CHAR(5),                              -- 수령지 우편 번호
+    member_id              BIGINT UNSIGNED NOT NULL,             -- 회원 id
+    time_id                BIGINT UNSIGNED NOT NULL,             -- 공연 회차 id
+    created_at             DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at             DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX booking_idx_buyer_name (buyer_name),
+    INDEX booking_idx_buyer_phone_number (buyer_phone_number),
+    INDEX booking_idx_member_id (member_id),
+    INDEX booking_idx_time_id (time_id),
+    INDEX booking_idx_created_at (created_at),
+    INDEX booking_idx_updated_at (updated_at)
 );
 
-CREATE TABLE ticket
+CREATE TABLE IF NOT EXISTS payment
 (
-    id         BIGINT AUTO_INCREMENT PRIMARY KEY,
-    created_at TIMESTAMP(6),
-    updated_at TIMESTAMP(6),
-    booking_id VARCHAR(255) NOT NULL,
-    seat_id    BIGINT       NOT NULL,
-    FOREIGN KEY (booking_id) REFERENCES booking (id),
-    FOREIGN KEY (seat_id) REFERENCES event_seat (id)
+    id                      BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY, -- 결제 id
+    payment_key             VARCHAR(50),                                -- 결제 키
+    status                  VARCHAR(20)  NOT NULL,                      -- 결제 상태
+    amount                  INT UNSIGNED NOT NULL,                      -- 결제 가격
+    method                  VARCHAR(20),                                -- 결제 수단
+    card_issuer             VARCHAR(20),                                -- 카드 발급사
+    card_number             VARCHAR(20),                                -- 카드 번호
+    installment_plan_months INT UNSIGNED,                               -- 할부 개월 수
+    is_interest_free        BOOLEAN,                                    -- 무이자 여부
+    bank_code               CHAR(4),                                    -- 은행 코드
+    account_number          VARCHAR(20),                                -- 가상 계좌 번호
+    depositor_name          VARCHAR(20),                                -- 입금자 명
+    due_date                DATETIME,                                   -- 입금 기한
+    refund_account_number   VARCHAR(20),                                -- 환불 계좌 번호
+    refund_bank_code        CHAR(2),                                    -- 환불 은행 코드
+    refund_holder_name      VARCHAR(20),                                -- 환불 계좌 예금주
+    failed_msg              VARCHAR(255),                               -- 결제 실패 메시지
+    requested_at            DATETIME,                                   -- 결제 요청 날짜
+    approved_at             DATETIME,                                   -- 결제 승인 날짜
+    booking_id              CHAR(13)     NOT NULL,                      -- 예매 번호
+    created_at              DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at              DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX payment_idx_payment_key (payment_key),
+    INDEX payment_idx_booking_id (booking_id)
+);
+
+CREATE TABLE IF NOT EXISTS ticket
+(
+    id         BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY, -- 티켓 id
+    seat_id    BIGINT UNSIGNED NOT NULL,                   -- 공연 좌석 id
+    booking_id CHAR(13)        NOT NULL,                   -- 예매 번호
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX ticket_idx_seat_id (seat_id),
+    INDEX ticket_idx_booking_id (booking_id)
+);
+
+CREATE TABLE IF NOT EXISTS booking_cancel
+(
+    id         BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY, -- 예매 취소 id
+    amount     INT UNSIGNED NOT NULL,                      -- 환불 금액
+    reason     VARCHAR(100) NOT NULL,                      -- 취소 사유
+    created_by VARCHAR(50)  NOT NULL,                      -- 취소 요청자
+    booking_id CHAR(13)     NOT NULL,                      -- 예매 번호
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX booking_cancel_idx_booking_id (booking_id)
 );
