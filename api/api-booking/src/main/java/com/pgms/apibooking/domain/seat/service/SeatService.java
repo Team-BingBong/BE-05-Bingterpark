@@ -21,8 +21,10 @@ import lombok.RequiredArgsConstructor;
 @Transactional
 public class SeatService { //TODO: 테스트 코드 작성
 
+	private final static int SEAT_LOCK_CACHE_EXPIRE_SECONDS = 420;
+
 	private final EventSeatRepository eventSeatRepository;
-	private final SeatLockService seatLockService;
+	private final SeatLockManager seatLockManager;
 
 	@Transactional(readOnly = true)
 	public List<AreaResponse> getSeats(SeatsGetRequest request) {
@@ -34,8 +36,8 @@ public class SeatService { //TODO: 테스트 코드 작성
 	}
 
 	public void selectSeat(Long seatId, Long memberId) {
-		if (seatLockService.isSeatLocked(seatId)) {
-			Long selectorId = seatLockService.getSelectorId(seatId);
+		if (seatLockManager.isSeatLocked(seatId)) {
+			Long selectorId = seatLockManager.getSelectorId(seatId);
 
 			if (selectorId != null && selectorId.equals(memberId)) {
 				return;
@@ -51,11 +53,11 @@ public class SeatService { //TODO: 테스트 코드 작성
 		}
 
 		seat.updateStatus(EventSeatStatus.SELECTED);
-		seatLockService.lockSeat(seatId, memberId);
+		seatLockManager.lockSeat(seatId, memberId, SEAT_LOCK_CACHE_EXPIRE_SECONDS);
 	}
 
 	public void deselectSeat(Long seatId, Long memberId) {
-		Long selectorId = seatLockService.getSelectorId(seatId);
+		Long selectorId = seatLockManager.getSelectorId(seatId);
 
 		if (selectorId == null) {
 			updateSeatStatusToAvailable(seatId);
@@ -73,7 +75,7 @@ public class SeatService { //TODO: 테스트 코드 작성
 		}
 
 		seat.updateStatus(EventSeatStatus.AVAILABLE);
-		seatLockService.unlockSeat(seatId);
+		seatLockManager.unlockSeat(seatId);
 	}
 
 	private EventSeat getSeat(Long seatId) {

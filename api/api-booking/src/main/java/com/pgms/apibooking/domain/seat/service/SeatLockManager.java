@@ -1,22 +1,18 @@
 package com.pgms.apibooking.domain.seat.service;
 
 import java.time.Duration;
-import java.util.List;
-import java.util.Optional;
 
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
 
-@Service
+@Component
 @RequiredArgsConstructor
-public class SeatLockService {
+public class SeatLockManager {
 
 	private final static String SEAT_LOCK_CACHE_KEY_PREFIX = "seatId:";
 	private final static String SEAT_LOCK_CACHE_VALUE_PREFIX = "memberId:";
-	private final static int SEAT_LOCK_CACHE_EXPIRE_SECONDS = 420;
-
 	private final RedisTemplate<String, String> redisTemplate;
 
 	public Long getSelectorId(Long seatId) {
@@ -29,10 +25,10 @@ public class SeatLockService {
 		return redisTemplate.opsForValue().get(generateSeatLockKey(seatId)) != null;
 	}
 
-	public void lockSeat(Long seatId, Long memberId) {
+	public void lockSeat(Long seatId, Long memberId, Integer expirationSeconds) {
 		String key = generateSeatLockKey(seatId);
 		String value = generateSeatLockValue(memberId);
-		Duration timeout = Duration.ofSeconds(SEAT_LOCK_CACHE_EXPIRE_SECONDS);
+		Duration timeout = Duration.ofSeconds(expirationSeconds);
 		redisTemplate.opsForValue().setIfAbsent(key, value, timeout);
 	}
 
