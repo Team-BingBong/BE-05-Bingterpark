@@ -2,8 +2,9 @@ package com.pgms.apibooking.domain.bookingqueue.service;
 
 import java.util.Optional;
 
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
+
+import com.pgms.apibooking.common.util.RedisOperator;
 
 import lombok.RequiredArgsConstructor;
 
@@ -11,25 +12,22 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class BookingQueueManager {
 
-	private final RedisTemplate<String, String> redisTemplate;
+	private final RedisOperator redisOperator;
 
 	public void add(Long eventId, String sessionId, double currentTimeSeconds) {
-		redisTemplate.opsForZSet().add(String.valueOf(eventId), sessionId, currentTimeSeconds);
+		redisOperator.addToZSet(String.valueOf(eventId), sessionId, currentTimeSeconds);
 	}
 	
 	public Optional<Long> getRank(Long eventId, String sessionId) {
-		return Optional.ofNullable(redisTemplate.opsForZSet().rank(String.valueOf(eventId), sessionId));
-	}
-	
-	public Long getEntryLimit() {
-		return 500L;
+		Long rank = redisOperator.getRankFromZSet(String.valueOf(eventId), sessionId);
+		return Optional.ofNullable(rank);
 	}
 
 	public void remove(Long eventId, String sessionId) {
-		redisTemplate.opsForZSet().remove(String.valueOf(eventId), sessionId);
+		redisOperator.removeElementFromZSet(String.valueOf(eventId), sessionId);
 	}
 
-	public void removeRangeByScore(Long eventId, double min, double max) {
-		redisTemplate.opsForZSet().removeRangeByScore(String.valueOf(eventId), min, max);
+	public void removeRangeByScore(Long eventId, double minScore, double maxScore) {
+		redisOperator.removeRangeByScoreFromZSet(String.valueOf(eventId), minScore, maxScore);
 	}
 }

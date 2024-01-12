@@ -21,11 +21,15 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class BookingQueueService {
 
+	private final static double MILLISECONDS_PER_SECOND = 1000.0;
+	private final static double TIMEOUT_SECONDS = 7 * 60;
+	private final static long ENTRY_LIMIT = 5;
+
 	private final BookingQueueManager bookingQueueManager;
 	private final BookingJwtProvider bookingJwtProvider;
 
 	public void enterQueue(BookingQueueEnterRequest request, String sessionId) {
-		double currentTimeSeconds = System.currentTimeMillis() / 1000.0;
+		double currentTimeSeconds = System.currentTimeMillis() / MILLISECONDS_PER_SECOND;
 		bookingQueueManager.add(request.eventId(), sessionId, currentTimeSeconds);
 	}
 
@@ -33,15 +37,15 @@ public class BookingQueueService {
 		Long myOrder = getMyOrder(eventId, sessionId);
 		Boolean isMyTurn = isMyTurn(eventId, sessionId);
 
-		double currentTimeSeconds = System.currentTimeMillis() / 1000.0;
-		double timeLimitSeconds = currentTimeSeconds - (7 * 60);
+		double currentTimeSeconds = System.currentTimeMillis() / MILLISECONDS_PER_SECOND;
+		double timeLimitSeconds = currentTimeSeconds - TIMEOUT_SECONDS;
 		bookingQueueManager.removeRangeByScore(eventId, 0, timeLimitSeconds);
 
 		return OrderInQueueGetResponse.of(myOrder, isMyTurn);
 	}
 
 	public TokenIssueResponse issueToken(TokenIssueRequest request, String sessionId) {
-		if(!isMyTurn(request.eventId(), sessionId)) {
+		if (!isMyTurn(request.eventId(), sessionId)) {
 			throw new BookingException(BookingErrorCode.OUT_OF_ORDER);
 		}
 
@@ -51,9 +55,18 @@ public class BookingQueueService {
 		return TokenIssueResponse.from(token);
 	}
 
+	private Long getMyOrder(Long eventId, String sessionId) {
+		return bookingQueueManager.getRank(eventId, sessionId)
+			.orElseThrow(() -> new BookingException(BookingErrorCode.NOT_IN_QUEUE));
+	}
+
+	public Long getEntryLimit() {
+		return ENTRY_LIMIT;
+	}
+
 	private Boolean isMyTurn(Long eventId, String sessionId) {
 		Long myOrder = getMyOrder(eventId, sessionId);
-		Long entryLimit = bookingQueueManager.getEntryLimit();
+		Long entryLimit = getEntryLimit();
 		return myOrder <= entryLimit;
 	}
 
@@ -64,10 +77,5 @@ public class BookingQueueService {
 	public SessionIdIssueResponse issueSessionId() {
 		UUID sessionId = UUID.randomUUID();
 		return SessionIdIssueResponse.from(sessionId.toString());
-	}
-
-	private Long getMyOrder(Long eventId, String sessionId) {
-		return bookingQueueManager.getRank(eventId, sessionId)
-			.orElseThrow(() -> new BookingException(BookingErrorCode.NOT_IN_QUEUE));
 	}
 }
