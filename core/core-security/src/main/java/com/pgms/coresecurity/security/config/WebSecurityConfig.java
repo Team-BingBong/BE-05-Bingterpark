@@ -93,8 +93,12 @@ public class WebSecurityConfig {
 			antMatcher(GET, "/api/*/events/*/seat-area"),    // 공연 좌석 구역 목록 조회
 
 			// DOCS
-			antMatcher("/v3/api-docs/**"),
-			antMatcher("/swagger-ui/**")
+			antMatcher("/swagger-ui/**"),
+			antMatcher("/swagger-ui"),
+			antMatcher("/swagger-ui.html"),
+			antMatcher("/v2/api-docs"),
+			antMatcher("/v3/api-docs"),
+			antMatcher("/webjars/**")
 		);
 		return requestMatchers.toArray(RequestMatcher[]::new);
 	}
@@ -217,13 +221,13 @@ public class WebSecurityConfig {
 		configureCommonSecuritySettings(http);
 		http
 			.authorizeHttpRequests()
-			.anyRequest().authenticated()
-			.and()
-			.addFilterAfter(jwtAuthenticationFilter, ExceptionTranslationFilter.class)
-			.exceptionHandling(exception -> {
-				exception.authenticationEntryPoint(jwtAuthenticationEntryPoint);
-				exception.accessDeniedHandler(jwtAccessDeniedHandler);
-			});
+			.anyRequest().permitAll();
+		// .and()
+		// .addFilterAfter(jwtAuthenticationFilter, ExceptionTranslationFilter.class)
+		// .exceptionHandling(exception -> {
+		// 	exception.authenticationEntryPoint(jwtAuthenticationEntryPoint);
+		// 	exception.accessDeniedHandler(jwtAccessDeniedHandler);
+		// });
 		return http.build();
 	}
 
