@@ -4,6 +4,7 @@ services:
   mysql:
     image: mysql:latest
     container_name: bingterpark
+    restart: always
     environment:
       MYSQL_ROOT_PASSWORD: root1234!
       MYSQL_DATABASE: bingterpark

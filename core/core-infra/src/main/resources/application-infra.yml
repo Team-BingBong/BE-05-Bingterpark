@@ -30,7 +30,7 @@ spring:
       on-profile: prod
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3307/bingterpark?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    url: jdbc:mysql://localhost:3307/bingterpark?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul&characterEncoding=UTF-8c:mysql://localhost:3307/bingterpark?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
     username: root
     password: root1234!
   jpa:
@@ -42,3 +42,7 @@ spring:
   sql:
     init:
       mode: never
+
+logging:
+  level:
+    org.hibernate.SQL: INFO
