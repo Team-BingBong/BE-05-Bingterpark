@@ -34,8 +34,9 @@ public class BookingQueueService {
 	}
 
 	public OrderInQueueGetResponse getOrderInQueue(Long eventId, String sessionId) {
-		Long myOrder = getMyOrder(eventId, sessionId);
-		Boolean isMyTurn = isMyTurn(eventId, sessionId);
+		Long order = getOrder(eventId, sessionId);
+		Long myOrder = order <= ENTRY_LIMIT ? 0 : order - ENTRY_LIMIT;
+		Boolean isMyTurn = isReadyToEnter(eventId, sessionId);
 
 		double currentTimeSeconds = System.currentTimeMillis() / MILLISECONDS_PER_SECOND;
 		double timeLimitSeconds = currentTimeSeconds - TIMEOUT_SECONDS;
@@ -45,7 +46,7 @@ public class BookingQueueService {
 	}
 
 	public TokenIssueResponse issueToken(TokenIssueRequest request, String sessionId) {
-		if (!isMyTurn(request.eventId(), sessionId)) {
+		if (!isReadyToEnter(request.eventId(), sessionId)) {
 			throw new BookingException(BookingErrorCode.OUT_OF_ORDER);
 		}
 
@@ -55,18 +56,14 @@ public class BookingQueueService {
 		return TokenIssueResponse.from(token);
 	}
 
-	private Long getMyOrder(Long eventId, String sessionId) {
+	private Long getOrder(Long eventId, String sessionId) {
 		return bookingQueueManager.getRank(eventId, sessionId)
 			.orElseThrow(() -> new BookingException(BookingErrorCode.NOT_IN_QUEUE));
 	}
 
-	public Long getEntryLimit() {
-		return ENTRY_LIMIT;
-	}
-
-	private Boolean isMyTurn(Long eventId, String sessionId) {
-		Long myOrder = getMyOrder(eventId, sessionId);
-		Long entryLimit = getEntryLimit();
+	private Boolean isReadyToEnter(Long eventId, String sessionId) {
+		Long myOrder = getOrder(eventId, sessionId);
+		Long entryLimit = ENTRY_LIMIT;
 		return myOrder <= entryLimit;
 	}
 
