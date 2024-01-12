@@ -1,5 +1,5 @@
 -- EventHall
-INSERT INTO event_hall (event_name, address)
+INSERT INTO event_hall (name, address)
 VALUES ('고척스카이돔', '서울 구로구 경인로 430');
 
 -- Event
@@ -95,7 +95,8 @@ INSERT INTO payment (booking_id,
                      approved_at,
                      created_at,
                      updated_at)
-VALUES ('bookingTestId', 180000, 'CARD', 'HYUNDAI', '11111111****111*', 0, false, 'paymentkey', 'CANCELED', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+VALUES ('bookingTestId', 180000, 'CARD', 'HYUNDAI', '11111111****111*', 0, false, 'paymentkey', 'CANCELED',
+        CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 -- Booking Cancel
 INSERT INTO booking_cancel (booking_id, amount, reason, created_by, created_at, updated_at)
