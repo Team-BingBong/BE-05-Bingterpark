@@ -1,10 +1,10 @@
 CREATE TABLE admin
 (
-    id                       BIGINT AUTO_INCREMENT PRIMARY KEY,
-    created_at               TIMESTAMP(6),
-    updated_at               TIMESTAMP(6),
-    last_login_at            TIMESTAMP(6) NOT NULL,
-    last_password_updated_at TIMESTAMP(6) NOT NULL,
+    id                       BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    created_at               DATETIME,
+    updated_at               DATETIME,
+    last_login_at            DATETIME     NOT NULL,
+    last_password_updated_at DATETIME     NOT NULL,
     email                    VARCHAR(50)  NOT NULL,
     name                     VARCHAR(20)  NOT NULL,
     password                 VARCHAR(100) NOT NULL,
@@ -15,21 +15,21 @@ CREATE TABLE admin
 
 CREATE TABLE member
 (
-    id                       BIGINT AUTO_INCREMENT PRIMARY KEY,
-    created_at               TIMESTAMP(6),
-    updated_at               TIMESTAMP(6),
-    last_login_at            TIMESTAMP(6) NOT NULL,
-    last_password_updated_at TIMESTAMP(6) NOT NULL,
+    id                       BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    created_at               DATETIME,
+    updated_at               DATETIME,
+    last_login_at            DATETIME    NOT NULL,
+    last_password_updated_at DATETIME    NOT NULL,
     birth_date               DATE,
     detail_address           VARCHAR(50),
-    email                    VARCHAR(50)  NOT NULL,
+    email                    VARCHAR(50) NOT NULL,
     gender                   VARCHAR(10),
-    name                     VARCHAR(20)  NOT NULL,
+    name                     VARCHAR(20) NOT NULL,
     password                 VARCHAR(100),
     phone_number             VARCHAR(20),
     provider                 VARCHAR(10),
     role                     VARCHAR(20),
-    status                   VARCHAR(10)  NOT NULL,
+    status                   VARCHAR(10) NOT NULL,
     street_address           VARCHAR(50),
     zip_code                 VARCHAR(5)
 );
