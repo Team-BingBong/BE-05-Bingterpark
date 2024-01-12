@@ -1,6 +1,7 @@
 package com.pgms.apibooking.fake;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import com.pgms.apibooking.domain.payment.dto.request.PaymentCancelRequest;
@@ -25,7 +26,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class TossPaymentServiceFake implements TossPaymentService {
 
-	private static final LocalDateTime NOW = LocalDateTime.now();
+	OffsetDateTime NOW = OffsetDateTime.now();
+	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXXX");
 
 	private final BookingRepository bookingRepository;
 	private final PaymentRepository paymentRepository;
@@ -44,8 +46,8 @@ public class TossPaymentServiceFake implements TossPaymentService {
 					booking.getPayment().getMethod().getDescription(),
 					request.amount(),
 					PaymentStatus.DONE.name(),
-					NOW.toString(),
-					NOW.toString(),
+					NOW.format(formatter),
+					NOW.format(formatter),
 					new PaymentCardResponse(
 						"61",
 						"12341234****123*",
@@ -63,8 +65,8 @@ public class TossPaymentServiceFake implements TossPaymentService {
 					booking.getPayment().getMethod().getDescription(),
 					request.amount(),
 					PaymentStatus.DONE.name(),
-					NOW.toString(),
-					NOW.toString(),
+					NOW.format(formatter),
+					NOW.format(formatter),
 					null,
 					new PaymentVirtualResponse(
 						"X6505636518308",
