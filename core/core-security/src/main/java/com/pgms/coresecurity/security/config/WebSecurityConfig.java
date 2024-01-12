@@ -221,13 +221,13 @@ public class WebSecurityConfig {
 		configureCommonSecuritySettings(http);
 		http
 			.authorizeHttpRequests()
-			.anyRequest().permitAll()
-			.and()
-			.addFilterAfter(jwtAuthenticationFilter, ExceptionTranslationFilter.class)
-			.exceptionHandling(exception -> {
-				exception.authenticationEntryPoint(jwtAuthenticationEntryPoint);
-				exception.accessDeniedHandler(jwtAccessDeniedHandler);
-			});
+			.anyRequest().permitAll();
+		// .and()
+		// .addFilterAfter(jwtAuthenticationFilter, ExceptionTranslationFilter.class)
+		// .exceptionHandling(exception -> {
+		// 	exception.authenticationEntryPoint(jwtAuthenticationEntryPoint);
+		// 	exception.accessDeniedHandler(jwtAccessDeniedHandler);
+		// });
 		return http.build();
 	}
 
