@@ -22,9 +22,9 @@ import com.pgms.apibooking.domain.booking.dto.request.BookingCancelRequest;
 import com.pgms.apibooking.domain.booking.dto.request.BookingCreateRequest;
 import com.pgms.apibooking.domain.booking.dto.response.BookingCreateResponse;
 import com.pgms.apibooking.domain.booking.service.BookingService;
-import com.pgms.apibooking.domain.bookingqueue.repository.BookingQueueRepository;
+import com.pgms.apibooking.domain.bookingqueue.service.BookingQueueManager;
 import com.pgms.apibooking.domain.payment.dto.request.RefundAccountRequest;
-import com.pgms.apibooking.domain.seat.service.SeatLockService;
+import com.pgms.apibooking.domain.seat.service.SeatLockManager;
 import com.pgms.apibooking.factory.BookingFactory;
 import com.pgms.apibooking.factory.EventFactory;
 import com.pgms.apibooking.factory.EventHallFactory;
@@ -92,10 +92,10 @@ class BookingServiceTest {
 	private MemberRepository memberRepository;
 
 	@MockBean
-	private BookingQueueRepository bookingQueueRepository;
+	private BookingQueueManager bookingQueueManager;
 
 	@MockBean
-	private SeatLockService seatLockService;
+	private SeatLockManager seatLockManager;
 
 	private Member member;
 
@@ -161,8 +161,8 @@ class BookingServiceTest {
 			Optional.empty()
 		);
 
-		given(seatLockService.getSelectorId(any(Long.class))).willReturn(member.getId());
-		doNothing().when(bookingQueueRepository).remove(any(Long.class), any(String.class));
+		given(seatLockManager.getSelectorId(any(Long.class))).willReturn(Optional.of(member.getId()));
+		doNothing().when(bookingQueueManager).remove(any(Long.class), any(String.class));
 
 		// when
 		BookingCreateResponse response = bookingService.createBooking(request, member.getId(), SESSION_ID);
@@ -242,8 +242,8 @@ class BookingServiceTest {
 			Optional.empty()
 		);
 
-		given(seatLockService.getSelectorId(seat1.getId())).willReturn(null);
-		given(seatLockService.getSelectorId(seat2.getId())).willReturn(member.getId() + 1);
+		given(seatLockManager.getSelectorId(seat1.getId())).willReturn(Optional.empty());
+		given(seatLockManager.getSelectorId(seat2.getId())).willReturn(Optional.of(member.getId() + 1));
 
 		// when & then
 		assertThatThrownBy(() -> bookingService.createBooking(request, member.getId(), SESSION_ID))
@@ -295,7 +295,7 @@ class BookingServiceTest {
 			Optional.empty()
 		);
 
-		given(seatLockService.getSelectorId(seat.getId())).willReturn(member.getId());
+		given(seatLockManager.getSelectorId(seat.getId())).willReturn(Optional.of(member.getId()));
 
 		// when & then
 		assertThatThrownBy(() -> bookingService.createBooking(request, member.getId(), SESSION_ID))
@@ -349,7 +349,7 @@ class BookingServiceTest {
 			Optional.empty()
 		);
 
-		given(seatLockService.getSelectorId(seat.getId())).willReturn(member.getId());
+		given(seatLockManager.getSelectorId(seat.getId())).willReturn(Optional.of(member.getId()));
 
 		// when & then
 		assertThatThrownBy(() -> bookingService.createBooking(request, member.getId(), SESSION_ID))
@@ -401,7 +401,7 @@ class BookingServiceTest {
 			Optional.empty()
 		);
 
-		given(seatLockService.getSelectorId(seat.getId())).willReturn(member.getId());
+		given(seatLockManager.getSelectorId(seat.getId())).willReturn(Optional.of(member.getId()));
 
 		// when & then
 		assertThatThrownBy(() -> bookingService.createBooking(request, member.getId(), SESSION_ID))
@@ -453,7 +453,7 @@ class BookingServiceTest {
 			Optional.empty()
 		);
 
-		given(seatLockService.getSelectorId(seat.getId())).willReturn(member.getId());
+		given(seatLockManager.getSelectorId(seat.getId())).willReturn(Optional.of(member.getId()));
 
 		// when & then
 		assertThatThrownBy(() -> bookingService.createBooking(request, member.getId(), SESSION_ID))

@@ -21,8 +21,10 @@ import lombok.RequiredArgsConstructor;
 @Transactional
 public class SeatService { //TODO: 테스트 코드 작성
 
+	private final static int SEAT_LOCK_CACHE_EXPIRE_SECONDS = 420;
+
 	private final EventSeatRepository eventSeatRepository;
-	private final SeatLockService seatLockService;
+	private final SeatLockManager seatLockManager;
 
 	@Transactional(readOnly = true)
 	public List<AreaResponse> getSeats(SeatsGetRequest request) {
@@ -34,14 +36,13 @@ public class SeatService { //TODO: 테스트 코드 작성
 	}
 
 	public void selectSeat(Long seatId, Long memberId) {
-		if (seatLockService.isSeatLocked(seatId)) {
-			Long selectorId = seatLockService.getSelectorId(seatId);
+		Long selectorId = seatLockManager.getSelectorId(seatId).orElse(null);
 
-			if (selectorId != null && selectorId.equals(memberId)) {
+		if (selectorId != null) {
+			if (selectorId.equals(memberId)) {
 				return;
 			}
-
-			throw new BookingException(BookingErrorCode.SEAT_SELECTED_BY_ANOTHER_MEMBER);
+			throw new BookingException(BookingErrorCode.SEAT_HELD_BY_ANOTHER_MEMBER);
 		}
 
 		EventSeat seat = getSeat(seatId);
@@ -50,12 +51,12 @@ public class SeatService { //TODO: 테스트 코드 작성
 			throw new BookingException(BookingErrorCode.SEAT_ALREADY_BOOKED);
 		}
 
-		seat.updateStatus(EventSeatStatus.SELECTED);
-		seatLockService.lockSeat(seatId, memberId);
+		seat.updateStatus(EventSeatStatus.HOLDING);
+		seatLockManager.lockSeat(seatId, memberId, SEAT_LOCK_CACHE_EXPIRE_SECONDS);
 	}
 
 	public void deselectSeat(Long seatId, Long memberId) {
-		Long selectorId = seatLockService.getSelectorId(seatId);
+		Long selectorId = seatLockManager.getSelectorId(seatId).orElse(null);
 
 		if (selectorId == null) {
 			updateSeatStatusToAvailable(seatId);
@@ -63,7 +64,7 @@ public class SeatService { //TODO: 테스트 코드 작성
 		}
 
 		if (!selectorId.equals(memberId)) {
-			throw new BookingException(BookingErrorCode.SEAT_SELECTED_BY_ANOTHER_MEMBER);
+			throw new BookingException(BookingErrorCode.SEAT_HELD_BY_ANOTHER_MEMBER);
 		}
 
 		EventSeat seat = getSeat(seatId);
@@ -73,7 +74,7 @@ public class SeatService { //TODO: 테스트 코드 작성
 		}
 
 		seat.updateStatus(EventSeatStatus.AVAILABLE);
-		seatLockService.unlockSeat(seatId);
+		seatLockManager.unlockSeat(seatId);
 	}
 
 	private EventSeat getSeat(Long seatId) {
