@@ -37,18 +37,18 @@ CREATE TABLE member
 CREATE TABLE event
 (
     id                 BIGINT AUTO_INCREMENT PRIMARY KEY, -- 공연 id
-    created_at         TIMESTAMP(6),
-    updated_at         TIMESTAMP(6),
+    created_at         DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at         DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     average_score      FLOAT(53),                         -- 공연 평점 평균
-    booking_ended_at   TIMESTAMP(6),                      -- 예매 시작일
-    booking_started_at TIMESTAMP(6),                      -- 예매 종료일
+    booking_ended_at   DATETIME,                          -- 예매 시작일
+    booking_started_at DATETIME,                          -- 예매 종료일
     description        TEXT,                              -- 공연 상세 설명
-    ended_at           TIMESTAMP(6),                      -- 공연 종료일
+    ended_at           DATETIME,                          -- 공연 종료일
     genre              VARCHAR(50),                       -- 장르
-    running_time       INT,                               -- 상영 시간
-    started_at         TIMESTAMP(6),                      -- 공연 시작일
+    running_time       INT UNSIGNED,                      -- 상영 시간
+    started_at         DATETIME,                          -- 공연 시작일
     thumbnail          TEXT,                              -- 공연 썸네일
-    title              VARCHAR(100),                      -- 공연 제목
+    title              VARCHAR(100) NOT NULL,             -- 공연 제목
     rating             VARCHAR(50),                       -- 관람 등급
     event_hall_id      BIGINT
 );
@@ -56,8 +56,8 @@ CREATE TABLE event
 CREATE TABLE event_hall
 (
     id         BIGINT AUTO_INCREMENT PRIMARY KEY, -- 공연장 id
-    created_at TIMESTAMP(6),
-    updated_at TIMESTAMP(6),
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     address    VARCHAR(255),                      -- 공연장 주소
     name       VARCHAR(50)                        -- 공연장 이름
 );
@@ -65,8 +65,8 @@ CREATE TABLE event_hall
 CREATE TABLE event_hall_seat
 (
     id           BIGINT AUTO_INCREMENT PRIMARY KEY, -- 공연장 좌석 id
-    created_at   TIMESTAMP(6),
-    updated_at   TIMESTAMP(6),
+    created_at   DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at   DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     name         VARCHAR(20),                       -- 공연장 좌석 이름
     eventhall_id BIGINT,
     FOREIGN KEY (eventhall_id) REFERENCES event_hall (id)
@@ -75,31 +75,28 @@ CREATE TABLE event_hall_seat
 CREATE TABLE event_image
 (
     id         BIGINT AUTO_INCREMENT PRIMARY KEY, -- 공연 이미지 id
-    created_at TIMESTAMP(6),
-    updated_at TIMESTAMP(6),
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     url        TEXT,                              -- 이미지 url
-    event_id   BIGINT,
-    FOREIGN KEY (event_id) REFERENCES event (id)
+    event_id   BIGINT
 );
 
 CREATE TABLE event_review
 (
     id         BIGINT AUTO_INCREMENT PRIMARY KEY, -- 공연 후기 id
-    created_at TIMESTAMP(6),
-    updated_at TIMESTAMP(6),
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     content    TEXT,                              -- 공연 후기 내용
-    score      INT,                               -- 공연 후기 점수
+    score      INT UNSIGNED,                      -- 공연 후기 점수
     event_id   BIGINT,
-    member_id  BIGINT,
-    FOREIGN KEY (event_id) REFERENCES event (id),
-    FOREIGN KEY (member_id) REFERENCES member (id)
+    member_id  BIGINT
 );
 
 CREATE TABLE event_seat
 (
     id                 BIGINT AUTO_INCREMENT PRIMARY KEY, -- 공연 좌석 id
-    created_at         TIMESTAMP(6),
-    updated_at         TIMESTAMP(6),
+    created_at         DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at         DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     name               VARCHAR(20),                       -- 좌석 이름
     status             VARCHAR(50),                       -- 좌석 상태
     event_seat_area_id BIGINT,
@@ -109,24 +106,22 @@ CREATE TABLE event_seat
 CREATE TABLE event_seat_area
 (
     id         BIGINT AUTO_INCREMENT PRIMARY KEY, -- 공연 좌석 구역 id
-    created_at TIMESTAMP(6),
-    updated_at TIMESTAMP(6),
-    price      INT,                               -- 구역별 가격
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    price      INT UNSIGNED,                      -- 구역별 가격
     area_type  VARCHAR(50),                       -- 구역 타입
-    event_id   BIGINT,
-    FOREIGN KEY (event_id) REFERENCES event (id)
+    event_id   BIGINT
 );
 
 CREATE TABLE event_time
 (
     id         BIGINT AUTO_INCREMENT PRIMARY KEY, -- 공연 회차 id
-    created_at TIMESTAMP(6),
-    updated_at TIMESTAMP(6),
-    ended_at   TIMESTAMP(6),                      -- 회차 종료 시간
-    round      INT,                               -- 회차
-    started_at TIMESTAMP(6),                      -- 회차 시작 시간
-    event_id   BIGINT,
-    FOREIGN KEY (event_id) REFERENCES event (id)
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    ended_at   DATETIME,                          -- 회차 종료 시간
+    round      INT UNSIGNED,                      -- 회차
+    started_at DATETIME,                          -- 회차 시작 시간
+    event_id   BIGINT
 );
 
 -- 예매
