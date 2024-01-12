@@ -1,15 +1,15 @@
-package com.pgms.apibooking.domain.bookingqueue.repository;
+package com.pgms.apibooking.domain.bookingqueue.service;
 
 import java.util.Optional;
 
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
 
-@Repository
+@Component
 @RequiredArgsConstructor
-public class BookingQueueRepository {
+public class BookingQueueManager {
 
 	private final RedisTemplate<String, String> redisTemplate;
 

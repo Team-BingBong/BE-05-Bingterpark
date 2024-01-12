@@ -13,7 +13,6 @@ import com.pgms.apibooking.domain.bookingqueue.dto.request.TokenIssueRequest;
 import com.pgms.apibooking.domain.bookingqueue.dto.response.OrderInQueueGetResponse;
 import com.pgms.apibooking.domain.bookingqueue.dto.response.SessionIdIssueResponse;
 import com.pgms.apibooking.domain.bookingqueue.dto.response.TokenIssueResponse;
-import com.pgms.apibooking.domain.bookingqueue.repository.BookingQueueRepository;
 import com.pgms.coredomain.domain.common.BookingErrorCode;
 
 import lombok.RequiredArgsConstructor;
@@ -22,12 +21,12 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class BookingQueueService {
 
-	private final BookingQueueRepository bookingQueueRepository;
+	private final BookingQueueManager bookingQueueManager;
 	private final BookingJwtProvider bookingJwtProvider;
 
 	public void enterQueue(BookingQueueEnterRequest request, String sessionId) {
 		double currentTimeSeconds = System.currentTimeMillis() / 1000.0;
-		bookingQueueRepository.add(request.eventId(), sessionId, currentTimeSeconds);
+		bookingQueueManager.add(request.eventId(), sessionId, currentTimeSeconds);
 	}
 
 	public OrderInQueueGetResponse getOrderInQueue(Long eventId, String sessionId) {
@@ -36,7 +35,7 @@ public class BookingQueueService {
 
 		double currentTimeSeconds = System.currentTimeMillis() / 1000.0;
 		double timeLimitSeconds = currentTimeSeconds - (7 * 60);
-		bookingQueueRepository.removeRangeByScore(eventId, 0, timeLimitSeconds);
+		bookingQueueManager.removeRangeByScore(eventId, 0, timeLimitSeconds);
 
 		return OrderInQueueGetResponse.of(myOrder, isMyTurn);
 	}
@@ -54,12 +53,12 @@ public class BookingQueueService {
 
 	private Boolean isMyTurn(Long eventId, String sessionId) {
 		Long myOrder = getMyOrder(eventId, sessionId);
-		Long entryLimit = bookingQueueRepository.getEntryLimit();
+		Long entryLimit = bookingQueueManager.getEntryLimit();
 		return myOrder <= entryLimit;
 	}
 
 	public void exitQueue(BookingQueueExitRequest request, String sessionId) {
-		bookingQueueRepository.remove(request.eventId(), sessionId);
+		bookingQueueManager.remove(request.eventId(), sessionId);
 	}
 
 	public SessionIdIssueResponse issueSessionId() {
@@ -68,7 +67,7 @@ public class BookingQueueService {
 	}
 
 	private Long getMyOrder(Long eventId, String sessionId) {
-		return bookingQueueRepository.getRank(eventId, sessionId)
+		return bookingQueueManager.getRank(eventId, sessionId)
 			.orElseThrow(() -> new BookingException(BookingErrorCode.NOT_IN_QUEUE));
 	}
 }

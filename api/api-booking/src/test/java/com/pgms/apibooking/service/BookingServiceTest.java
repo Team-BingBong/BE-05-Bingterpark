@@ -22,7 +22,7 @@ import com.pgms.apibooking.domain.booking.dto.request.BookingCancelRequest;
 import com.pgms.apibooking.domain.booking.dto.request.BookingCreateRequest;
 import com.pgms.apibooking.domain.booking.dto.response.BookingCreateResponse;
 import com.pgms.apibooking.domain.booking.service.BookingService;
-import com.pgms.apibooking.domain.bookingqueue.repository.BookingQueueRepository;
+import com.pgms.apibooking.domain.bookingqueue.service.BookingQueueManager;
 import com.pgms.apibooking.domain.payment.dto.request.RefundAccountRequest;
 import com.pgms.apibooking.domain.seat.service.SeatLockManager;
 import com.pgms.apibooking.factory.BookingFactory;
@@ -92,7 +92,7 @@ class BookingServiceTest {
 	private MemberRepository memberRepository;
 
 	@MockBean
-	private BookingQueueRepository bookingQueueRepository;
+	private BookingQueueManager bookingQueueManager;
 
 	@MockBean
 	private SeatLockManager seatLockManager;
@@ -162,7 +162,7 @@ class BookingServiceTest {
 		);
 
 		given(seatLockManager.getSelectorId(any(Long.class))).willReturn(member.getId());
-		doNothing().when(bookingQueueRepository).remove(any(Long.class), any(String.class));
+		doNothing().when(bookingQueueManager).remove(any(Long.class), any(String.class));
 
 		// when
 		BookingCreateResponse response = bookingService.createBooking(request, member.getId(), SESSION_ID);
