@@ -211,13 +211,11 @@ Booking-Authorization: Bearer {{bookingToken}}
 
 ### 좌석 선택
 POST http://localhost:8082/api/v1/seats/1/select
-Content-Type: application/json
 Authorization: Bearer {{accessToken}}
 Booking-Authorization: Bearer {{bookingToken}}
 
 ### 좌석 선택 해제
 POST http://localhost:8082/api/v1/seats/1/deselect
-Content-Type: application/json
 Authorization: Bearer {{accessToken}}
 Booking-Authorization: Bearer {{bookingToken}}
 
