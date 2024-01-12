@@ -1,5 +1,5 @@
 -- EventHall
-INSERT INTO event_hall (event_name, address)
+INSERT INTO event_hall (name, address)
 VALUES ('고척스카이돔', '서울 구로구 경인로 430');
 
 -- Event

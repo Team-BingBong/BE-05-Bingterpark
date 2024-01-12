@@ -31,6 +31,16 @@ public class BookingCancel extends BaseEntity {
     @JoinColumn(name = "booking_id", nullable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private Booking booking;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "refund_ bank_code")
+    private BankCode refundBankCode;
+
+    @Column(name = "refund_ account_number")
+    private String refundAccountNumber;
+
+    @Column(name = "refund_ holder_name")
+    private String refundHolderName;
+
     @Builder
     public BookingCancel(String reason, int amount, String createdBy, Booking booking) {
         this.reason = reason;
@@ -41,5 +51,11 @@ public class BookingCancel extends BaseEntity {
 
     public void updateBooking(Booking booking) {
         this.booking = booking;
+    }
+
+    public void updateRefundInfo(String refundBankCode, String refundAccountNumber, String refundHolderName) {
+        this.refundBankCode = BankCode.getByBankNumCode(refundBankCode);
+        this.refundAccountNumber = refundAccountNumber;
+        this.refundHolderName = refundHolderName;
     }
 }
