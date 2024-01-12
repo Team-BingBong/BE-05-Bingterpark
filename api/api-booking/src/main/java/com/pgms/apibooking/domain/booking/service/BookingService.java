@@ -230,14 +230,14 @@ public class BookingService { //TODO: 테스트 코드 작성
 	}
 
 	public Integer calculateRefundAmount(Booking booking) {
+		Payment payment = booking.getPayment();
 		if (booking.isPaid())
 			return booking.getAmount();
-
-		Payment payment = booking.getPayment();
-		return (payment.getMethod() == PaymentMethod.VIRTUAL_ACCOUNT &&
+		else if (payment.getMethod() == PaymentMethod.VIRTUAL_ACCOUNT &&
 			payment.getStatus() == PaymentStatus.WAITING_FOR_DEPOSIT)
-			? null
-			: 0;
+			return null;
+		else
+			throw new BookingException(BookingErrorCode.UNCANCELABLE_BOOKING);
 	}
 
 	private Member getMemberById(Long memberId) {

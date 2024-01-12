@@ -76,7 +76,7 @@ public class PaymentService {
 		return response;
 	}
 
-	public PaymentFailResponse failPayment(String errorCode, String errorMessage, String bookingId) {//TODO : booking 상태값 변경
+	public PaymentFailResponse failPayment(String errorCode, String errorMessage, String bookingId) {
 		Payment payment = getPaymentByBookingId(bookingId);
 		payment.updateStatus(PaymentStatus.ABORTED);
 		payment.updateFailedMsg(errorMessage);
@@ -108,9 +108,8 @@ public class PaymentService {
 	}
 
 	private Booking getBookingById(String bookingId) {
-		Booking booking = bookingRepository.findWithPaymentById(bookingId)
+		return bookingRepository.findWithPaymentById(bookingId)
 			.orElseThrow(() -> new BookingException(BookingErrorCode.BOOKING_NOT_FOUND));
-		return booking;
 	}
 
 	private Payment getPaymentByPaymentKey(String paymentKey) {

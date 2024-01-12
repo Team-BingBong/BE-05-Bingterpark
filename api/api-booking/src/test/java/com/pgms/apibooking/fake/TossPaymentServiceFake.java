@@ -72,7 +72,7 @@ public class TossPaymentServiceFake implements TossPaymentService {
 						"X6505636518308",
 						"20",
 						"박토스",
-						NOW.plusDays(7).toString()
+						NOW.plusDays(7).format(formatter)
 					)
 				);
 			}

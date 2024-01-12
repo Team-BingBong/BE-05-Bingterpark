@@ -583,7 +583,7 @@ class BookingServiceTest {
 	}
 
 	@Test
-	void 결제_수단이_가상게좌인데_환불계좌정보가_없다면_예매를_취소할_수_없다() {
+	void 결제_수단이_가상계좌이고_입금되었는데_환불계좌정보가_없다면_예매를_취소할_수_없다() {
 		// given
 		LocalDateTime eventStartedAt = NOW.plusDays(2);
 		LocalDateTime eventEndedAt = NOW.plusDays(2).plusMinutes(120);
