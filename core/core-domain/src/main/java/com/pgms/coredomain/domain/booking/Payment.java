@@ -72,16 +72,6 @@ public class Payment extends BaseEntity {
 	@Column(name = "due_date")
 	private LocalDateTime dueDate;
 
-	@Enumerated(EnumType.STRING)
-	@Column(name = "refund_ bank_code")
-	private BankCode refundBankCode;
-
-	@Column(name = "refund_ account_number")
-	private String refundAccountNumber;
-
-	@Column(name = "refund_ holder_name")
-	private String refundHolderName;
-
 	@Column(name = "failed_msg")
 	private String failedMsg;
 
@@ -128,12 +118,6 @@ public class Payment extends BaseEntity {
 	public void updateConfirmInfo(String paymentKey, LocalDateTime requestedAt) {
 		this.paymentKey = paymentKey;
 		this.requestedAt = requestedAt;
-	}
-
-	public void updateRefundInfo(String refundBankCode, String refundAccountNumber, String refundHolderName) {
-		this.refundBankCode = BankCode.getByBankNumCode(refundBankCode);
-		this.refundAccountNumber = refundAccountNumber;
-		this.refundHolderName = refundHolderName;
 	}
 
 	public void updateStatus(PaymentStatus status) {
