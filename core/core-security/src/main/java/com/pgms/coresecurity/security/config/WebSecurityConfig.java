@@ -96,9 +96,14 @@ public class WebSecurityConfig {
 			antMatcher("/swagger-ui/**"),
 			antMatcher("/swagger-ui"),
 			antMatcher("/swagger-ui.html"),
-			antMatcher("/v2/api-docs"),
-			antMatcher("/v3/api-docs"),
-			antMatcher("/webjars/**")
+			antMatcher("/swagger/**"),
+			antMatcher("/swagger-resources/**"),
+			antMatcher("/v3/api-docs/**"),
+			antMatcher("/webjars/**"),
+
+			// H2-CONSOLE
+			antMatcher("/h2-console/**")
+
 		);
 		return requestMatchers.toArray(RequestMatcher[]::new);
 	}
@@ -238,8 +243,10 @@ public class WebSecurityConfig {
 			.formLogin().disable()
 			.httpBasic().disable()
 			.rememberMe().disable()
+			.headers().frameOptions().disable().and()
 			.logout().disable()
 			.sessionManagement()
 			.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+
 	}
 }
