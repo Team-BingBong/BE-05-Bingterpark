@@ -43,7 +43,7 @@ public class SeatService { //TODO: 테스트 코드 작성
 		}
 
 		if (selectorId != null) {
-			throw new BookingException(BookingErrorCode.SEAT_SELECTED_BY_ANOTHER_MEMBER);
+			throw new BookingException(BookingErrorCode.SEAT_HELD_BY_ANOTHER_MEMBER);
 		}
 
 		EventSeat seat = getSeat(seatId);
@@ -52,7 +52,7 @@ public class SeatService { //TODO: 테스트 코드 작성
 			throw new BookingException(BookingErrorCode.SEAT_ALREADY_BOOKED);
 		}
 
-		seat.updateStatus(EventSeatStatus.SELECTED);
+		seat.updateStatus(EventSeatStatus.HOLDING);
 		seatLockManager.lockSeat(seatId, memberId, SEAT_LOCK_CACHE_EXPIRE_SECONDS);
 	}
 
@@ -65,7 +65,7 @@ public class SeatService { //TODO: 테스트 코드 작성
 		}
 
 		if (!selectorId.equals(memberId)) {
-			throw new BookingException(BookingErrorCode.SEAT_SELECTED_BY_ANOTHER_MEMBER);
+			throw new BookingException(BookingErrorCode.SEAT_HELD_BY_ANOTHER_MEMBER);
 		}
 
 		EventSeat seat = getSeat(seatId);

@@ -181,12 +181,7 @@ public class BookingService { //TODO: 테스트 코드 작성
 	}
 
 	private List<EventSeat> getBookableSeatsWithArea(Long timeId, List<Long> seatIds, Long memberId) {
-		seatIds.forEach(seatId -> {
-			Long selectorId = seatLockManager.getSelectorId(seatId).orElse(null);
-			if (selectorId == null || !selectorId.equals(memberId)) {
-				throw new BookingException(BookingErrorCode.UNBOOKABLE_SEAT_INCLUSION);
-			}
-		});
+		checkHeldSeats(seatIds, memberId);
 
 		List<EventSeat> seats = eventSeatRepository.findAllWithAreaByTimeIdAndSeatIds(timeId, seatIds);
 
@@ -199,6 +194,15 @@ public class BookingService { //TODO: 테스트 코드 작성
 		}
 
 		return seats;
+	}
+
+	private void checkHeldSeats(List<Long> seatIds, Long memberId) {
+		seatIds.forEach(seatId -> {
+			Long selectorId = seatLockManager.getSelectorId(seatId).orElse(null);
+			if (selectorId == null || !selectorId.equals(memberId)) {
+				throw new BookingException(BookingErrorCode.UNBOOKABLE_SEAT_INCLUSION);
+			}
+		});
 	}
 
 	private void validateDeliveryAddress(ReceiptType receiptType, Optional<DeliveryAddress> deliveryAddress) {

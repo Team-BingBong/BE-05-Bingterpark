@@ -14,8 +14,8 @@ public enum BookingErrorCode implements BaseErrorCode{
 	// seat
 	SEAT_NOT_FOUND(HttpStatus.BAD_REQUEST, "SEAT_NOT_FOUND", "존재하지 않는 좌석입니다."),
 	SEAT_ALREADY_BOOKED(HttpStatus.BAD_REQUEST, "SEAT_ALREADY_BOOKED", "예매된 좌석입니다."),
-	SEAT_SELECTED_BY_ANOTHER_MEMBER(HttpStatus.BAD_REQUEST, "SEAT_SELECTED_BY_ANOTHER_MEMBER", "예매중인 좌석입니다."),
-	SEAT_SELECTION_EXPIRED(HttpStatus.BAD_REQUEST, "SEAT_SELECTION_EXPIRED", "좌석 선택 시간이 만료되었습니다."),
+	SEAT_HELD_BY_ANOTHER_MEMBER(HttpStatus.BAD_REQUEST, "SEAT_HELD_BY_ANOTHER_MEMBER", "예매중인 좌석입니다."),
+	SEAT_HOLDING_EXPIRED(HttpStatus.BAD_REQUEST, "SEAT_HOLDING_EXPIRED", "좌석 선점 시간이 만료되었습니다."),
 
 	// booking
 	BOOKING_NOT_FOUND(HttpStatus.NOT_FOUND, "BOOKING_NOT_FOUND", "존재하지 않는 예매입니다."),

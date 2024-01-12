@@ -5,7 +5,7 @@ import lombok.Getter;
 @Getter
 public enum EventSeatStatus {
 	AVAILABLE("예매가능"),
-	SELECTED("예매중"),
+	HOLDING("예매중"),
 	BOOKED("예매완료");
 
 	private final String description;
