@@ -13,15 +13,19 @@ import com.pgms.apibooking.domain.payment.dto.response.PaymentFailResponse;
 import com.pgms.apibooking.domain.payment.service.PaymentService;
 import com.pgms.coredomain.response.ApiResponse;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/v1/payments")
 @RequiredArgsConstructor
+@Tag(name = "결제")
 public class PaymentController {
 
 	private final PaymentService paymentService;
 
+	@Operation(summary = "결제 성공 처리")
 	@GetMapping("/success")
 	public ResponseEntity<ApiResponse> confirmPaymentSuccess(
 		@RequestParam String paymentKey,
@@ -31,6 +35,7 @@ public class PaymentController {
 		return ResponseEntity.ok(ApiResponse.ok(paymentService.successPayment(paymentKey, bookingId, amount)));
 	}
 
+	@Operation(summary = "결제 실패 처리")
 	@GetMapping("/fail")
 	public ResponseEntity<ApiResponse> confirmPaymentFail(
 		@RequestParam(name = "code") String errorCode,
@@ -42,6 +47,7 @@ public class PaymentController {
 		return ResponseEntity.ok(response);
 	}
 
+	@Operation(summary = "가상계좌 입금 확인 웹훅")
 	@PostMapping("/virtual/income")
 	public ResponseEntity<Void> confirmVirtualAccountIncome(@RequestBody ConfirmVirtualIncomeRequest request) {
 		System.out.println(request.createdAt());
