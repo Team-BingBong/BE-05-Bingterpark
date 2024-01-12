@@ -9,6 +9,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import com.pgms.coredomain.domain.common.MemberErrorCode;
+import com.pgms.coredomain.domain.member.enums.Role;
 import com.pgms.coresecurity.security.exception.SecurityCustomException;
 
 @Component
@@ -31,10 +32,10 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
 	public Authentication authenticate(Authentication authentication) throws AuthenticationException {
 		String email = authentication.getName();
 		String password = authentication.getCredentials().toString();
-		String accountType = authentication.getDetails().toString();
+		Role accountType = (Role)authentication.getDetails();
 
 		UserDetailsImpl userDetails;
-		if (accountType.equals("member")) {
+		if (accountType.equals(Role.ROLE_USER)) {
 			userDetails = (UserDetailsImpl)memberUserDetailsService.loadUserByUsername(email);
 		} else {
 			userDetails = (UserDetailsImpl)adminUserDetailsService.loadUserByUsername(email);
