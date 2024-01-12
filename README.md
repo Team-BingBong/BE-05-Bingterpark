@@ -27,15 +27,15 @@
 
 ## 협업 링크
 
-🐘 [팀 페이지]()
+🐘 [팀 페이지](https://www.notion.so/backend-devcourse/2-BingterPark-4ecfb3943d9c4a8f9bb83f72876b6a80)
 
-📌 [코드 컨벤션]()
+📌 [코드 컨벤션](https://www.notion.so/backend-devcourse/0ebe193cfaeb45db9c9377fa6eb8d38a)
 
-👨‍💻 [기능 명세서]()
+👨‍💻 [기능 명세서](https://www.notion.so/backend-devcourse/915c54641e6d4bdca96524a178d860b6?v=18e598a3b9234189a69cef24d2abd985)
 
-🚀 [RBF]()
+🚀 [RBF(작성중)]()
 
-✨ [회고]()
+✨ [회고(작성중)]()
 
 <br/>
 
