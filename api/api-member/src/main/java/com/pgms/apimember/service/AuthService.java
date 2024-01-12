@@ -12,6 +12,7 @@ import com.pgms.apimember.dto.request.RefreshTokenRequest;
 import com.pgms.apimember.dto.response.AuthResponse;
 import com.pgms.apimember.exception.CustomException;
 import com.pgms.coredomain.domain.common.SecurityErrorCode;
+import com.pgms.coredomain.domain.member.enums.Role;
 import com.pgms.coredomain.domain.member.redis.RefreshToken;
 import com.pgms.coredomain.domain.member.redis.RefreshTokenRepository;
 import com.pgms.coresecurity.security.jwt.JwtTokenProvider;
@@ -32,7 +33,7 @@ public class AuthService {
 	private final AdminUserDetailsService adminUserDetailsService;
 	private final MemberUserDetailsService memberUserDetailsService;
 
-	public AuthResponse login(LoginRequest request, String accountType) {
+	public AuthResponse login(LoginRequest request, Role accountType) {
 		// 인증 전의 auth 객체
 		UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
 			request.email(),
@@ -49,7 +50,7 @@ public class AuthService {
 		String refreshToken = jwtTokenProvider.generateRefreshToken();
 
 		// redis에 토큰 정보 저장
-		refreshTokenRepository.save(new RefreshToken(refreshToken, accessToken, accountType,
+		refreshTokenRepository.save(new RefreshToken(refreshToken, accessToken, accountType.toString(),
 			((UserDetailsImpl)authenticated.getPrincipal()).getEmail()));
 		return new AuthResponse(accessToken, refreshToken);
 	}
@@ -74,7 +75,7 @@ public class AuthService {
 	}
 
 	private UserDetailsImpl loadUserDetails(String accountType, String email) {
-		if ("admin".equals(accountType)) {
+		if (accountType.equals(Role.ROLE_ADMIN.toString())) {
 			return (UserDetailsImpl)adminUserDetailsService.loadUserByUsername(email);
 		} else {
 			return (UserDetailsImpl)memberUserDetailsService.loadUserByUsername(email);
