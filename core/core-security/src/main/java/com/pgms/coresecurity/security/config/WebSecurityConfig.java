@@ -68,6 +68,8 @@ public class WebSecurityConfig {
 			// MEMBER
 			antMatcher("/api/*/auth/**"),
 			antMatcher("/api/*/members/signup"),
+			antMatcher("/api/*/members/send-restore-email"),
+			antMatcher("/api/*/members/confirm-restore"),
 
 			// BOOKING
 			antMatcher(GET, "/api/*/payments/**"),

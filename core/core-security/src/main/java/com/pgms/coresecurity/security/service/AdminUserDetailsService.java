@@ -24,8 +24,10 @@ public class AdminUserDetailsService implements UserDetailsService {
 	public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 		Admin admin = adminRepository.findByEmail(email)
 			.orElseThrow(() -> new SecurityCustomException(MemberErrorCode.ADMIN_NOT_FOUND));
-		if (admin.isNotActive())
+		if (admin.isLocked())
 			throw new SecurityCustomException(MemberErrorCode.NOT_ACTIVE_ADMIN);
+		if (admin.isDeleted())
+			throw new SecurityCustomException(MemberErrorCode.ADMIN_ALREADY_DELETED);
 		return UserDetailsImpl.from(admin);
 	}
 }
