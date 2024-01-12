@@ -96,9 +96,13 @@ public class WebSecurityConfig {
 			antMatcher("/swagger-ui/**"),
 			antMatcher("/swagger-ui"),
 			antMatcher("/swagger-ui.html"),
-			antMatcher("/v2/api-docs"),
-			antMatcher("/v3/api-docs"),
-			antMatcher("/webjars/**")
+			antMatcher("/swagger/**"),
+			antMatcher("/swagger-resources/**"),
+			antMatcher("/v3/api-docs/**"),
+			antMatcher("/webjars/**"),
+
+			// H2-CONSOLE
+			antMatcher("/h2-console/**")
 		);
 		return requestMatchers.toArray(RequestMatcher[]::new);
 	}
@@ -221,13 +225,13 @@ public class WebSecurityConfig {
 		configureCommonSecuritySettings(http);
 		http
 			.authorizeHttpRequests()
-			.anyRequest().permitAll();
-		// .and()
-		// .addFilterAfter(jwtAuthenticationFilter, ExceptionTranslationFilter.class)
-		// .exceptionHandling(exception -> {
-		// 	exception.authenticationEntryPoint(jwtAuthenticationEntryPoint);
-		// 	exception.accessDeniedHandler(jwtAccessDeniedHandler);
-		// });
+			.anyRequest().authenticated()
+			.and()
+			.addFilterAfter(jwtAuthenticationFilter, ExceptionTranslationFilter.class)
+			.exceptionHandling(exception -> {
+				exception.authenticationEntryPoint(jwtAuthenticationEntryPoint);
+				exception.accessDeniedHandler(jwtAccessDeniedHandler);
+			});
 		return http.build();
 	}
 
@@ -238,8 +242,10 @@ public class WebSecurityConfig {
 			.formLogin().disable()
 			.httpBasic().disable()
 			.rememberMe().disable()
+			.headers().frameOptions().disable().and()
 			.logout().disable()
 			.sessionManagement()
 			.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+
 	}
 }
