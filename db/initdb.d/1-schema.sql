@@ -5,12 +5,12 @@ CREATE TABLE admin
     updated_at               TIMESTAMP(6),
     last_login_at            TIMESTAMP(6) NOT NULL,
     last_password_updated_at TIMESTAMP(6) NOT NULL,
-    email                    VARCHAR(255) NOT NULL,
-    name                     VARCHAR(255) NOT NULL,
-    password                 VARCHAR(255) NOT NULL,
-    phone_number             VARCHAR(255) NOT NULL,
-    role                     VARCHAR(255),
-    status                   VARCHAR(255) NOT NULL
+    email                    VARCHAR(50)  NOT NULL,
+    name                     VARCHAR(20)  NOT NULL,
+    password                 VARCHAR(100) NOT NULL,
+    phone_number             VARCHAR(20)  NOT NULL,
+    role                     VARCHAR(20),
+    status                   VARCHAR(10)  NOT NULL
 );
 
 CREATE TABLE member
@@ -20,18 +20,18 @@ CREATE TABLE member
     updated_at               TIMESTAMP(6),
     last_login_at            TIMESTAMP(6) NOT NULL,
     last_password_updated_at TIMESTAMP(6) NOT NULL,
-    birth_date               VARCHAR(255),
-    detail_address           VARCHAR(255),
-    email                    VARCHAR(255) NOT NULL,
-    gender                   VARCHAR(255),
-    name                     VARCHAR(255) NOT NULL,
-    password                 VARCHAR(255),
-    phone_number             VARCHAR(255),
-    provider                 VARCHAR(255),
-    role                     VARCHAR(255),
-    status                   VARCHAR(255) NOT NULL,
-    street_address           VARCHAR(255),
-    zip_code                 VARCHAR(255)
+    birth_date               DATE,
+    detail_address           VARCHAR(50),
+    email                    VARCHAR(50)  NOT NULL,
+    gender                   VARCHAR(10),
+    name                     VARCHAR(20)  NOT NULL,
+    password                 VARCHAR(100),
+    phone_number             VARCHAR(20),
+    provider                 VARCHAR(10),
+    role                     VARCHAR(20),
+    status                   VARCHAR(10)  NOT NULL,
+    street_address           VARCHAR(50),
+    zip_code                 VARCHAR(5)
 );
 
 CREATE TABLE event
