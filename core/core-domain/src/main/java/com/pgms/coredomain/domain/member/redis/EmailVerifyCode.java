@@ -8,7 +8,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-@RedisHash(value = "emailVerifyCode", timeToLive = 30 * 5) // 5분
+@RedisHash(value = "emailVerifyCode", timeToLive = 60 * 5) // 5분
 public class EmailVerifyCode {
 	@Id
 	private String code;
