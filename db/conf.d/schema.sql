@@ -54,12 +54,12 @@ CREATE TABLE event
     booking_started_at TIMESTAMP(6),
     description        TEXT,
     ended_at           TIMESTAMP(6),
-    genre              VARCHAR(255),
+    genre              VARCHAR(50),
     running_time       INT,
     started_at         TIMESTAMP(6),
     thumbnail          TEXT,
-    title              VARCHAR(255),
-    rating             VARCHAR(255),
+    title              VARCHAR(100),
+    rating             VARCHAR(50), -- 12세 이상 관람가
     event_hall_id      BIGINT
 );
 
@@ -69,7 +69,7 @@ CREATE TABLE event_hall
     created_at TIMESTAMP(6),
     updated_at TIMESTAMP(6),
     address    VARCHAR(255),
-    event_name VARCHAR(255)
+    name       VARCHAR(50)
 );
 
 CREATE TABLE event_hall_seat
@@ -77,7 +77,7 @@ CREATE TABLE event_hall_seat
     id           BIGINT AUTO_INCREMENT PRIMARY KEY,
     created_at   TIMESTAMP(6),
     updated_at   TIMESTAMP(6),
-    name         VARCHAR(255),
+    name         VARCHAR(20),
     eventhall_id BIGINT,
     FOREIGN KEY (eventhall_id) REFERENCES event_hall (id)
 );
@@ -110,8 +110,8 @@ CREATE TABLE event_seat
     id                 BIGINT AUTO_INCREMENT PRIMARY KEY,
     created_at         TIMESTAMP(6),
     updated_at         TIMESTAMP(6),
-    name               VARCHAR(255),
-    status             VARCHAR(255),
+    name               VARCHAR(20),
+    status             VARCHAR(50),
     event_seat_area_id BIGINT,
     event_time_id      BIGINT
 );
@@ -122,7 +122,7 @@ CREATE TABLE event_seat_area
     created_at TIMESTAMP(6),
     updated_at TIMESTAMP(6),
     price      INT,
-    area_type  VARCHAR(255),
+    area_type  VARCHAR(50),
     event_id   BIGINT,
     FOREIGN KEY (event_id) REFERENCES event (id)
 );
