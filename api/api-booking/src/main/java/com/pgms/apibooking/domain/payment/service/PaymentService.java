@@ -3,26 +3,25 @@ package com.pgms.apibooking.domain.payment.service;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.pgms.apibooking.common.exception.BookingException;
+import com.pgms.apibooking.common.util.DateTimeUtil;
+import com.pgms.apibooking.domain.payment.dto.request.ConfirmVirtualIncomeRequest;
 import com.pgms.apibooking.domain.payment.dto.request.PaymentCancelRequest;
 import com.pgms.apibooking.domain.payment.dto.request.PaymentConfirmRequest;
 import com.pgms.apibooking.domain.payment.dto.response.PaymentCancelResponse;
-import com.pgms.apibooking.domain.payment.dto.response.PaymentSuccessResponse;
-import com.pgms.apibooking.domain.payment.dto.request.ConfirmVirtualIncomeRequest;
-import com.pgms.apibooking.domain.payment.dto.request.RefundAccountRequest;
 import com.pgms.apibooking.domain.payment.dto.response.PaymentCardResponse;
 import com.pgms.apibooking.domain.payment.dto.response.PaymentFailResponse;
+import com.pgms.apibooking.domain.payment.dto.response.PaymentSuccessResponse;
 import com.pgms.apibooking.domain.payment.dto.response.PaymentVirtualResponse;
-import com.pgms.coredomain.domain.booking.CardIssuer;
-import com.pgms.coredomain.domain.common.BookingErrorCode;
-import com.pgms.apibooking.common.exception.BookingException;
-import com.pgms.apibooking.common.util.DateTimeUtil;
 import com.pgms.coredomain.domain.booking.Booking;
 import com.pgms.coredomain.domain.booking.BookingStatus;
+import com.pgms.coredomain.domain.booking.CardIssuer;
 import com.pgms.coredomain.domain.booking.Payment;
 import com.pgms.coredomain.domain.booking.PaymentMethod;
 import com.pgms.coredomain.domain.booking.PaymentStatus;
 import com.pgms.coredomain.domain.booking.repository.BookingRepository;
 import com.pgms.coredomain.domain.booking.repository.PaymentRepository;
+import com.pgms.coredomain.domain.common.BookingErrorCode;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -87,14 +86,6 @@ public class PaymentService {
 	public PaymentCancelResponse cancelPayment(String paymentKey, PaymentCancelRequest request) {
 		Payment payment = getPaymentByPaymentKey(paymentKey);
 		PaymentCancelResponse response = tossPaymentServiceImpl.requestTossPaymentCancellation(paymentKey, request);
-		if (request.refundReceiveAccount().isPresent()) {
-			RefundAccountRequest refundAccountRequest = request.refundReceiveAccount().get();
-			payment.updateRefundInfo(
-				refundAccountRequest.bank(),
-				refundAccountRequest.accountNumber(),
-				refundAccountRequest.holderName()
-			);
-		}
 		Booking booking = payment.getBooking();
 		payment.updateStatus(PaymentStatus.valueOf(response.status()));
 		booking.updateStatus(BookingStatus.CANCELED);

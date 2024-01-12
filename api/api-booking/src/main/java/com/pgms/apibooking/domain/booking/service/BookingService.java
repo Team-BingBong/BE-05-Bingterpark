@@ -29,6 +29,7 @@ import com.pgms.apibooking.domain.payment.dto.request.RefundAccountRequest;
 import com.pgms.apibooking.domain.payment.service.PaymentService;
 import com.pgms.apibooking.domain.seat.service.SeatLockService;
 import com.pgms.coredomain.domain.booking.Booking;
+import com.pgms.coredomain.domain.booking.BookingCancel;
 import com.pgms.coredomain.domain.booking.Payment;
 import com.pgms.coredomain.domain.booking.PaymentMethod;
 import com.pgms.coredomain.domain.booking.PaymentStatus;
@@ -123,9 +124,16 @@ public class BookingService { //TODO: 테스트 코드 작성
 		);
 		cancelAmount = Objects.requireNonNullElse(cancelAmount, 0);
 
-		booking.cancel(
-			BookingCancelRequest.toEntity(request, cancelAmount, member.getEmail(), booking)
-		);
+		BookingCancel bookingCancel = BookingCancelRequest.toEntity(request, cancelAmount, member.getEmail(), booking);
+		if (request.refundReceiveAccount().isPresent()) {
+			RefundAccountRequest refundAccountRequest = request.refundReceiveAccount().get();
+			bookingCancel.updateRefundInfo(
+				refundAccountRequest.bank(),
+				refundAccountRequest.accountNumber(),
+				refundAccountRequest.holderName()
+			);
+		}
+		booking.cancel(bookingCancel);
 	}
 
 	public void exitBooking(String id) {
