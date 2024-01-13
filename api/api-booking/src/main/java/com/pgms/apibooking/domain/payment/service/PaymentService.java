@@ -103,6 +103,7 @@ public class PaymentService {
 				booking.updateStatus(BookingStatus.PAYMENT_COMPLETED);
 			}
 			case WAITING_FOR_DEPOSIT -> throw new BookingException(BookingErrorCode.ACCOUNT_TRANSFER_ERROR);
+			case CANCELED -> log.info("Virtual Amount Payment Canceled");
 			default -> throw new BookingException(BookingErrorCode.INTERNAL_SERVER_ERROR);
 		}
 	}
