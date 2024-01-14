@@ -68,7 +68,7 @@ public class BookingService { //TODO: 테스트 코드 작성
 	public BookingCreateResponse createBooking(BookingCreateRequest request, Long memberId, String tokenSessionId) {
 		Member member = getMemberById(memberId);
 		EventTime time = getBookableTimeWithEvent(request.timeId());
-		List<EventSeat> seats = getBookableSeatsWithArea(request.timeId(), request.seatIds(), memberId);
+		List<EventSeat> seats = getBookableSeatsWithArea(request.timeId(), request.seatIds(), tokenSessionId);
 
 		ReceiptType receiptType = ReceiptType.fromDescription(request.receiptType());
 		validateDeliveryAddress(receiptType, request.deliveryAddress());
@@ -188,8 +188,8 @@ public class BookingService { //TODO: 테스트 코드 작성
 		return time;
 	}
 
-	private List<EventSeat> getBookableSeatsWithArea(Long timeId, List<Long> seatIds, Long memberId) {
-		checkHeldSeats(seatIds, memberId);
+	private List<EventSeat> getBookableSeatsWithArea(Long timeId, List<Long> seatIds, String tokenSessionId) {
+		checkHeldSeats(seatIds, tokenSessionId);
 
 		List<EventSeat> seats = eventSeatRepository.findAllWithAreaByTimeIdAndSeatIds(timeId, seatIds);
 
@@ -204,10 +204,10 @@ public class BookingService { //TODO: 테스트 코드 작성
 		return seats;
 	}
 
-	private void checkHeldSeats(List<Long> seatIds, Long memberId) {
+	private void checkHeldSeats(List<Long> seatIds, String sessionId) {
 		seatIds.forEach(seatId -> {
-			Long selectorId = seatLockManager.getSelectorId(seatId).orElse(null);
-			if (selectorId == null || !selectorId.equals(memberId)) {
+			String selectorId = seatLockManager.getSelectorId(seatId).orElse(null);
+			if (selectorId == null || !selectorId.equals(sessionId)) {
 				throw new BookingException(BookingErrorCode.UNBOOKABLE_SEAT_INCLUSION);
 			}
 		});

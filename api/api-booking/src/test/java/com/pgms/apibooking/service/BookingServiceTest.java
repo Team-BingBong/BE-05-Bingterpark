@@ -161,7 +161,7 @@ class BookingServiceTest {
 			Optional.empty()
 		);
 
-		given(seatLockManager.getSelectorId(any(Long.class))).willReturn(Optional.of(member.getId()));
+		given(seatLockManager.getSelectorId(any(Long.class))).willReturn(Optional.of(SESSION_ID));
 		doNothing().when(bookingQueueManager).remove(any(Long.class), any(String.class));
 
 		// when
@@ -243,7 +243,7 @@ class BookingServiceTest {
 		);
 
 		given(seatLockManager.getSelectorId(seat1.getId())).willReturn(Optional.empty());
-		given(seatLockManager.getSelectorId(seat2.getId())).willReturn(Optional.of(member.getId() + 1));
+		given(seatLockManager.getSelectorId(seat2.getId())).willReturn(Optional.of(SESSION_ID));
 
 		// when & then
 		assertThatThrownBy(() -> bookingService.createBooking(request, member.getId(), SESSION_ID))
@@ -295,7 +295,7 @@ class BookingServiceTest {
 			Optional.empty()
 		);
 
-		given(seatLockManager.getSelectorId(seat.getId())).willReturn(Optional.of(member.getId()));
+		given(seatLockManager.getSelectorId(seat.getId())).willReturn(Optional.of(SESSION_ID));
 
 		// when & then
 		assertThatThrownBy(() -> bookingService.createBooking(request, member.getId(), SESSION_ID))
@@ -349,7 +349,7 @@ class BookingServiceTest {
 			Optional.empty()
 		);
 
-		given(seatLockManager.getSelectorId(seat.getId())).willReturn(Optional.of(member.getId()));
+		given(seatLockManager.getSelectorId(seat.getId())).willReturn(Optional.of(SESSION_ID));
 
 		// when & then
 		assertThatThrownBy(() -> bookingService.createBooking(request, member.getId(), SESSION_ID))
@@ -401,7 +401,7 @@ class BookingServiceTest {
 			Optional.empty()
 		);
 
-		given(seatLockManager.getSelectorId(seat.getId())).willReturn(Optional.of(member.getId()));
+		given(seatLockManager.getSelectorId(seat.getId())).willReturn(Optional.of(SESSION_ID));
 
 		// when & then
 		assertThatThrownBy(() -> bookingService.createBooking(request, member.getId(), SESSION_ID))
@@ -453,7 +453,7 @@ class BookingServiceTest {
 			Optional.empty()
 		);
 
-		given(seatLockManager.getSelectorId(seat.getId())).willReturn(Optional.of(member.getId()));
+		given(seatLockManager.getSelectorId(seat.getId())).willReturn(Optional.of(SESSION_ID));
 
 		// when & then
 		assertThatThrownBy(() -> bookingService.createBooking(request, member.getId(), SESSION_ID))

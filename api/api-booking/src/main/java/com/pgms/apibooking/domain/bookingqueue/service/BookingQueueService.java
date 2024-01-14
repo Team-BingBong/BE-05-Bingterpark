@@ -23,7 +23,7 @@ public class BookingQueueService {
 
 	private final static double MILLISECONDS_PER_SECOND = 1000.0;
 	private final static double TIMEOUT_SECONDS = 7 * 60;
-	private final static long ENTRY_LIMIT = 5;
+	private final static long ENTRY_LIMIT = 2;
 
 	private final BookingQueueManager bookingQueueManager;
 	private final BookingJwtProvider bookingJwtProvider;
@@ -34,19 +34,17 @@ public class BookingQueueService {
 	}
 
 	public OrderInQueueGetResponse getOrderInQueue(Long eventId, String sessionId) {
+		cleanQueue(eventId);
 		Long order = getOrder(eventId, sessionId);
-		Long myOrder = order <= ENTRY_LIMIT ? 0 : order - ENTRY_LIMIT;
-		Boolean isMyTurn = isReadyToEnter(eventId, sessionId);
-
-		double currentTimeSeconds = System.currentTimeMillis() / MILLISECONDS_PER_SECOND;
-		double timeLimitSeconds = currentTimeSeconds - TIMEOUT_SECONDS;
-		bookingQueueManager.removeRangeByScore(eventId, 0, timeLimitSeconds);
-
+		Boolean isMyTurn = order <= ENTRY_LIMIT;
+		Long myOrder = isMyTurn ? 0 : order - ENTRY_LIMIT;
 		return OrderInQueueGetResponse.of(myOrder, isMyTurn);
 	}
 
 	public TokenIssueResponse issueToken(TokenIssueRequest request, String sessionId) {
-		if (!isReadyToEnter(request.eventId(), sessionId)) {
+		Long order = getOrder(request.eventId(), sessionId);
+
+		if (order > ENTRY_LIMIT) {
 			throw new BookingException(BookingErrorCode.OUT_OF_ORDER);
 		}
 
@@ -61,12 +59,6 @@ public class BookingQueueService {
 			.orElseThrow(() -> new BookingException(BookingErrorCode.NOT_IN_QUEUE));
 	}
 
-	private Boolean isReadyToEnter(Long eventId, String sessionId) {
-		Long myOrder = getOrder(eventId, sessionId);
-		Long entryLimit = ENTRY_LIMIT;
-		return myOrder <= entryLimit;
-	}
-
 	public void exitQueue(BookingQueueExitRequest request, String sessionId) {
 		bookingQueueManager.remove(request.eventId(), sessionId);
 	}
@@ -74,5 +66,14 @@ public class BookingQueueService {
 	public SessionIdIssueResponse issueSessionId() {
 		UUID sessionId = UUID.randomUUID();
 		return SessionIdIssueResponse.from(sessionId.toString());
+	}
+
+	/*
+	 * 대기열에 존재하는 세션 중 타임아웃된 세션을 제거한다.
+	 */
+	private void cleanQueue(Long eventId) {
+		double currentTimeSeconds = System.currentTimeMillis() / MILLISECONDS_PER_SECOND;
+		double timeLimitSeconds = currentTimeSeconds - TIMEOUT_SECONDS;
+		bookingQueueManager.removeRangeByScore(eventId, 0, timeLimitSeconds);
 	}
 }

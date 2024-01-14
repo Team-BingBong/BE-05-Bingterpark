@@ -24,9 +24,13 @@ INSERT INTO event_seat (name, status, event_seat_area_id, event_time_id)
 VALUES ('A1', 'AVAILABLE', 1, 1),
        ('A2', 'AVAILABLE', 1, 1),
        ('A3', 'AVAILABLE', 1, 1),
+       ('A4', 'AVAILABLE', 1, 1),
+       ('A5', 'AVAILABLE', 1, 1),
        ('E1', 'AVAILABLE', 2, 1),
        ('E2', 'AVAILABLE', 2, 1),
-       ('E3', 'AVAILABLE', 2, 1);
+       ('E3', 'AVAILABLE', 2, 1),
+       ('E4', 'BOOKED', 2, 1),
+       ('E5', 'BOOKED', 2, 1);
 
 -- EventReview
 INSERT INTO event_review (score, content, event_id)
