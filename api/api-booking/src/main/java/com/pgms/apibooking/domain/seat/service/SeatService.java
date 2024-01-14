@@ -35,11 +35,11 @@ public class SeatService { //TODO: 테스트 코드 작성
 			.toList();
 	}
 
-	public void selectSeat(Long seatId, Long memberId) {
-		Long selectorId = seatLockManager.getSelectorId(seatId).orElse(null);
+	public void selectSeat(Long seatId, String tokenSessionId) {
+		String selectorId = seatLockManager.getSelectorId(seatId).orElse(null);
 
 		if (selectorId != null) {
-			if (selectorId.equals(memberId)) {
+			if (selectorId.equals(tokenSessionId)) {
 				return;
 			}
 			throw new BookingException(BookingErrorCode.SEAT_HELD_BY_ANOTHER_MEMBER);
@@ -52,18 +52,18 @@ public class SeatService { //TODO: 테스트 코드 작성
 		}
 
 		seat.updateStatus(EventSeatStatus.HOLDING);
-		seatLockManager.lockSeat(seatId, memberId, SEAT_LOCK_CACHE_EXPIRE_SECONDS);
+		seatLockManager.lockSeat(seatId, tokenSessionId, SEAT_LOCK_CACHE_EXPIRE_SECONDS);
 	}
 
-	public void deselectSeat(Long seatId, Long memberId) {
-		Long selectorId = seatLockManager.getSelectorId(seatId).orElse(null);
+	public void deselectSeat(Long seatId, String tokenSessionId) {
+		String selectorId = seatLockManager.getSelectorId(seatId).orElse(null);
 
 		if (selectorId == null) {
 			updateSeatStatusToAvailable(seatId);
 			return;
 		}
 
-		if (!selectorId.equals(memberId)) {
+		if (!selectorId.equals(tokenSessionId)) {
 			throw new BookingException(BookingErrorCode.SEAT_HELD_BY_ANOTHER_MEMBER);
 		}
 

@@ -91,7 +91,6 @@ public class BookingController {
 		@CurrentAccount Long memberId,
 		@PathVariable String id
 	) {
-		System.out.println("!!!!!!!!! memberId = " + memberId);
 		BookingGetResponse booking = bookingService.getBooking(id, memberId);
 		ApiResponse<BookingGetResponse> response = ApiResponse.ok(booking);
 		return ResponseEntity.ok().body(response);

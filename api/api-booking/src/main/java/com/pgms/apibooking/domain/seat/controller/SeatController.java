@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -14,7 +15,6 @@ import com.pgms.apibooking.domain.seat.dto.request.SeatsGetRequest;
 import com.pgms.apibooking.domain.seat.dto.response.AreaResponse;
 import com.pgms.apibooking.domain.seat.service.SeatService;
 import com.pgms.coredomain.response.ApiResponse;
-import com.pgms.coresecurity.security.resolver.CurrentAccount;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -38,15 +38,21 @@ public class SeatController {
 
 	@Operation(summary = "좌석 선택")
 	@PostMapping("/{seatId}/select")
-	public ResponseEntity<Void> selectSeat(@PathVariable Long seatId, @CurrentAccount Long memberId) {
-		seatService.selectSeat(seatId, memberId);
+	public ResponseEntity<Void> selectSeat(
+		@PathVariable Long seatId,
+		@RequestAttribute("tokenSessionId") String tokenSessionId
+	) {
+		seatService.selectSeat(seatId, tokenSessionId);
 		return ResponseEntity.noContent().build();
 	}
 
 	@Operation(summary = "좌석 선택 해제")
 	@PostMapping("/{seatId}/deselect")
-	public ResponseEntity<Void> deselectSeat(@PathVariable Long seatId, @CurrentAccount Long memberId) {
-		seatService.deselectSeat(seatId, memberId);
+	public ResponseEntity<Void> deselectSeat(
+		@PathVariable Long seatId,
+		@RequestAttribute("tokenSessionId") String tokenSessionId
+	) {
+		seatService.deselectSeat(seatId, tokenSessionId);
 		return ResponseEntity.noContent().build();
 	}
 }

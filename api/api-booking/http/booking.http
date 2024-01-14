@@ -89,5 +89,5 @@ GET http://localhost:8082/api/v1/bookings
 Authorization: Bearer {{accessToken}}
 
 ### 내 예매 내역 상세 조회
-GET http://localhost:8082/api/v1/bookings/1705163603493
+GET http://localhost:8082/api/v1/bookings/{bookingId}
 Authorization: Bearer {{accessToken}}
