@@ -47,7 +47,7 @@ public class BookingController {
 		@RequestAttribute("tokenSessionId") String tokenSessionId,
 		HttpServletRequest httpRequest) {
 		BookingCreateResponse createdBooking = bookingService.createBooking(request, memberId, tokenSessionId);
-		ApiResponse<BookingCreateResponse> response = ApiResponse.ok(createdBooking);
+		ApiResponse<BookingCreateResponse> response = ApiResponse.created(createdBooking);
 		URI location = UriComponentsBuilder
 			.fromHttpUrl(httpRequest.getRequestURL().toString())
 			.path("/{id}")
@@ -91,6 +91,7 @@ public class BookingController {
 		@CurrentAccount Long memberId,
 		@PathVariable String id
 	) {
+		System.out.println("!!!!!!!!! memberId = " + memberId);
 		BookingGetResponse booking = bookingService.getBooking(id, memberId);
 		ApiResponse<BookingGetResponse> response = ApiResponse.ok(booking);
 		return ResponseEntity.ok().body(response);

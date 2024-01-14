@@ -53,6 +53,20 @@ POST http://localhost:8082/api/v1/seats/1/deselect
 Authorization: Bearer {{accessToken}}
 Booking-Authorization: Bearer {{bookingToken}}
 
+### 예매 생성
+POST http://localhost:8082/api/v1/bookings/create
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+Booking-Authorization: Bearer {{bookingToken}}
+
+{
+  "timeId": 1,
+  "seatIds": [1],
+  "receiptType": "현장수령",
+  "buyerName": "빙봉",
+  "buyerPhoneNumber": "010-1234-5678"
+}
+
 ### 예매 ~ 결제 승인 (브라우저에서 진행해 주세요)
 GET http://localhost:8082/bookings
 
@@ -75,5 +89,5 @@ GET http://localhost:8082/api/v1/bookings
 Authorization: Bearer {{accessToken}}
 
 ### 내 예매 내역 상세 조회
-GET http://localhost:8082/api/v1/bookings/{bookingId}
+GET http://localhost:8082/api/v1/bookings/1705163603493
 Authorization: Bearer {{accessToken}}
