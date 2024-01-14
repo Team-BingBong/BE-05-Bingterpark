@@ -13,7 +13,7 @@ import lombok.RequiredArgsConstructor;
 public class SeatLockManager {
 
 	private final static String SEAT_LOCK_CACHE_KEY_PREFIX = "seatId:";
-	private final static String SEAT_LOCK_CACHE_VALUE_PREFIX = "tokenSessionId:";
+	private final static String SEAT_LOCK_CACHE_VALUE_PREFIX = "sessionId:";
 
 	private final RedisOperator redisOperator;
 
