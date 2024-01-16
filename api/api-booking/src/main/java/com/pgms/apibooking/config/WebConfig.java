@@ -22,7 +22,7 @@ public class WebConfig implements WebMvcConfigurer {
 	public void addInterceptors(InterceptorRegistry registry) {
 		registry.addInterceptor(bookingSessionInterceptor)
 			.addPathPatterns("/api/*/bookings/enter-queue")
-			.addPathPatterns("/api/*/bookings/order-in-queue")
+			.addPathPatterns("/api/*/bookings/waiting-order")
 			.addPathPatterns("/api/*/bookings/issue-token")
 			.addPathPatterns("/api/*/bookings/exit-queue");
 		registry.addInterceptor(bookingTokenInterceptor)

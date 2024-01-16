@@ -12,8 +12,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class SeatLockManager {
 
-	private final static String SEAT_LOCK_CACHE_KEY_PREFIX = "seatId:";
-	private final static String SEAT_LOCK_CACHE_VALUE_PREFIX = "sessionId:";
+	private final static String SEAT_LOCK_KEY_PREFIX = "seatId:";
+	private final static String SEAT_LOCK_VALUE_PREFIX = "sessionId:";
 
 	private final RedisOperator redisOperator;
 
@@ -34,14 +34,14 @@ public class SeatLockManager {
 	}
 
 	private String generateSeatLockKey(Long seatId) {
-		return SEAT_LOCK_CACHE_KEY_PREFIX + seatId;
+		return SEAT_LOCK_KEY_PREFIX + seatId;
 	}
 
 	private String generateSeatLockValue(String tokenSessionId) {
-		return SEAT_LOCK_CACHE_VALUE_PREFIX + tokenSessionId;
+		return SEAT_LOCK_VALUE_PREFIX + tokenSessionId;
 	}
 
 	private String extractSessionId(String value) {
-		return value.replace(SEAT_LOCK_CACHE_VALUE_PREFIX, "");
+		return value.replace(SEAT_LOCK_VALUE_PREFIX, "");
 	}
 }
