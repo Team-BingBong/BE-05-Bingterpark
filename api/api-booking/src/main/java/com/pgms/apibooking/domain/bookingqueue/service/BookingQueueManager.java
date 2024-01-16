@@ -14,12 +14,18 @@ public class BookingQueueManager {
 
 	private static final String WAITING_QUEUE_KEY_PREFIX = "waiting:eventId:";
 	private static final String PARTICIPANT_QUEUE_KEY_PREFIX = "participant:eventId:";
-
+	private static final long QUEUE_TIMEOUT_SECONDS = 60 * 24 * 60 * 60; // 2 months
 	private final RedisOperator redisOperator;
 
 	public void addToWaitingQueue(Long eventId, String sessionId, double currentTimeSeconds) {
 		String key = generateWaitingQueueKey(eventId);
-		redisOperator.addToZSet(key, sessionId, currentTimeSeconds);
+
+		if (redisOperator.exists(key)) {
+			redisOperator.addToZSet(key, sessionId, currentTimeSeconds);
+		} else {
+			redisOperator.addToZSet(key, sessionId, currentTimeSeconds);
+			redisOperator.expire(key, QUEUE_TIMEOUT_SECONDS);
+		}
 	}
 
 	public Optional<Long> getRankInWaitingQueue(Long eventId, String sessionId) {
@@ -40,7 +46,13 @@ public class BookingQueueManager {
 
 	public void addToParticipantQueue(Long eventId, String sessionId, double currentTimeSeconds) {
 		String key = generateParticipantQueueKey(eventId);
-		redisOperator.addToZSet(key, sessionId, currentTimeSeconds);
+
+		if(redisOperator.exists(key)) {
+			redisOperator.addToZSet(key, sessionId, currentTimeSeconds);
+		} else {
+			redisOperator.addToZSet(key, sessionId, currentTimeSeconds);
+			redisOperator.expire(key, QUEUE_TIMEOUT_SECONDS);
+		}
 	}
 
 	public Long getSizeOfParticipantQueue(Long eventId) {

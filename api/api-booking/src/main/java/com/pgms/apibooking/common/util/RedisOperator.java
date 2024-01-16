@@ -19,6 +19,15 @@ public class RedisOperator {
 
 	private final RedisTemplate<String, String> redisTemplate;
 
+	public Boolean exists(String key) {
+		return tryOperation(() -> redisTemplate.hasKey(key));
+	}
+
+	public void expire(String key, long expirationSeconds) {
+		Duration timeout = Duration.ofSeconds(expirationSeconds);
+		tryOperation(() -> redisTemplate.expire(key, timeout));
+	}
+
 	public void setIfAbsent(String key, String value, Integer expirationSeconds) {
 		Duration timeout = Duration.ofSeconds(expirationSeconds);
 		tryOperation(() -> redisTemplate.opsForValue().setIfAbsent(key, value, timeout));

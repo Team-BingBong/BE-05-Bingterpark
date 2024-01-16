@@ -22,8 +22,8 @@ import lombok.RequiredArgsConstructor;
 public class BookingQueueService {
 
 	private final static double MILLISECONDS_PER_SECOND = 1000.0;
-	private final static long WAITING_QUEUE_TIMEOUT_SECONDS = 2 * 60 * 60;
-	private final static long PARTICIPANT_QUEUE_TIMEOUT_SECONDS = 7 * 60;
+	private final static long WAITING_QUEUE_TIMEOUT_SECONDS = 2 * 60 * 60; // 2 hours
+	private final static long PARTICIPANT_QUEUE_TIMEOUT_SECONDS = 7 * 60; // 7 minutes
 	private final static int ENTRY_LIMIT = 2;
 
 	private final BookingQueueManager bookingQueueManager;
