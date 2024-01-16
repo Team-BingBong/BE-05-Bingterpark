@@ -162,7 +162,7 @@ class BookingServiceTest {
 		);
 
 		given(seatLockManager.getSelectorId(any(Long.class))).willReturn(Optional.of(SESSION_ID));
-		doNothing().when(bookingQueueManager).remove(any(Long.class), any(String.class));
+		doNothing().when(bookingQueueManager).removeFromWaitingQueue(any(Long.class), any(String.class));
 
 		// when
 		BookingCreateResponse response = bookingService.createBooking(request, member.getId(), SESSION_ID);

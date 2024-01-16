@@ -40,16 +40,16 @@ public class BookingQueueController {
 
 	@Operation(summary = "대기열 진입")
 	@PostMapping("/enter-queue")
-	public ResponseEntity<Void> enterQueue(@RequestBody @Valid BookingQueueEnterRequest request, @RequestAttribute("bookingSessionId") String bookingSessionId) {
-		bookingQueueService.enterQueue(request, bookingSessionId);
+	public ResponseEntity<Void> enterWaitingQueue(@RequestBody @Valid BookingQueueEnterRequest request, @RequestAttribute("bookingSessionId") String bookingSessionId) {
+		bookingQueueService.enterWaitingQueue(request, bookingSessionId);
 		return ResponseEntity.noContent().build();
 	}
 
 	@Operation(summary = "내 대기 순서 확인")
-	@GetMapping("/order-in-queue")
-	public ResponseEntity<ApiResponse<OrderInQueueGetResponse>> getOrderInQueue(@RequestParam Long eventId, @RequestAttribute("bookingSessionId") String bookingSessionId) {
+	@GetMapping("/waiting-order")
+	public ResponseEntity<ApiResponse<OrderInQueueGetResponse>> getWaitingOrder(@RequestParam Long eventId, @RequestAttribute("bookingSessionId") String bookingSessionId) {
 		ApiResponse<OrderInQueueGetResponse> response =
-			ApiResponse.ok(bookingQueueService.getOrderInQueue(eventId, bookingSessionId));
+			ApiResponse.ok(bookingQueueService.getWaitingOrder(eventId, bookingSessionId));
 		return ResponseEntity.ok(response);
 	}
 

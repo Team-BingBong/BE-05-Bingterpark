@@ -36,8 +36,16 @@ public class RedisOperator {
 		tryOperation(() -> redisTemplate.opsForZSet().add(key, value, score));
 	}
 
+	public Long getSizeOfZSet(String key) {
+		return tryOperation(() -> redisTemplate.opsForZSet().size(key));
+	}
+
 	public Long getRankFromZSet(String key, String value) {
 		return tryOperation(() -> redisTemplate.opsForZSet().rank(key, value));
+	}
+
+	public Double getScoreFromZSet(String key, String index) {
+		return tryOperation(() -> redisTemplate.opsForZSet().score(key, index));
 	}
 
 	public void removeElementFromZSet(String key, String value) {

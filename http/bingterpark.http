@@ -184,7 +184,7 @@ Booking-Session-Id: {{sessionId}}
 }
 
 ### 대기열 조회
-GET http://localhost:8082/api/v1/bookings/order-in-queue?eventId=1
+GET http://localhost:8082/api/v1/bookings/waiting-order?eventId=1
 Authorization: Bearer {{accessToken}}
 Booking-Session-Id: {{sessionId}}
 

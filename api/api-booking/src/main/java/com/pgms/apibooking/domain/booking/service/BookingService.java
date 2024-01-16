@@ -174,7 +174,7 @@ public class BookingService { //TODO: 테스트 코드 작성
 
 	@Async
 	protected void removeSessionIdInBookingQueue(Long eventId, String tokenSessionId) {
-		bookingQueueManager.remove(eventId, tokenSessionId);
+		bookingQueueManager.removeFromParticipantQueue(eventId, tokenSessionId);
 	}
 
 	private EventTime getBookableTimeWithEvent(Long timeId) {
