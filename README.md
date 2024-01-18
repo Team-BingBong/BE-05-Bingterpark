@@ -97,7 +97,7 @@
 
 ## ✨프로젝트 설계
 
-### [유저스토리 & ERD](https://github.com/Team-BingBong/BE-05-Bingterpark/wiki/Backlog-&-Database)
+### [유저스토리 & ERD](https://github.com/Team-BingBong/BE-05-Bingterpark/wiki/%EC%9C%A0%EC%A0%80%EC%8A%A4%ED%86%A0%EB%A6%AC-&-ERD)
 
 ### [모듈 구조](https://github.com/Team-BingBong/BE-05-Bingterpark/wiki/%EB%A9%80%ED%8B%B0%EB%AA%A8%EB%93%88-%EA%B5%AC%EC%A1%B0)
 
