@@ -92,34 +92,6 @@
 
 <br/>
 
-### 모듈 구조
-
-![img.png](img.png)
-
-<br/>
-
-#### [api 모듈]
-
-| api-member | api-event | api-booking |
-|:----------:|:---------:|:-----------:|
-|   회원 도메인   |  공연 도메인   |   예매 도메인    |
-
-<br/>
-
-#### [batch 모듈]
-
-- 스프링 배치 모듈
-
-<br/>
-
-#### [core  모듈]
-
-| **core-domain** |   **core-infra**    |                  **core-infra-es**                  | **core-security**     |
-|:---------------:|:-------------------:|:---------------------------------------------------:|-----------------------|
-| JPA 엔티티, 레포지토리  | QueryDsl, RDB 설정 파일 | elastic search 설정 파일,<br>document, searchRepository | Spring security 설정 파일 |
-
-<br/>
-
 ### Github Flow 전략
 
 ![](https://velog.velcdn.com/images/gmlstjq123/post/04588f97-e776-4829-a519-58f7c93b6c4a/image.png)
