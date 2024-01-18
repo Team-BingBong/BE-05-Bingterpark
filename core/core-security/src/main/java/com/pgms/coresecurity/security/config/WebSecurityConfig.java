@@ -21,9 +21,11 @@ import org.springframework.security.web.access.ExceptionTranslationFilter;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
+import com.pgms.coredomain.domain.member.repository.AdminRepository;
 import com.pgms.coresecurity.security.jwt.JwtAccessDeniedHandler;
 import com.pgms.coresecurity.security.jwt.JwtAuthenticationEntryPoint;
 import com.pgms.coresecurity.security.jwt.JwtAuthenticationFilter;
+import com.pgms.coresecurity.security.service.AdminUserDetailsService;
 import com.pgms.coresecurity.security.service.OAuth2UserService;
 
 import lombok.RequiredArgsConstructor;
@@ -38,6 +40,7 @@ public class WebSecurityConfig {
 	private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
 	private final OAuth2UserService oAuth2UserService;
 	private final AuthenticationSuccessHandler oauthSuccessHandler;
+	private final AdminRepository adminRepository;
 
 	@Bean
 	public PasswordEncoder passwordEncoder() {
@@ -56,6 +59,17 @@ public class WebSecurityConfig {
 	public SecurityFilterChain securityFilterChainPermitAll(HttpSecurity http) throws Exception {
 		configureCommonSecuritySettings(http);
 		http.securityMatchers(matchers -> matchers.requestMatchers(requestPermitAll()))
+			.authorizeHttpRequests()
+			.anyRequest()
+			.permitAll();
+		return http.build();
+	}
+
+	@Bean
+	public SecurityFilterChain securityFilterChainAdminLogin(HttpSecurity http) throws Exception {
+		configureCommonSecuritySettings(http);
+		http.securityMatchers(matchers -> matchers.requestMatchers(antMatcher("/api/*/auth/**")))
+			.userDetailsService(new AdminUserDetailsService(adminRepository))
 			.authorizeHttpRequests()
 			.anyRequest()
 			.permitAll();

@@ -1,8 +1,11 @@
 package com.pgms.apimember.service;
 
+import java.util.List;
+
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,8 +19,6 @@ import com.pgms.coredomain.domain.member.enums.Role;
 import com.pgms.coredomain.domain.member.redis.RefreshToken;
 import com.pgms.coredomain.domain.member.redis.RefreshTokenRepository;
 import com.pgms.coresecurity.security.jwt.JwtTokenProvider;
-import com.pgms.coresecurity.security.service.AdminUserDetailsService;
-import com.pgms.coresecurity.security.service.MemberUserDetailsService;
 import com.pgms.coresecurity.security.service.UserDetailsImpl;
 
 import lombok.RequiredArgsConstructor;
@@ -30,8 +31,8 @@ public class AuthService {
 	private final AuthenticationManager authenticationManager;
 	private final JwtTokenProvider jwtTokenProvider;
 	private final RefreshTokenRepository refreshTokenRepository;
-	private final AdminUserDetailsService adminUserDetailsService;
-	private final MemberUserDetailsService memberUserDetailsService;
+	// private final AdminUserDetailsService adminUserDetailsService;
+	// private final MemberUserDetailsService memberUserDetailsService;
 
 	public AuthResponse login(LoginRequest request, Role accountType) {
 		// 인증 전의 auth 객체
@@ -61,7 +62,9 @@ public class AuthService {
 			.orElseThrow(() -> new CustomException(SecurityErrorCode.REFRESH_TOKEN_EXPIRED));
 
 		// 회원 정보 로드
-		UserDetailsImpl userDetails = loadUserDetails(refreshToken.getAccountType(), refreshToken.getEmail());
+		// UserDetailsImpl userDetails = loadUserDetails(refreshToken.getAccountType(), refreshToken.getEmail());
+		UserDetailsImpl userDetails = new UserDetailsImpl(1L, "name", "email",
+			List.of(new SimpleGrantedAuthority("ROLE_USER")));
 
 		// 새로운 accessToken, refreshToken 발급
 		String newAccessToken = jwtTokenProvider.generateAccessToken(userDetails);
@@ -74,11 +77,11 @@ public class AuthService {
 		return new AuthResponse(newAccessToken, newRefreshToken);
 	}
 
-	private UserDetailsImpl loadUserDetails(String accountType, String email) {
-		if (accountType.equals(Role.ROLE_ADMIN.toString())) {
-			return (UserDetailsImpl)adminUserDetailsService.loadUserByUsername(email);
-		} else {
-			return (UserDetailsImpl)memberUserDetailsService.loadUserByUsername(email);
-		}
-	}
+	// private UserDetailsImpl loadUserDetails(String accountType, String email) {
+	// 	if (accountType.equals(Role.ROLE_ADMIN.toString())) {
+	// 		return (UserDetailsImpl)adminUserDetailsService.loadUserByUsername(email);
+	// 	} else {
+	// 		return (UserDetailsImpl)memberUserDetailsService.loadUserByUsername(email);
+	// 	}
+	// }
 }

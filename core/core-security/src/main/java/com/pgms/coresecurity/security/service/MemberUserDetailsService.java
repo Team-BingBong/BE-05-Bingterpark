@@ -1,6 +1,5 @@
 package com.pgms.coresecurity.security.service;
 
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -14,7 +13,6 @@ import com.pgms.coresecurity.security.exception.SecurityCustomException;
 import lombok.RequiredArgsConstructor;
 
 @Service
-@Qualifier("memberUserDetailsService")
 @RequiredArgsConstructor
 public class MemberUserDetailsService implements UserDetailsService {
 
