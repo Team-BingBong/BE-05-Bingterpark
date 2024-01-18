@@ -1,6 +1,6 @@
 # Bingterpark
 
-![](https://i.imgur.com/xRGQU4e.jpg)
+<img src="https://i.imgur.com/xRGQU4e.jpg" width="300">
 
 <br/>
 
@@ -17,6 +17,22 @@
 
 <br/>
 
+## 🎯도메인 별 목표 달성
+>회원
+>- Spring Security, OAuth를 이용한 회원가입,로그인,권한 관리 구현 및 시큐리티 내부 구조에 대한 이해
+>
+> 예매
+>- Redis SortedSet 자료구조를 이용한 예매 대기열 구현
+>- 토스페이먼츠 API를 이용한 결제 시스템 구현
+>
+>
+>공연
+>- 공연 별 좌석 관리 등 복잡한 연관관계 및 비즈니스 로직 설계
+>- 검색 기능에 최적화 된 엘라스틱서치를 도입하여 키워드 검색 기능을 구현
+>- 실시간 인기 검색어 Top 10 기능 구현
+
+<br/>
+
 ## 👥 팀원
 
 |           Product Owner            |            Scrum Master             |             Developer              |             Developer              |             Developer              |            Developer            |
@@ -25,19 +41,7 @@
 
 <br/>
 
-## 협업 링크
 
-🐘 [팀 페이지](https://www.notion.so/backend-devcourse/2-BingterPark-4ecfb3943d9c4a8f9bb83f72876b6a80)
-
-📌 [코드 컨벤션](https://www.notion.so/backend-devcourse/0ebe193cfaeb45db9c9377fa6eb8d38a)
-
-👨‍💻 [기능 명세서](https://www.notion.so/backend-devcourse/915c54641e6d4bdca96524a178d860b6?v=18e598a3b9234189a69cef24d2abd985)
-
-🚀 [RBF(작성중)]()
-
-✨ [회고(작성중)]()
-
-<br/>
 
 ## 🛠️ 기술 스택
 
@@ -84,47 +88,21 @@
 
 <br/>
 
-## 프로젝트 설계
+## 🚀협업 
 
-### ERD
+### [팀 노션](https://www.notion.so/backend-devcourse/2-BingterPark-4ecfb3943d9c4a8f9bb83f72876b6a80)
 
-![](https://i.imgur.com/Egu30AX.png)
+### [Git Convention](https://github.com/Team-BingBong/BE-05-Bingterpark/wiki/Git-Convention)
+<br/>
+
+## ✨프로젝트 설계
+
+### [유저스토리 & ERD](https://github.com/Team-BingBong/BE-05-Bingterpark/wiki/Backlog-&-Database)
+
+### [모듈 구조](https://github.com/Team-BingBong/BE-05-Bingterpark/wiki/%EB%A9%80%ED%8B%B0%EB%AA%A8%EB%93%88-%EA%B5%AC%EC%A1%B0)
 
 <br/>
 
-### 모듈 구조
-
-![img.png](img.png)
-
-<br/>
-
-#### [api 모듈]
-
-| api-member | api-event | api-booking |
-|:----------:|:---------:|:-----------:|
-|   회원 도메인   |  공연 도메인   |   예매 도메인    |
-
-<br/>
-
-#### [batch 모듈]
-
-- 스프링 배치 모듈
-
-<br/>
-
-#### [core  모듈]
-
-| **core-domain** |   **core-infra**    |                  **core-infra-es**                  | **core-security**     |
-|:---------------:|:-------------------:|:---------------------------------------------------:|-----------------------|
-| JPA 엔티티, 레포지토리  | QueryDsl, RDB 설정 파일 | elastic search 설정 파일,<br>document, searchRepository | Spring security 설정 파일 |
-
-<br/>
-
-### Github Flow 전략
-
-![](https://velog.velcdn.com/images/gmlstjq123/post/04588f97-e776-4829-a519-58f7c93b6c4a/image.png)
-
-<br/>
 
 ## 실행 방법
 
