@@ -17,12 +17,13 @@
 
 <br/>
 
-## 🎯도메인 별 목표 달성
+## 🎯 도메인 별 목표 달성
 >회원
 >- Spring Security, OAuth를 이용한 회원가입,로그인,권한 관리 구현 및 시큐리티 내부 구조에 대한 이해
 >
 > 예매
->- Redis SortedSet 자료구조를 이용한 예매 대기열 구현
+>- Redis SortedSet 자료구조를 이용한 예매 대기열 구축
+>- Redis를 이용한 좌석 선점 기능과 예매 기능 구현
 >- 토스페이먼츠 API를 이용한 결제 시스템 구현
 >
 >
@@ -88,14 +89,14 @@
 
 <br/>
 
-## 🚀협업 
+## 🚀 협업 
 
 ### [팀 노션](https://www.notion.so/backend-devcourse/2-BingterPark-4ecfb3943d9c4a8f9bb83f72876b6a80)
 
 ### [Git Convention](https://github.com/Team-BingBong/BE-05-Bingterpark/wiki/Git-Convention)
 <br/>
 
-## ✨프로젝트 설계
+## ✨ 프로젝트 설계
 
 ### [유저스토리 & ERD](https://github.com/Team-BingBong/BE-05-Bingterpark/wiki/%EC%9C%A0%EC%A0%80%EC%8A%A4%ED%86%A0%EB%A6%AC-&-ERD)
 
@@ -103,6 +104,24 @@
 
 <br/>
 
+## 🔍 기술 문서
+
+>회원
+>- [Spring Security 멀티 필터체인으로 철벽 보안 구성하기](https://github.com/Team-BingBong/BE-05-Bingterpark/wiki/Spring-Security-%EB%A9%80%ED%8B%B0-%ED%95%84%ED%84%B0%EC%B2%B4%EC%9D%B8%EC%9C%BC%EB%A1%9C-%EC%B2%A0%EB%B2%BD-%EB%B3%B4%EC%95%88-%EA%B5%AC%EC%84%B1%ED%95%98%EA%B8%B0)
+>- [스프링 시큐리티 다중 로그인 처리](https://github.com/Team-BingBong/BE-05-Bingterpark/wiki/%EC%8A%A4%ED%94%84%EB%A7%81-%EC%8B%9C%ED%81%90%EB%A6%AC%ED%8B%B0-%EB%8B%A4%EC%A4%91-%EB%A1%9C%EA%B7%B8%EC%9D%B8-%EC%B2%98%EB%A6%AC)
+>
+>예매
+>- [Redis Sorted Set을 활용한 예매 대기열 구축](https://github.com/Team-BingBong/BE-05-Bingterpark/wiki/Redis-Sorted-Set%EC%9D%84-%ED%99%9C%EC%9A%A9%ED%95%9C-%EC%98%88%EB%A7%A4-%EB%8C%80%EA%B8%B0%EC%97%B4-%EA%B5%AC%EC%B6%95)
+>- [토스페이먼츠를 이용한 결제 플로우](https://github.com/Team-BingBong/BE-05-Bingterpark/wiki/%EA%B2%B0%EC%A0%9C-%ED%94%8C%EB%A1%9C%EC%9A%B0)
+>- [외부 API 사용 및 테스트를 위한 리팩토링 여정](https://github.com/Team-BingBong/BE-05-Bingterpark/wiki/%EC%99%B8%EB%B6%80-API-%EC%82%AC%EC%9A%A9-%EB%B0%8F-%ED%85%8C%EC%8A%A4%ED%8A%B8%EB%A5%BC-%EC%9C%84%ED%95%9C-%EB%A6%AC%ED%8C%A9%ED%86%A0%EB%A7%81-%EC%97%AC%EC%A0%95)
+>- OneToOne 연관관계 매핑에서 Lazy Loading 적용안되는 문제 트러블 슈팅 (작성 중)
+>
+>공연
+>- [ELK 스택 설정](https://github.com/Team-BingBong/BE-05-Bingterpark/wiki/ELK-%EC%8A%A4%ED%83%9D-%EC%84%A4%EC%A0%95)
+>- [엘라스틱 서치 키워드 검색](https://github.com/Team-BingBong/BE-05-Bingterpark/wiki/%EC%97%98%EB%9D%BC%EC%8A%A4%ED%8B%B1-%EC%84%9C%EC%B9%98-%ED%82%A4%EC%9B%8C%EB%93%9C-%EA%B2%80%EC%83%89)
+>- [로그분석을 통한 인기 검색어 분석](https://github.com/Team-BingBong/BE-05-Bingterpark/wiki/%EB%A1%9C%EA%B7%B8%EC%8A%A4%ED%83%9C%EC%8B%9C%EB%A5%BC-%ED%99%9C%EC%9A%A9%ED%95%98%EC%97%AC-%EB%A1%9C%EA%B7%B8%EB%B6%84%EC%84%9D%EC%9D%84-%ED%86%B5%ED%95%9C-%EC%8B%A4%EC%8B%9C%EA%B0%84-%EC%9D%B8%EA%B8%B0-%EA%B2%80%EC%83%89%EC%96%B4-%EC%88%9C%EC%9C%84)
+>- [Elasticsearch Document Bulk Update 과정](https://github.com/Team-BingBong/BE-05-Bingterpark/wiki/Elasticsearch-Document-Update-%EA%B3%BC%EC%A0%95)
+<br/>
 
 ## 실행 방법
 
