@@ -90,6 +90,8 @@ public class WebSecurityConfig {
 			antMatcher(GET, "/api/*/event-seats/event-times/*/seats"),    // 회차별 공연 좌석 조회
 			antMatcher(GET, "/api/*/event-seats/event-times/*/available-numbers"),    // 회차별 공연 좌석 구역별 남은 자리 수 조회
 			antMatcher(GET, "/api/*/events/*/seat-area"),    // 공연 좌석 구역 목록 조회
+			antMatcher(GET, "/api/*/events/search/keyword/jpa"),    // 공연 키워드 검색 - jpa
+			antMatcher(GET, "/api/*/events/addcsv"),    // 공연 키워드 검색 - jpa
 
 			// DOCS
 			antMatcher("/swagger-ui/**"),
