@@ -12,6 +12,7 @@ import com.pgms.apievent.event.dto.request.EventPageRequest;
 import com.pgms.apievent.event.dto.request.EventUpdateRequest;
 import com.pgms.apievent.event.dto.response.EventResponse;
 import com.pgms.apievent.event.repository.EventCustomRepository;
+import com.pgms.apievent.eventSearch.dto.request.EventKeywordSearchRequest;
 import com.pgms.apievent.exception.EventException;
 import com.pgms.coredomain.domain.event.Event;
 import com.pgms.coredomain.domain.event.EventEdit;
@@ -20,6 +21,7 @@ import com.pgms.coredomain.domain.event.repository.EventHallRepository;
 import com.pgms.coredomain.domain.event.repository.EventRepository;
 import com.pgms.coreinfraes.buffer.DocumentBuffer;
 import com.pgms.coreinfraes.document.EventDocument;
+import com.pgms.coreinfraes.dto.EventKeywordSearchDto;
 import com.pgms.coreinfraes.repository.EventSearchRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -36,7 +38,7 @@ public class EventService {
 
 	public EventResponse createEvent(EventCreateRequest request) {
 		EventHall eventHall = getEventHall(request.eventHallId());
-		validateDuplicateEvent(request.title());
+		// validateDuplicateEvent(request.title());
 
 		Event event = request.toEntity(eventHall);
 		Event savedEvent = eventRepository.save(event);
@@ -82,6 +84,12 @@ public class EventService {
 		Event event = getEvent(id);
 		eventRepository.delete(event);
 		eventSearchRepository.deleteById(id);
+	}
+
+	public PageResponseDto searchEventByKeywordwithJpa(EventKeywordSearchRequest request){
+		EventKeywordSearchDto eventKeywordSearchDto = request.toDto();
+		Page<EventResponse> eventsByKeyword = eventCustomRepository.getEventsByKeyword(eventKeywordSearchDto);
+		return PageResponseDto.of(eventsByKeyword);
 	}
 
 	private void validateDuplicateEvent(String title) {

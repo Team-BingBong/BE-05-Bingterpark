@@ -1,8 +1,11 @@
 package com.pgms.apievent.event.controller;
 
+import static com.pgms.apievent.exception.EventErrorCode.*;
+
 import java.net.URI;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -11,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -20,6 +24,9 @@ import com.pgms.apievent.event.dto.request.EventPageRequest;
 import com.pgms.apievent.event.dto.request.EventUpdateRequest;
 import com.pgms.apievent.event.dto.response.EventResponse;
 import com.pgms.apievent.event.service.EventService;
+import com.pgms.apievent.eventSearch.dto.request.EventKeywordSearchRequest;
+import com.pgms.apievent.exception.EventException;
+import com.pgms.apievent.util.CsvReader;
 import com.pgms.coredomain.response.ApiResponse;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -34,6 +41,7 @@ import lombok.RequiredArgsConstructor;
 public class EventController {
 
 	private final EventService eventService;
+	private final CsvReader csvReader;
 
 	@Operation(summary = "공연 생성", description = "공연 생성 메서드입니다.")
 	@PostMapping
@@ -90,6 +98,24 @@ public class EventController {
 	@DeleteMapping("/{eventId}")
 	public ResponseEntity<Void> deleteEventById(@PathVariable Long eventId) {
 		eventService.deleteEventById(eventId);
+		return ResponseEntity.noContent().build();
+	}
+
+	@GetMapping("/search/keyword/jpa")
+	public ResponseEntity<ApiResponse> searchEventsByKeyword(
+			@ModelAttribute @Valid EventKeywordSearchRequest eventKeywordSearchRequest,
+			BindingResult bindingResult) {
+		if(bindingResult.hasErrors()){
+			throw new EventException(BINDING_FAILED_EXCEPTION);
+		}
+
+		PageResponseDto response = eventService.searchEventByKeywordwithJpa(eventKeywordSearchRequest);
+		return ResponseEntity.ok(ApiResponse.ok(response));
+	}
+
+	@GetMapping("/addcsv")
+	public ResponseEntity<Void> addCsvEvent(@RequestParam String filePath){
+		csvReader.saveEventCsv(filePath);
 		return ResponseEntity.noContent().build();
 	}
 }

@@ -1,25 +1,31 @@
 package com.pgms.apievent.event.repository;
 
-import com.pgms.apievent.event.dto.request.EventPageRequest;
-import com.pgms.apievent.event.dto.response.EventResponse;
-import com.pgms.coredomain.domain.event.DateRangeType;
-import com.pgms.coredomain.domain.event.GenreType;
-import com.querydsl.jpa.impl.JPAQuery;
-import com.querydsl.jpa.impl.JPAQueryFactory;
-import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.support.PageableExecutionUtils;
-import org.springframework.stereotype.Repository;
+import static com.pgms.coredomain.domain.booking.QBooking.*;
+import static com.pgms.coredomain.domain.event.QEvent.*;
+import static com.pgms.coredomain.domain.event.QEventReview.*;
+import static com.pgms.coredomain.domain.event.QEventTime.*;
+import static org.springframework.util.StringUtils.*;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
-import static com.pgms.coredomain.domain.booking.QBooking.booking;
-import static com.pgms.coredomain.domain.event.QEvent.event;
-import static com.pgms.coredomain.domain.event.QEventReview.eventReview;
-import static com.pgms.coredomain.domain.event.QEventTime.eventTime;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.support.PageableExecutionUtils;
+import org.springframework.stereotype.Repository;
+
+import com.pgms.apievent.event.dto.request.EventPageRequest;
+import com.pgms.apievent.event.dto.response.EventResponse;
+import com.pgms.coredomain.domain.event.DateRangeType;
+import com.pgms.coredomain.domain.event.GenreType;
+import com.pgms.coreinfraes.dto.EventKeywordSearchDto;
+import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.impl.JPAQuery;
+import com.querydsl.jpa.impl.JPAQueryFactory;
+
+import lombok.RequiredArgsConstructor;
 
 @Repository
 @RequiredArgsConstructor
@@ -122,5 +128,46 @@ public class EventCustomRepositoryImpl implements EventCustomRepository {
 			);
 
 		return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
+	}
+
+	@Override
+	public Page<EventResponse> getEventsByKeyword(EventKeywordSearchDto eventKeywordSearchDto) {
+		Pageable pageable = eventKeywordSearchDto.pageable();
+		List<EventResponse> content = jpaQueryFactory.selectFrom(event)
+				.where(
+					containsTitle(eventKeywordSearchDto.keyword()),
+					isGenreType(eventKeywordSearchDto.genreType())
+				)
+				.fetch()
+				.stream()
+				.map(EventResponse::of)
+				.toList();
+
+		JPAQuery<Long> countQuery = jpaQueryFactory.select(event.count())
+				.from(event)
+				.where(
+					containsTitle(eventKeywordSearchDto.keyword()),
+					isGenreType(eventKeywordSearchDto.genreType())
+				);
+
+		return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
+	}
+
+	private BooleanExpression containsTitle(String title){
+		return hasText(title) ? event.title.contains(title) : null;
+	}
+
+	private BooleanBuilder isGenreType(List<String> genres){
+		if(genres == null || genres.isEmpty()){
+			return null;
+		}
+
+		BooleanBuilder booleanBuilder = new BooleanBuilder();
+		genres.stream()
+				.forEach(genre -> {
+					GenreType genreType = GenreType.of(genre);
+					booleanBuilder.or(event.genreType.eq(genreType));
+				});
+		return booleanBuilder;
 	}
 }
