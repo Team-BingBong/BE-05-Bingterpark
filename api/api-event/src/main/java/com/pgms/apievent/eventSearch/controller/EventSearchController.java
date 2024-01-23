@@ -1,15 +1,9 @@
 package com.pgms.apievent.eventSearch.controller;
 
-import com.pgms.apievent.common.dto.response.PageResponseDto;
-import com.pgms.apievent.eventSearch.dto.request.EventKeywordSearchRequest;
-import com.pgms.apievent.eventSearch.dto.response.RecentTop10KeywordsResponse;
-import com.pgms.apievent.eventSearch.service.EventSearchService;
-import com.pgms.apievent.exception.EventException;
-import com.pgms.coredomain.response.ApiResponse;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
+import static com.pgms.apievent.exception.EventErrorCode.*;
+
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,9 +11,18 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import com.pgms.apievent.aop.LogExecutionTime;
+import com.pgms.apievent.common.dto.response.PageResponseDto;
+import com.pgms.apievent.eventSearch.dto.request.EventKeywordSearchRequest;
+import com.pgms.apievent.eventSearch.dto.response.RecentTop10KeywordsResponse;
+import com.pgms.apievent.eventSearch.service.EventSearchService;
+import com.pgms.apievent.exception.EventException;
+import com.pgms.coredomain.response.ApiResponse;
 
-import static com.pgms.apievent.exception.EventErrorCode.BINDING_FAILED_EXCEPTION;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 
 @Tag(name = "검색", description = "검색 관련 API 입니다.")
 @RestController
@@ -30,6 +33,7 @@ public class EventSearchController {
 	private final EventSearchService eventSearchService;
 
 	@Operation(summary = "키워드 검색", description = "키워드로 종합 검색합니다.")
+	@LogExecutionTime
 	@GetMapping("/keyword")
 	public ResponseEntity<ApiResponse> searchEventsByKeyword(
 		@ModelAttribute @Valid EventKeywordSearchRequest eventKeywordSearchRequest,

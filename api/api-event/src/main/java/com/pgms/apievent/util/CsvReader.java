@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.pgms.apievent.event.dto.request.EventCreateRequest;
 import com.pgms.apievent.exception.EventException;
@@ -27,6 +28,7 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class CsvReader {
 
 	private final EventRepository eventRepository;
@@ -40,32 +42,41 @@ public class CsvReader {
 			List<EventDocument> documents = new ArrayList<>();
 			List<Event> events = new ArrayList<>();
 
-			datas.forEach(data -> {
-					EventCreateRequest request = new EventCreateRequest(
-						data[0],
-						data[2],
-						100,
-						LocalDateTime.now(),
-						LocalDateTime.now().plusDays(10),
-						null,
-						GenreType.MUSICAL,
-						LocalDateTime.now(),
-						LocalDateTime.now().plusDays(10),
-						1L);
+			int count = 0;
 
-					EventHall eventHall = eventHallRepository.findById(request.eventHallId())
-						.orElseThrow(() -> new EventException(EVENT_HALL_NOT_FOUND));
-					Event event = request.toEntity(eventHall);
+			EventHall eventHall = eventHallRepository.findById(1L)
+				.orElseThrow(() -> new EventException(EVENT_HALL_NOT_FOUND));
+			for(String[] data : datas) {
+				EventCreateRequest request = new EventCreateRequest(
+					data[0],
+					data[2],
+					100,
+					LocalDateTime.now(),
+					LocalDateTime.now().plusDays(10),
+					null,
+					GenreType.MUSICAL,
+					LocalDateTime.now(),
+					LocalDateTime.now().plusDays(10),
+					1L);
 
-					events.add(event);
+				Event event = request.toEntity(eventHall);
+
+				events.add(event);
+				count++;
+				if(count == 100){
+					count = 0;
+					List<Event> savedEvents = eventRepository.saveAll(events);
+					savedEvents.forEach(e -> {
+						EventDocument eventDocument = EventDocument.from(e);
+						documents.add(eventDocument);
+					});
+					eventSearchQueryRepository.bulkInsert(documents);
+					events.clear();
+					documents.clear();
 				}
-			);
-			List<Event> savedEvents = eventRepository.saveAll(events);
-			savedEvents.forEach(e -> {
-				EventDocument eventDocument = EventDocument.from(e);
-				documents.add(eventDocument);
-			});
-			eventSearchQueryRepository.bulkInsert(documents);
+			}
+
+
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
