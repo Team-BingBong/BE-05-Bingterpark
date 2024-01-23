@@ -38,7 +38,7 @@ public class EventService {
 
 	public EventResponse createEvent(EventCreateRequest request) {
 		EventHall eventHall = getEventHall(request.eventHallId());
-		// validateDuplicateEvent(request.title());
+		validateDuplicateEvent(request.title());
 
 		Event event = request.toEntity(eventHall);
 		Event savedEvent = eventRepository.save(event);
@@ -86,7 +86,7 @@ public class EventService {
 		eventSearchRepository.deleteById(id);
 	}
 
-	public PageResponseDto searchEventByKeywordwithJpa(EventKeywordSearchRequest request){
+	public PageResponseDto searchEventByKeywordwithJpa(EventKeywordSearchRequest request) {
 		EventKeywordSearchDto eventKeywordSearchDto = request.toDto();
 		Page<EventResponse> eventsByKeyword = eventCustomRepository.getEventsByKeyword(eventKeywordSearchDto);
 		return PageResponseDto.of(eventsByKeyword);
