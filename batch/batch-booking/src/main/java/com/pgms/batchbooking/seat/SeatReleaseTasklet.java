@@ -25,7 +25,7 @@ public class SeatReleaseTasklet implements Tasklet{
 	@Override
 	public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
 		List<Ticket> tickets = ticketRepository.findAll(LocalDateTime.now(), BookingStatus.WAITING_FOR_PAYMENT);
-		tickets.forEach(ticket -> ticket.getSeat().updateStatus(EventSeatStatus.AVAILABLE));
+		ticketRepository.updateSeatStatusBulk(EventSeatStatus.AVAILABLE, tickets.stream().map(Ticket::getId).toList());
 		return RepeatStatus.FINISHED;
 	}
 }
