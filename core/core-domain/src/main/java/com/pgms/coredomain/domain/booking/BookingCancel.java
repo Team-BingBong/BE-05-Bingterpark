@@ -32,13 +32,13 @@ public class BookingCancel extends BaseEntity {
     private Booking booking;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "refund_ bank_code")
+    @Column(name = "refund_bank_code")
     private BankCode refundBankCode;
 
-    @Column(name = "refund_ account_number")
+    @Column(name = "refund_account_number")
     private String refundAccountNumber;
 
-    @Column(name = "refund_ holder_name")
+    @Column(name = "refund_holder_name")
     private String refundHolderName;
 
     @Builder
