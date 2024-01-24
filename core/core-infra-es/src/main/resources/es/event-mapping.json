@@ -3,29 +3,26 @@
     "id": {
       "type": "long"
     },
+    "keywordText": {
+      "type": "text",
+      "analyzer": "ngram_analyzer"
+    },
     "title": {
       "type": "text",
       "copy_to": [
-        "title_chosung"
-      ],
-      "fields" : {
-        "kor" : {
-          "type": "text",
-          "analyzer": "korean"
-        },
-        "ngram" : {
-          "type": "text",
-          "analyzer": "ngram_analyzer"
-        }
-      }
+        "title_chosung",
+        "keyword_text"
+      ]
     },
     "title_chosung": {
       "type": "text",
-      "analyzer": "chosung"
+      "analyzer": "chosung",
+      "copy_to" : ["keyword_text"]
     },
     "description": {
       "type": "text",
-      "analyzer": "korean"
+      "analyzer": "korean",
+      "copy_to" : ["keyword_text"]
     },
     "startedAt": {
       "type": "date",
@@ -39,7 +36,8 @@
       "type": "keyword"
     },
     "genreType": {
-      "type": "keyword"
+      "type": "keyword",
+      "copy_to" : ["keyword_text"]
     },
     "averageScore": {
       "type": "double"

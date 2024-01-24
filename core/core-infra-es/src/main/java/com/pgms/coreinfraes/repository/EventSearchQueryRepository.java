@@ -39,9 +39,6 @@ import co.elastic.clients.elasticsearch._types.ScriptLanguage;
 import co.elastic.clients.elasticsearch._types.aggregations.Aggregation;
 import co.elastic.clients.elasticsearch._types.aggregations.AggregationBuilders;
 import co.elastic.clients.elasticsearch._types.aggregations.StringTermsBucket;
-import co.elastic.clients.elasticsearch._types.query_dsl.FieldValueFactorModifier;
-import co.elastic.clients.elasticsearch._types.query_dsl.FieldValueFactorScoreFunction;
-import co.elastic.clients.elasticsearch._types.query_dsl.FunctionScore;
 import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import co.elastic.clients.elasticsearch._types.query_dsl.QueryBuilders;
 import co.elastic.clients.elasticsearch._types.query_dsl.TermsQueryField;
@@ -161,10 +158,15 @@ public class EventSearchQueryRepository {
 	private NativeQuery getKeywordSearchNativeQuery(EventKeywordSearchDto eventKeywordSearchDto) {
 		NativeQueryBuilder queryBuilder = new NativeQueryBuilder();
 
-		Query multiQuery = QueryBuilders.multiMatch()
+		// Query multiQuery = QueryBuilders.multiMatch()
+		// 	.query(eventKeywordSearchDto.keyword())
+		// 	.fields("title.ngram^1", "title_chosung^1", "description^1", "genreType^1")
+		// 	.minimumShouldMatch(MINIMUM_SHOULD_MATCH_PERCENTAGE)
+		// 	.build()._toQuery();
+
+		Query query = QueryBuilders.match()
 			.query(eventKeywordSearchDto.keyword())
-			.fields("title.ngram^1", "title_chosung^1", "description^1", "genreType^1")
-			.minimumShouldMatch(MINIMUM_SHOULD_MATCH_PERCENTAGE)
+			.field("keyword_text")
 			.build()._toQuery();
 
 		List<Query> filterList = new ArrayList<>();
@@ -209,22 +211,22 @@ public class EventSearchQueryRepository {
 
 		Query boolQuery = QueryBuilders.bool()
 			.filter(filterList)
-			.must(multiQuery)
+			.must(query)
 			.build()._toQuery();
 
-		FunctionScore fieldValueFactorScoreFunction = new FieldValueFactorScoreFunction.Builder()
-			.field("id")
-			.factor(1.2)
-			.modifier(FieldValueFactorModifier.None)
-			.missing(1.0)
-			.build()._toFunctionScore();
+		// FunctionScore fieldValueFactorScoreFunction = new FieldValueFactorScoreFunction.Builder()
+		// 	.field("id")
+		// 	.factor(1.2)
+		// 	.modifier(FieldValueFactorModifier.None)
+		// 	.missing(1.0)
+		// 	.build()._toFunctionScore();
+		//
+		// Query functionScoreQuery = QueryBuilders.functionScore()
+		// 	.functions(List.of(fieldValueFactorScoreFunction))
+		// 	.query(boolQuery)
+		// 	.build()._toQuery();
 
-		Query functionScoreQuery = QueryBuilders.functionScore()
-			.functions(List.of(fieldValueFactorScoreFunction))
-			.query(boolQuery)
-			.build()._toQuery();
-
-		return queryBuilder.withQuery(functionScoreQuery)
+		return queryBuilder.withQuery(boolQuery)
 			.build();
 	}
 

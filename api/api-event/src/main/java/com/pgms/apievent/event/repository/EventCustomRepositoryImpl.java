@@ -4,7 +4,6 @@ import static com.pgms.coredomain.domain.booking.QBooking.*;
 import static com.pgms.coredomain.domain.event.QEvent.*;
 import static com.pgms.coredomain.domain.event.QEventReview.*;
 import static com.pgms.coredomain.domain.event.QEventTime.*;
-import static org.springframework.util.StringUtils.*;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -21,7 +20,6 @@ import com.pgms.coredomain.domain.event.DateRangeType;
 import com.pgms.coredomain.domain.event.GenreType;
 import com.pgms.coreinfraes.dto.EventKeywordSearchDto;
 import com.querydsl.core.BooleanBuilder;
-import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
@@ -133,11 +131,15 @@ public class EventCustomRepositoryImpl implements EventCustomRepository {
 	@Override
 	public Page<EventResponse> getEventsByKeyword(EventKeywordSearchDto eventKeywordSearchDto) {
 		Pageable pageable = eventKeywordSearchDto.pageable();
+		int offset = pageable.getPageNumber() * pageable.getPageSize();
+
 		List<EventResponse> content = jpaQueryFactory.selectFrom(event)
 				.where(
-					containsTitle(eventKeywordSearchDto.keyword()),
+					containsKeyword(eventKeywordSearchDto.keyword()),
 					isGenreType(eventKeywordSearchDto.genreType())
 				)
+				.offset(offset)
+				.limit(pageable.getPageSize())
 				.fetch()
 				.stream()
 				.map(EventResponse::of)
@@ -146,15 +148,22 @@ public class EventCustomRepositoryImpl implements EventCustomRepository {
 		JPAQuery<Long> countQuery = jpaQueryFactory.select(event.count())
 				.from(event)
 				.where(
-					containsTitle(eventKeywordSearchDto.keyword()),
+					containsKeyword(eventKeywordSearchDto.keyword()),
 					isGenreType(eventKeywordSearchDto.genreType())
 				);
 
 		return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
 	}
 
-	private BooleanExpression containsTitle(String title){
-		return hasText(title) ? event.title.contains(title) : null;
+	private BooleanBuilder containsKeyword(String keyword){
+		BooleanBuilder booleanBuilder = new BooleanBuilder();
+		if(keyword == null) {
+			return null;
+		}
+		booleanBuilder.or(event.title.contains(keyword));
+		booleanBuilder.or(event.description.contains(keyword));
+
+		return booleanBuilder;
 	}
 
 	private BooleanBuilder isGenreType(List<String> genres){

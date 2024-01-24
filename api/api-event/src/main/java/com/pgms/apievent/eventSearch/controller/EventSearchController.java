@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.pgms.apievent.aop.LogExecutionTime;
 import com.pgms.apievent.common.dto.response.PageResponseDto;
 import com.pgms.apievent.eventSearch.dto.request.EventKeywordSearchRequest;
 import com.pgms.apievent.eventSearch.dto.response.RecentTop10KeywordsResponse;
@@ -33,7 +32,6 @@ public class EventSearchController {
 	private final EventSearchService eventSearchService;
 
 	@Operation(summary = "키워드 검색", description = "키워드로 종합 검색합니다.")
-	@LogExecutionTime
 	@GetMapping("/keyword")
 	public ResponseEntity<ApiResponse> searchEventsByKeyword(
 		@ModelAttribute @Valid EventKeywordSearchRequest eventKeywordSearchRequest,

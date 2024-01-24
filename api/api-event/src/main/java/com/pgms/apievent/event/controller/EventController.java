@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import com.pgms.apievent.aop.LogExecutionTime;
 import com.pgms.apievent.common.dto.response.PageResponseDto;
 import com.pgms.apievent.event.dto.request.EventCreateRequest;
 import com.pgms.apievent.event.dto.request.EventPageRequest;
@@ -103,7 +102,6 @@ public class EventController {
 	}
 
 	@GetMapping("/search/keyword/jpa")
-	@LogExecutionTime
 	public ResponseEntity<ApiResponse> searchEventsByKeyword(
 			@ModelAttribute @Valid EventKeywordSearchRequest eventKeywordSearchRequest,
 			BindingResult bindingResult) {
