@@ -24,7 +24,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
-@Document(indexName = "event")
+@Document(indexName = "events")
 @Mapping(mappingPath = "es/event-mapping.json")
 @Setting(settingPath = "es/event-setting.json")
 public class EventDocument {

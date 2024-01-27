@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import com.pgms.apievent.aop.LogExecutionTime;
 import com.pgms.apievent.common.dto.response.PageResponseDto;
 import com.pgms.apievent.event.dto.request.EventCreateRequest;
 import com.pgms.apievent.event.dto.request.EventPageRequest;
@@ -101,11 +102,12 @@ public class EventController {
 		return ResponseEntity.noContent().build();
 	}
 
+	@LogExecutionTime
 	@GetMapping("/search/keyword/jpa")
 	public ResponseEntity<ApiResponse> searchEventsByKeyword(
-			@ModelAttribute @Valid EventKeywordSearchRequest eventKeywordSearchRequest,
-			BindingResult bindingResult) {
-		if(bindingResult.hasErrors()){
+		@ModelAttribute @Valid EventKeywordSearchRequest eventKeywordSearchRequest,
+		BindingResult bindingResult) {
+		if (bindingResult.hasErrors()) {
 			throw new EventException(BINDING_FAILED_EXCEPTION);
 		}
 
@@ -114,8 +116,14 @@ public class EventController {
 	}
 
 	@GetMapping("/addcsv")
-	public ResponseEntity<Void> addCsvEvent(@RequestParam String filePath){
+	public ResponseEntity<Void> addCsvEvent(@RequestParam String filePath) {
 		csvReader.saveEventCsv(filePath);
+		return ResponseEntity.noContent().build();
+	}
+
+	@GetMapping("/add-document")
+	public ResponseEntity<Void> addDocuments() {
+		csvReader.saveAllDocument();
 		return ResponseEntity.noContent().build();
 	}
 }

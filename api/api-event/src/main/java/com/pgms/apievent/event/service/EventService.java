@@ -6,7 +6,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.pgms.apievent.aop.LogExecutionTime;
 import com.pgms.apievent.common.dto.response.PageResponseDto;
 import com.pgms.apievent.event.dto.request.EventCreateRequest;
 import com.pgms.apievent.event.dto.request.EventPageRequest;
@@ -87,7 +86,6 @@ public class EventService {
 		eventSearchRepository.deleteById(id);
 	}
 
-	@LogExecutionTime
 	public PageResponseDto searchEventByKeywordwithJpa(EventKeywordSearchRequest request) {
 		EventKeywordSearchDto eventKeywordSearchDto = request.toDto();
 		Page<EventResponse> eventsByKeyword = eventCustomRepository.getEventsByKeyword(eventKeywordSearchDto);

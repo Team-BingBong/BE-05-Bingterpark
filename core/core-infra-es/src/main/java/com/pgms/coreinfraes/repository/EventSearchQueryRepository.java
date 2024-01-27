@@ -249,14 +249,22 @@ public class EventSearchQueryRepository {
 
 	public <T> void bulkInsert(List<T> documents) {
 		try {
+			int chunkSize = 50;
 			List<IndexQuery> insertQueries = new ArrayList<>();
-			for (T document : documents) {
-				IndexQuery indexQuery = new IndexQueryBuilder()
-					.withObject(document)
-					.build();
-				insertQueries.add(indexQuery);
+
+			for (int i = 0; i < documents.size(); i += chunkSize) {
+				List<T> chunk = documents.subList(i, Math.min(i + chunkSize, documents.size()));
+
+				for (T document : chunk) {
+					IndexQuery indexQuery = new IndexQueryBuilder()
+						.withObject(document)
+						.build();
+					insertQueries.add(indexQuery);
+				}
+
+				elasticsearchOperations.bulkIndex(insertQueries, IndexCoordinates.of("events"));
+				insertQueries.clear();
 			}
-			elasticsearchOperations.bulkIndex(insertQueries, IndexCoordinates.of("event"));
 		} catch (Exception e) {
 			throw e;
 		}
